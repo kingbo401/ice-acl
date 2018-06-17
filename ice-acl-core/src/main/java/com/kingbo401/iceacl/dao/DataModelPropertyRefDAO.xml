@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingbo401.iceacl.dao.DataModelPropertyRefDAO">
+	<select id="listDataPropertyByModelId" resultType="DataPropertyDO">
+		select b.* from ice_data_model_property_ref a,ice_data_property b
+		where a.property_id = b.id and a.`status` != 0 and b.`status` =1 and
+		a.model_id = #{modelId}
+	</select>
+
+	<select id="listDataModelByPropertyId" resultType="DataModelDO">
+		select b.* from ice_data_model_property_ref a,ice_data_model b
+		where a.model_id = b.id and a.`status` != 0 and b.`status` =1 and
+		a.property_id = #{propertyId}
+	</select>
+
+	<select id="listRefsByModelId" resultType="DataModelPropertyRefDO">
+		select * from ice_data_model_property_ref
+		where model_id = #{modelId} and status != 0
+	</select>
+
+	<insert id="batchCreate" parameterType="list">
+		insert into ice_data_model_property_ref (model_id, property_id,
+		default_access_type,status, create_time, update_time)
+		values
+		<foreach collection="list" separator="," item="item">
+			(#{item.modelId},
+			#{item.propertyId},#{item.defaultAccessType},#{item.status},
+			#{item.createTime}, #{item.updateTime})
+		</foreach>
+		ON DUPLICATE KEY update
+		status=values{status},default_access_type=values{defaultAccessType},
+		update_time = values(updateTime)
+	</insert>
+
+	<update id="updateRefsStatus">
+		update ice_data_model_property_ref set status = #{status},update_time = now()
+		where model_id = #{modelId}
+		<if test="propertyIds != null and propertyIds.size>0">
+			and property_id in
+			<foreach collection="propertyIds" item="id" close=")" open="(" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</update>
+</mapper> 

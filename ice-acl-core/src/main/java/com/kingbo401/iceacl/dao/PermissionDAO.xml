@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingbo401.iceacl.dao.PermissionDAO">
+	<select id="getPermissionByIds" resultType="PermissionDO">
+		select * from ice_permission where status != 0 and id in
+		<foreach collection="ids" open="(" close=")" item="id"
+			separator=",">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="getPermissionByKeys" resultType="PermissionDO">
+		select * from ice_permission where status != 0 and app_key=#{appKey}
+		and permission_key in
+		<foreach collection="permissionKeys" open="(" close=")"
+			item="permissionKey" separator=",">
+			#{permissionKey}
+		</foreach>
+	</select>
+	
+	<sql id="queryPermissionSubSql">
+		where status != 0 and app_key=#{appKey}
+		<if test="permissionType != null and permissionType != ''">
+			and permission_type=#{permissionType}
+		</if>
+		<if test="permissionKey != null and permissionKey != ''">
+			and permission_key=#{permissionKey}
+		</if>
+		<if test="permissionName != null and permissionName != ''">
+			and permission_name=#{permissionName}
+		</if>
+		<if test="tag1 != null">
+			and tag1 = #{tag1}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+	</sql>
+
+	<select id="listPermission" resultType="PermissionDO">
+		select * from ice_permission
+		<include refid="queryPermissionSubSql" />
+		<if test = "orderField != null and orderField != ''">
+		    order by ${orderField} ${orderType}
+		</if>
+	</select>
+
+	<select id="countPermission" resultType="long">
+		select count(*) from ice_permission
+		<include refid="queryPermissionSubSql" />
+	</select>
+
+	<select id="pagePermission" resultType="PermissionDO">
+		select * from ice_permission 
+		<include refid="queryPermissionSubSql" />
+		<if test = "orderField != null and orderField != ''">
+		    order by ${orderField} ${orderType}
+		</if>
+		limit #{offset}, #{pageSize}
+	</select>
+
+	<insert id="create" parameterType="PermissionDO"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into ice_permission(permission_key,permission_name,permission_type,app_key,description,tag1,update_time,create_time,status)
+		values
+		(#{permissionKey},#{permissionName},#{permissionType},#{appKey},#{description},#{tag1},#{updateTime},#{createTime},#{status})
+		ON DUPLICATE KEY update status=#{status},permission_name=#{permissionName},permission_type=#{permissionType},
+		description=#{description},tag1=#{tag1},update_time = #{updateTime}
+	</insert>
+
+	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into ice_permission(permission_key,permission_name,permission_type,app_key,description,tag1,update_time,create_time,status)
+		values
+		<foreach collection="list" separator="," item="item">
+			(#{item.permissionKey},#{item.permissionName},#{item.permissionType},#{item.appKey},#{item.description},#{item.tag1},#{item.updateTime},#{item.createTime},#{status})
+		</foreach>
+		ON DUPLICATE KEY update status=values{status},permission_name=values{permissionName},permission_type=values{permissionType},
+		description=values{description},tag1=values{tag1},update_time = values{updateTime}
+	</insert>
+
+	<update id="update" parameterType="PermissionDO">
+		update ice_permission
+		<set>
+			<if test="permissionKey != null and permissionKey != ''">
+				permission_key = #{permissionKey},
+			</if>
+			<if test="permissionName != null and permissionName != ''">
+				permission_name = #{permissionName},
+			</if>
+			<if test="permissionType != null and permissionType != ''">
+				permission_type = #{permissionType},
+			</if>
+			<if test="tag1 != null and tag1 != ''">
+				tag1 = #{tag1},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description},
+			</if>
+			<if test="status != null">
+                  status = #{status},
+              </if>
+			update_time = #{updateTime}
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="removeById" parameterType="long">
+		update ice_permission set status = 0,update_time = now() where id = #{id}
+	</update>
+
+	<select id="getById" resultType="PermissionDO">
+		select * from ice_permission where id = #{id} and status != 0 limit 1
+	</select>
+	
+	<select id="getByKey" resultType="PermissionDO">
+		select * from ice_permission where app_key = #{appKey} and permission_key=#{permissionKey} and status != 0 limit 1
+	</select>
+
+	<select id="hasUserRolePermission" resultType="int">
+		select count(1) from ice_user_role_ref t1, ice_role_permission_ref t2, ice_role t3
+		where t1.user_id=#{userId} and t1.tenant=#{tenant} and
+		t2.permission_id=#{permissionId}
+		and t1.role_id=t2.role_id and t1.role_id = t3.id and 
+		t1.status=1 and t2.status=1 and t3.status=1
+		and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		limit 1
+	</select>
+
+	<select id="hasUserDirectPermission" resultType="int">
+		select count(1) from ice_user_permission_ref
+		where user_id = #{userId} and tenant = #{tenant} 
+		and permission_id = #{permissionId} and status = 1
+		and (expire_time &gt;= now() or expire_time is null) and (effective_time &lt;= now() or effective_time is null)
+		limit 1
+	</select>
+
+	<select id="hasUserPermissionGroupPermission" resultType="int">
+		select count(1) from ice_user_permission_group_ref t1,
+		ice_permission_group_ref t2, ice_permission_group t3
+		where t1.group_id = t2.group_id and t1.group_id=t3.id 
+		and t1.status=1 and t2.status=1 and t3.status=1
+		and t1.user_id=#{userId} and t1.tenant = #{tenant} and
+		t2.permission_id = #{permissionId}
+		and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		limit 1
+	</select>
+
+	<select id="hasUserRolePermissionGroupPermission" resultType="int">
+		select count(1) from ice_user_role_ref t1, ice_role t2,
+		ice_role_permission_group_ref t3, ice_permission_group_ref t4
+		where t1.user_id = #{userId} and t1.tenant = #{tenant}
+		and t1.role_id = t2.id and t2.id = t3.role_id and t3.group_id = t4.group_id
+		and t1.status = 1 and t2.status = 1 and t3.status = 1 and t4.status = 1
+		and t4.permission_id = #{permissionId}
+		and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		limit 1
+	</select>
+</mapper>

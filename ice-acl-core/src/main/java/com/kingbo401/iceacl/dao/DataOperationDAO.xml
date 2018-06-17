@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.kingbo401.iceacl.dao.DataOperationDAO">
+    <select id="getOperationByCode" resultType="DataOperationDO">
+        select * from ice_data_operation 
+        where model_id = #{modelId} and code = #{code} and status != 0 
+    </select>
+
+    <select id="listDataOperationByModelId" resultType="DataOperationDO">
+        select * from ice_data_operation
+        where  model_id = #{modelId} and status != 0 order by id desc
+    </select>
+
+    <insert id="create" parameterType="DataOperationDO" useGeneratedKeys="true" keyProperty="id">
+        insert into ice_data_operation (model_id, code,name, description, status,create_time, update_time)
+        values (#{modelId}, #{code},  #{name}, #{description}, #{status}, #{createTime}, #{updateTime})
+        ON DUPLICATE KEY update status=#{status},name=#{name},
+		description=#{description},update_time = #{updateTime}
+    </insert>
+
+    <update id="update" parameterType="DataOperationDO" >
+        update ice_data_operation
+        <set >
+            <if test="name != null" >
+                name = #{name},
+            </if>
+            <if test="description != null" >
+                description = #{description},
+            </if>
+            <if test="status != null" >
+                status = #{status},
+            </if>
+            update_time = #{updateTime}
+        </set>
+        where id = #{id}
+    </update>
+</mapper> 

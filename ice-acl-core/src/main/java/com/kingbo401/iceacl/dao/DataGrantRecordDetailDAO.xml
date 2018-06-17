@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.kingbo401.iceacl.dao.DataGrantRecordDetailDAO"> 
+	<insert id="create" parameterType="DataGrantRecordDetailDO" useGeneratedKeys="true" keyProperty="id">
+		insert into ice_data_grant_record_detail(data_grant_record_id,property_id,property_value,property_value_desc,create_time,update_time)
+		values(#{dataGrantRecordId},#{propertyId},#{propertyValue},#{propertyValueDesc},#{createTime},#{updateTime})
+	</insert>
+	
+	<insert id="batchCreate" parameterType="list">
+		insert into ice_data_grant_record_detail(data_grant_record_id,property_id,property_value,property_value_desc,create_time,update_time) values
+		<foreach collection="datas" item="item" index="index" separator="," >  
+		(#{item.dataGrantRecordId},#{item.propertyId},#{item.propertyValue},#{item.propertyValueDesc},#{item.createTime},#{item.updateTime})
+		</foreach>
+	</insert>
+	
+	<delete id="removeByRecordIds" parameterType="list">
+		delete from ice_data_grant_record_detail where data_grant_record_id in		
+		<foreach collection="recordIds" item="recordId" index="index" open="(" separator="," close=")">
+			#{recordId}
+		</foreach>
+	</delete>
+	
+	<delete id="removeByRecordId" parameterType="list">
+		delete from ice_data_grant_record_detail where data_grant_record_id = #{recordId}		
+	</delete>
+	
+	<select id = "listDetailByRecordId"  resultType="DataGrantRecordDetailDO">
+		select * from ice_data_grant_record_detail where data_grant_record_id=#{recordId}
+	</select>
+	
+	<select id = "listDetailByRecordIds" resultType="DataGrantRecordDetailDO">
+		select * from ice_data_grant_record_detail where data_grant_record_id in		
+		<foreach collection="recordIds" item="recordId" index="index" open="(" separator="," close=")">
+			#{recordId}
+		</foreach>
+	</select>
+</mapper> 

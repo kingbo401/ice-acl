@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.kingbo401.iceacl.dao.UserPermissionGroupRefDAO"> 
+	<insert id="batchCreate" parameterType="list">
+		insert into ice_user_permission_group_ref(user_id,group_id,tenant,status,effective_time,expire_time,create_time,update_time) values
+		<foreach collection="list" item="item" index="index" separator="," >  
+		(#{item.userId},#{item.groupId},#{item.tenant},#{item.status},#{item.effectiveTime},#{item.expireTime},#{item.createTime},#{item.updateTime})
+		</foreach>
+		ON DUPLICATE KEY UPDATE update_time = values(update_time),status = values(status),effective_time=values(effective_time),expire_time=values(expire_time)
+	</insert>
+
+	<update id="updateRefsStatus">
+		update ice_user_permission_group_ref set status = #{status},update_time = now() where user_id=#{userId}
+		<if test = "tenant != null and tenant != ''">
+			and tenant=#{tenant}
+		</if>
+		<if test="groupIds != null and groupIds.size() > 0">
+			and group_id in
+			<foreach collection="groupIds" item="groupId" open="(" separator="," close=")">
+				#{groupId}
+			</foreach>
+		</if>
+	</update>
+	
+	<update id="removeRefsByGroupId">
+		update ice_user_permission_group_ref set status = 0,update_time = now() where group_id = #{groupId}
+	</update>
+	
+	<sql id="queryUserPermissionGroupRefSubSql">
+		where t1.user_id=#{userId} and t1.tenant=#{tenant} and t1.group_id=t2.id 
+		<if test="status != null">
+            and t1.status = #{status},
+        </if>
+		<if test = "appKey != null and appKey != ''">
+		    and t2.app_key=#{appKey}
+		</if>
+		<if test='tenant == "tenant_common_symbol"'>
+		    and t2.tenant='tenant_common_symbol'
+		</if>
+		<if test='tenant != "tenant_common_symbol"'>
+		    and t2.tenant in ('tenant_common_symbol',#{tenant})
+		</if>
+		<if test = "tag1 != null and tag1 != ''">
+		    and t2.tag1=#{tag1}
+		</if>
+		<if test = "groupType != null and groupType != ''">
+		    and t2.group_type = #{groupType}
+		</if>
+		<if test = "groupName != null and groupName != ''">
+		    and t2.group_name like  concat('%', #{groupName}, '%')
+		</if>
+		<if test = "groupId != null">
+		    and t2.id=#{groupId}
+		</if>
+		and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
+		<if test="returnNotEffective == false">
+		and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		</if>
+		and t2.status=1 and t1.status!=0
+	</sql>
+
+	<select id = "listUserPermissionGroupRef"  resultType="UserPermissionGroupRefVO">
+		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.tag1,t2.group_pid,
+		t2.group_name,t2.description, t2.group_order,t2.group_type
+		from ice_user_permission_group_ref t1, ice_permission_group t2
+		<include refid="queryUserPermissionGroupRefSubSql" />
+		<if test = "orderField != null and orderField != ''">
+	       order by ${orderField} ${orderType}
+	    </if>
+	</select>
+	
+	<select id = "countUserPermissionGroupRef"  resultType="long">
+		select count(*) from ice_user_permission_group_ref t1, ice_permission_group t2
+		<include refid="queryUserPermissionGroupRefSubSql" />
+	</select>
+	
+	<select id = "pageUserPermissionGroupRef"  resultType="UserPermissionGroupRefVO">
+		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.tag1,t2.group_pid,
+		t2.group_name,t2.description, t2.group_order,t2.group_type
+		from ice_user_permission_group_ref t1, ice_permission_group t2
+		<include refid="queryUserPermissionGroupRefSubSql" />
+		<if test = "orderField != null and orderField != ''">
+	       order by ${orderField} ${orderType}
+	    </if>
+		limit #{offset},#{pageSize}
+	</select>
+	
+	<select id = "hasUserUse" resultType="UserPermissionGroupRefDO">
+		select count(*) from ice_user_permission_group_ref 
+		where group_id=#{groupId} and status!=0
+		and	(expire_time &gt;= now() or expire_time is null)
+		limit 1
+	</select>
+</mapper> 

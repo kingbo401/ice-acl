@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingbo401.iceacl.dao.DataPropertyAccessDAO">
+	<select id="listDataPropertyAccess" resultType="DataPropertyAccessDO"
+		parameterType="DataPropertyAccessParam">
+		select * from ice_data_property_access
+		where status != 0 and model_id = #{modelId}
+		<if test="grantTargetId != null"> and grant_target_id = #{grantTargetId}</if>
+		<if test="grantTargetType != null"> and grant_target_type = #{grantTargetType}</if>
+		<if test='tenant == "tenant_common_symbol"'>
+			and tenant='tenant_common_symbol'
+		</if>
+		<if test='tenant != "tenant_common_symbol"'>
+			and tenant in ('tenant_common_symbol',#{tenant})
+		</if>
+		<if test="status != null"> and status = #{status} </if>
+		<if test="orderField != null and orderField != ''">
+			order by ${orderField} ${orderType}
+		</if>
+	</select>
+
+	<insert id="create" parameterType="DataPropertyAccessDO">
+		insert into ice_data_property_access (model_id, property_id,
+		grant_target_id, grant_target_type, tenant,
+		access_type, status, create_time, update_time)
+		values (#{modelId}, #{propertyId}, #{grantTargetId}, #{grantTargetType},
+		#{tenant},
+		#{accessType}, #{status}, #{createTime}, #{updateTime})
+		ON DUPLICATE KEY update
+		status=#{status},access_type=#{accessType},update_time = #{updateTime}
+	</insert>
+
+	<insert id="batchCreate" parameterType="DataPropertyAccessDO">
+		insert into ice_data_property_access (model_id, property_id,
+		grant_target_id, grant_target_type, tenant
+		,access_type, status, create_time, update_time ) values
+		<foreach collection="datas" item="item" separator=",">
+			(#{item.modelId}, #{item.propertyId}, #{item.grantTargetId},
+			#{item.grantTargetType}, #{item.tenant},
+			#{item.accessType},#{item.status}, #{item.createTime},
+			#{item.updateTime})
+		</foreach>
+		ON DUPLICATE KEY update
+		status=values(status),access_type=values(accessType),update_time =
+		values{updateTime}
+	</insert>
+
+	<update id="updateRefsStatus" parameterType="DataPropertyAccessParam">
+		update ice_data_property_access set status = #{status}, update_time = now()
+		where grant_target_id = #{grantTargetId} and grant_target_type = #{grantTargetType} and tenant = #{tenant}
+		and model_id = #{modelId}
+		<if test="propertyIds != null and propertyIds.size() > 0">
+			and property_id in
+			<foreach collection="propertyIds" separator="," open="("
+				item="id" close=")">
+				#{id}
+			</foreach>
+		</if>
+	</update>
+</mapper>
