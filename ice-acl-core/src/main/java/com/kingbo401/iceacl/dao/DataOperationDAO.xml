@@ -16,8 +16,6 @@
     <insert id="create" parameterType="DataOperationDO" useGeneratedKeys="true" keyProperty="id">
         insert into ice_data_operation (model_id, code,name, description, status,create_time, update_time)
         values (#{modelId}, #{code},  #{name}, #{description}, #{status}, #{createTime}, #{updateTime})
-        ON DUPLICATE KEY update status=#{status},name=#{name},
-		description=#{description},update_time = #{updateTime}
     </insert>
 
     <update id="update" parameterType="DataOperationDO" >

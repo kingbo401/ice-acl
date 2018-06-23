@@ -66,8 +66,6 @@
 		insert into ice_permission(permission_key,permission_name,permission_type,app_key,description,tag1,update_time,create_time,status)
 		values
 		(#{permissionKey},#{permissionName},#{permissionType},#{appKey},#{description},#{tag1},#{updateTime},#{createTime},#{status})
-		ON DUPLICATE KEY update status=#{status},permission_name=#{permissionName},permission_type=#{permissionType},
-		description=#{description},tag1=#{tag1},update_time = #{updateTime}
 	</insert>
 
 	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"

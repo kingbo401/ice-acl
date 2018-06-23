@@ -60,8 +60,6 @@
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="DataPropertyDO">
         insert into ice_data_property (app_key, code,name, description, status,create_time, update_time)
         values (#{appKey}, #{code}, #{name}, #{description}, #{status}, #{createTime}, #{updateTime})
-        ON DUPLICATE KEY update status=#{status},name=#{name},
-		description=#{description},update_time = #{updateTime}
     </insert>
 
     <update id="update" parameterType="DataPropertyDO" >

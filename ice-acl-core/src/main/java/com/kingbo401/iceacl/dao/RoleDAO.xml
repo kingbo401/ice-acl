@@ -8,8 +8,6 @@
 		tag1,status,create_time, update_time)
 		values (#{appKey},#{roleKey},#{roleName},#{roleType},#{level},#{description},#{tenant},
 		#{tag1},,#{status},#{createTime},#{updateTime})
-		ON DUPLICATE KEY update status=#{status},role_name=#{roleName},role_type=#{roleType},
-		level=#{level},description=#{description},tenant=#{tenant},tag1=#{tag1},update_time = #{updateTime}
 	</insert>
 	
 	<update id="updateRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
