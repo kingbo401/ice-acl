@@ -11,8 +11,7 @@
 			(#{item.roleId}, #{item.menuId},
 			#{item.status},#{item.updateTime},#{item.createTime})
 		</foreach>
-		ON DUPLICATE KEY UPDATE update_time = values{updateTime},status =
-		values{status}
+		ON DUPLICATE KEY UPDATE update_time = now(),status = values{status}
 	</insert>
 
 	<update id="updateRefsStatus">

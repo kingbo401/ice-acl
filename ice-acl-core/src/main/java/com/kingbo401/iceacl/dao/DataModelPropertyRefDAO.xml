@@ -31,7 +31,7 @@
 		</foreach>
 		ON DUPLICATE KEY update
 		status=values{status},default_access_type=values{defaultAccessType},
-		update_time = values(updateTime)
+		update_time = now()
 	</insert>
 
 	<update id="updateRefsStatus">

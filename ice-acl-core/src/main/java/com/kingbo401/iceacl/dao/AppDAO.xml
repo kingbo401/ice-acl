@@ -52,7 +52,8 @@
 
 	<insert id="createApp" keyProperty="id" useGeneratedKeys="true" parameterType="AppDO">
 		insert into ice_app(app_name,app_key,app_secret,status,description,create_time,update_time)
-		values(#{appName},#{appKey},#{appSecret},#{status},#{description},#{createTime},#{updateTime});
+		values(#{appName},#{appKey},#{appSecret},#{status},#{description},#{createTime},#{updateTime})
+		ON DUPLICATE KEY update app_name=#{appName},app_secret=#{appSecret},status=#{status},update_time=now(),description=#{description}
 	</insert>
 
 	<update id="updateApp" parameterType="AppDO">

@@ -8,7 +8,7 @@
 		<foreach collection="list" item="item" index="index" separator="," >  
 		(#{item.userId},#{item.permissionId},#{item.tenant},#{item.status},#{item.effectiveTime},#{item.expireTime},#{item.createTime},#{item.updateTime})
 		</foreach>
-		ON DUPLICATE KEY UPDATE update_time = values(update_time),status = values(status),effective_time=values(effective_time),expire_time=values(expire_time)
+		ON DUPLICATE KEY UPDATE update_time = now(),status = values(status),effective_time=values(effective_time),expire_time=values(expire_time)
 	</insert>
 
 	<update id="updateRefsStatus">
