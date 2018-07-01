@@ -8,7 +8,7 @@ public class RolePermissionGroupRefParam extends BaseParam{
 	private String appKey;
 	private Long roleId;
 	private List<Long> groupIds;
-	private boolean multiApp = false;//是否更新角色上关联的其它应用的权限组
+	private boolean multiApp = false;
 
 	public String getAppKey() {
 		return appKey;

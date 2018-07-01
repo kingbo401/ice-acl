@@ -8,7 +8,7 @@ public class RoleMenuIdRefParam extends BaseParam{
 	private String appKey;
 	private long roleId;
 	private List<Long> menuIds;
-	private boolean multiApp = false;//是否更新角色上关联的其它应用的菜单
+	private boolean multiApp = false;
 	
 	public String getAppKey() {
 		return appKey;

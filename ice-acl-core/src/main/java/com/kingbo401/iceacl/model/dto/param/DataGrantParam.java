@@ -7,9 +7,7 @@ import java.util.Map;
 import kingbo401.iceacl.common.model.PropertyValue;
 
 public class DataGrantParam extends BaseDataGrantParam{
-	/**
-	 * 数据模型操作编码
-	 */
+	
 	private String operationCode;
 	
 	private List<Map<String, PropertyValue>> datas;

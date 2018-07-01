@@ -3,32 +3,17 @@ package com.kingbo401.iceacl.model.dto.param;
 import java.util.Map;
 
 public class DataGrantQueryParam extends BaseDataGrantParam{
-	/**
-	 * 数据模型操作编码，可不传值
-	 */
+	
 	private String operationCode;
 	
-	/**
-	 * 授权对象是用户时，是否进行级联查询角色上的数据;分页查询时无效
-	 */
 	private boolean hierarchicalRole = false;
-	/**
-	 * 授权对象是用户时，是否进行级联查询角色关联的权限组上的数据;分页查询时无效
-	 */
+	
 	private boolean hierarchicalRolePermissionGroup = false;
-	/**
-	 * 授权对象是用户时，是否进行级联查询权限组上的数据;分页查询时无效
-	 */
+	
 	private boolean hierarchicalPermissionGroup = false;
 	
-	/**
-     * 是否返回没有生效的授权
-     */
     private boolean returnNotEffective = false;
     
-	/**
-	 * map的key为propertyCode，value为授权的属性值;可只传入部分属性值；可为空
-	 */
 	private Map<String, String> data;
 
 	public String getOperationCode() {

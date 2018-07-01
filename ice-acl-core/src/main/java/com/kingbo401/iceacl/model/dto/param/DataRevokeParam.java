@@ -4,14 +4,8 @@ import java.util.List;
 
 public class DataRevokeParam extends BaseDataGrantParam{
 
-	/**
-	 * 数据模型操作编码，dataGrantRecordId不为null时，operationCode不能为空
-	 */
 	private String operationCode;
 	
-	/**
-	 * 授权记录id，可为空，不为空则直接回收dataGrantRecordId对应的数据
-	 */
 	private List<Long> dataGrantRecordIds;
 	
 	public String getOperationCode() {
