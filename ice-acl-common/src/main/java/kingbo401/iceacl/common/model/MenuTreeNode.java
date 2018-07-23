@@ -11,7 +11,7 @@ public class MenuTreeNode extends BasePojo{
 	private Long menuPid;
 	private String menuUrl;
 	private String menuIcon;
-	private String menuType;
+	private Integer menuType;
 	private Integer menuOrder;
 	private Integer level;
 	private List<MenuTreeNode> children = new ArrayList<MenuTreeNode>();
@@ -45,10 +45,11 @@ public class MenuTreeNode extends BasePojo{
 	public void setMenuIcon(String menuIcon) {
 		this.menuIcon = menuIcon;
 	}
-	public String getMenuType() {
+	
+	public Integer getMenuType() {
 		return menuType;
 	}
-	public void setMenuType(String menuType) {
+	public void setMenuType(Integer menuType) {
 		this.menuType = menuType;
 	}
 	public Integer getMenuOrder() {

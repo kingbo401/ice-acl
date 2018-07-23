@@ -72,4 +72,20 @@
          and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
          order by menu_order asc
     </select>
+    
+    <select id="hasAnyUserMenu" resultType="MenuDO">
+    	select count(1) from t0
+    	(
+    		 select t4.*
+	         from ice_user_role_ref t1, ice_role t2, ice_role_menu_ref t3, ice_menu t4
+	         where t1.user_id=#{userId} and t1.tenant=#{tenant} and t4.app_key=#{appKey}
+	         and t1.role_id=t2.id and t1.role_id=t3.role_id and t3.menu_id=t4.id
+	         and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
+	         and t4.id in
+	        <foreach collection="menuIds" open="(" close=")" item="id" separator=",">
+	            #{id}
+	        </foreach>
+	         limit 1
+    	) t0
+    </select>
 </mapper>

@@ -15,6 +15,8 @@ public interface MenuManager {
 	
 	MenuDTO updateMenu(MenuDTO menu);
 
+	MenuDTO getMenu(String appKey, Long id);
+	
 	boolean removeMenu(String appKey, Long id);
 	
 	boolean freezeMenu(String appKey, Long id);

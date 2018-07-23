@@ -4,42 +4,45 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum OperationType {
-	DELETE(0, "删除"), 
-	ADD(1, "新增"), 
-	UPDATE(2, "修改");
+public enum MenuType {
+	PAGE(1, "页面"), 
+	TAB(2, "tab"), 
+	HIDDEN(3, "hidden");
 
-	private static final Map<Integer, OperationType> TYPE_MAP;
+	private static final Map<Integer, MenuType> TYPE_MAP;
 
 	static {
-		Map<Integer, OperationType> map = new HashMap<Integer, OperationType>();
-		for (OperationType type : OperationType.values()) {
+		Map<Integer, MenuType> map = new HashMap<>();
+		for (MenuType type : MenuType.values()) {
 			map.put(type.getCode(), type);
 		}
 		TYPE_MAP = Collections.unmodifiableMap(map);
 	}
 
-	public static boolean isValid(int code) {
+	public static boolean isValid(Integer code) {
 		return TYPE_MAP.get(code) != null;
 	}
 
-	public static String getName(int code) {
-		OperationType userRoleGrantType = TYPE_MAP.get(code);
+	public static String getName(Integer code) {
+		if(code == null){
+			return null;
+		}
+		MenuType userRoleGrantType = TYPE_MAP.get(code);
 		if (userRoleGrantType != null) {
 			return userRoleGrantType.getName();
 		}
 		return null;
 	}
 
-	private int code;
+	private Integer code;
 
 	private String name;
 
-	OperationType(int code, String name) {
+	MenuType(Integer code, String name) {
 		this.code = code;
 		this.name = name;
 	}
-
+	
 	public String getName() {
 		return name;
 	}

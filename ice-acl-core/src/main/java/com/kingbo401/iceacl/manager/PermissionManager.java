@@ -26,6 +26,8 @@ public interface PermissionManager {
 	List<PermissionDTO> getPermissionByKeys(String appKey, List<String> permissionKeys);
 	
 	List<PermissionDTO> getPermissionByIds(String appKey, List<Long> permissionIds);
+	
+	List<PermissionDTO> getPermissionByIds(List<Long> permissionIds);
 
 	List<PermissionDTO> listPermission(PermissonQueryParam param);
 	

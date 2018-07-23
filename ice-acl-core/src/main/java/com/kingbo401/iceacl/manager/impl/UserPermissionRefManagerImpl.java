@@ -3,7 +3,6 @@ package com.kingbo401.iceacl.manager.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -188,10 +187,6 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		}
 		List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(appKey, permissionIds);
 		Assert.notEmpty(permissionDTOs, "权限不存在");
-		Map<Object, PermissionDTO> permissionMap = CollectionUtil.toIdMap(permissionDTOs);
-		for(Long permissionId : permissionIds){
-			Assert.notNull(permissionMap.get(permissionId), "权限不存在:" + permissionId);
-		}
 	}
 
 	@Override

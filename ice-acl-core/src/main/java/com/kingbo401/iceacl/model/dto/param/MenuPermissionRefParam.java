@@ -4,23 +4,22 @@ import java.util.List;
 
 import com.kingbo401.commons.model.BasePojo;
 
-public class RolePermissionIdRefParam extends BasePojo{
+public class MenuPermissionRefParam extends BasePojo{
 	private String appKey;
-	private Long roleId;
+	private Long menuId;
 	private List<Long> permissionIds;
 	private boolean multiApp = false;
-	
 	public String getAppKey() {
 		return appKey;
 	}
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
-	public Long getRoleId() {
-		return roleId;
+	public Long getMenuId() {
+		return menuId;
 	}
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
+	public void setMenuId(Long menuId) {
+		this.menuId = menuId;
 	}
 	public List<Long> getPermissionIds() {
 		return permissionIds;

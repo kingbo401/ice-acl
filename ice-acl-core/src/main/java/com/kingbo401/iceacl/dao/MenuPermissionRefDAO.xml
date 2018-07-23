@@ -2,22 +2,22 @@
 <!DOCTYPE mapper 
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kingbo401.iceacl.dao.RolePermissionRefDAO">
+<mapper namespace="com.kingbo401.iceacl.dao.MenuPermissionRefDAO">
 	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
 		keyProperty="id">
-		insert into ice_role_permission_ref (role_id,permission_id, status,
+		insert into ice_menu_permission_ref (menu_id,permission_id, status,
 		create_time, update_time)
 		values
 		<foreach collection="list" separator="," item="item">
-			(#{item.roleId}, #{item.permissionId},
+			(#{item.menuId}, #{item.permissionId},
 			#{item.status},#{item.updateTime},#{item.createTime})
 		</foreach>
 		ON DUPLICATE KEY UPDATE update_time = now(),status = values{status}
 	</insert>
 
 	<update id="updateRefsStatus">
-		update ice_role_permission_ref set status = #{status},update_time = now()
-		where role_id = #{roleId}
+		update ice_menu_permission_ref set status = #{status},update_time = now()
+		where menu_id = #{menuId}
 		<if test="permissionIds != null and permissionIds.size > 0">
 			and permission_id in
 			<foreach collection="permissionIds" item="id" close=")" open="("
@@ -28,7 +28,7 @@
 	</update>
 
 	<sql id="queryPermissionSubSql">
-		where t1.status != 0 and t2.status = 1 and t1.role_id = #{roleId} 
+		where t1.status != 0 and t2.status = 1 and t1.menu_id = #{menuId} 
 		and t1.permission_id=t2.id
 		<if test="status != null">
 			and t1.status = #{status},
@@ -48,7 +48,7 @@
 	</sql>
 	
 	<select id="listPermission" resultType="PermissionDO">
-		select t2.* from ice_role_permission_ref t1,ice_permission t2
+		select t2.* from ice_menu_permission_ref t1,ice_permission t2
 		<include refid="queryPermissionSubSql" />
 		<if test="orderField != null and orderField != ''">
 			order by ${orderField} ${orderType}
@@ -56,7 +56,7 @@
 	</select>
 
 	<select id="pagePermission" resultType="PermissionDO">
-		select t2.* from ice_role_permission_ref t1,ice_permission t2
+		select t2.* from ice_menu_permission_ref t1,ice_permission t2
 		<include refid="queryPermissionSubSql" />
 		<if test="orderField != null and orderField != ''">
 			order by ${orderField} ${orderType}
@@ -65,7 +65,11 @@
 	</select>
 
 	<select id="countPermission" resultType="long">
-		select count(t2.*) from ice_role_permission_ref t1,ice_permission t2
+		select count(t2.*) from ice_menu_permission_ref t1,ice_permission t2
 		<include refid="queryPermissionSubSql" />
+	</select>
+	
+	<select id="listMenuIds" resultType="long">
+		select menu_id from ice_menu_permission_ref where permission_id=#{permissionId}
 	</select>
 </mapper>

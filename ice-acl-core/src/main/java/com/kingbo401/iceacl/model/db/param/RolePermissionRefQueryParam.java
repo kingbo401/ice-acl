@@ -7,6 +7,7 @@ public class RolePermissionRefQueryParam extends PageParam{
 	private String appKey;
 	private String permissionAppKey;
 	private String permissionType;
+	private String permissionKey;
 	private String tag1;
 	private Integer status;
 
@@ -40,6 +41,14 @@ public class RolePermissionRefQueryParam extends PageParam{
 
 	public void setPermissionType(String permissionType) {
 		this.permissionType = permissionType;
+	}
+
+	public String getPermissionKey() {
+		return permissionKey;
+	}
+
+	public void setPermissionKey(String permissionKey) {
+		this.permissionKey = permissionKey;
 	}
 
 	public String getTag1() {

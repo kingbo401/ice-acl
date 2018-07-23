@@ -3,7 +3,6 @@ package com.kingbo401.iceacl.manager.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,8 @@ import org.springframework.util.Assert;
 
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-import com.kingbo401.iceacl.dao.PermissionDAO;
 import com.kingbo401.iceacl.dao.RolePermissionRefDAO;
+import com.kingbo401.iceacl.manager.PermissionManager;
 import com.kingbo401.iceacl.manager.RoleManager;
 import com.kingbo401.iceacl.manager.RolePermissionRefManager;
 import com.kingbo401.iceacl.model.db.PermissionDO;
@@ -32,7 +31,7 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 	@Autowired
 	private RoleManager roleManager;
 	@Autowired
-	private PermissionDAO permissionDAO;
+	private PermissionManager permissionManager;
 	
 	@Override
 	public boolean addRolePermissionRef(RolePermissionIdRefParam param) {
@@ -81,7 +80,7 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		for(Long permissionId : permissionIds){
 			RolePermissionRefDO rolePermissionRefDO = new RolePermissionRefDO();
 			rolePermissionRefDO.setPermissionId(permissionId);
-			rolePermissionRefDO.setRoleId(param.getRoleId());
+			rolePermissionRefDO.setRoleId(roleId);
 			rolePermissionRefDO.setCreateTime(now);
 			rolePermissionRefDO.setUpdateTime(now);
 			rolePermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
@@ -157,15 +156,11 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		Assert.notNull(roleDTO, "角色不存在");
 		List<Long> permissionIds = param.getPermissionIds();
 		if(CollectionUtil.isNotEmpty(permissionIds)){
-			List<PermissionDO> permissionDOs = permissionDAO.getPermissionByIds(permissionIds);
-			Assert.notEmpty(permissionDOs, "权限不存在");
-			Map<Object, PermissionDO> permissionMap = CollectionUtil.toIdMap(permissionDOs);
-			for(Long permissionId : permissionIds){
-				Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
-			}
+			List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(permissionIds);
+			Assert.notEmpty(permissionDTOs, "权限不存在");
 			if(!param.isMultiApp()){
-				for(PermissionDO permissionDO : permissionDOs){
-					Assert.isTrue(appKey.equals(permissionDO.getAppKey()), "权限appkey不匹配:" + permissionDO.getId());
+				for(PermissionDTO permissionDTO : permissionDTOs){
+					Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appkey不匹配:" + permissionDTO.getId());
 				}
 			}
 		}

@@ -1,15 +1,20 @@
 package com.kingbo401.iceacl.manager.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.kingbo401.iceacl.dao.MenuDAO;
+import com.kingbo401.iceacl.dao.MenuPermissionRefDAO;
 import com.kingbo401.iceacl.dao.PermissionDAO;
 import com.kingbo401.iceacl.dao.RoleDAO;
 import com.kingbo401.iceacl.dao.UserRoleRefDAO;
 import com.kingbo401.iceacl.manager.AccessManager;
 import com.kingbo401.iceacl.model.db.PermissionDO;
 import com.kingbo401.iceacl.model.db.RoleDO;
+import com.kingbo401.iceacl.model.db.param.CheckUserMenuParam;
 import com.kingbo401.iceacl.model.db.param.CheckUserPermissionParam;
 
 @Service
@@ -20,6 +25,10 @@ public class AccessManagerImpl implements AccessManager{
     private UserRoleRefDAO userRoleRefDAO;
     @Autowired
     private PermissionDAO permissionDAO;
+    @Autowired
+    private MenuDAO menuDAO;
+    @Autowired
+    private MenuPermissionRefDAO menuPermissionRefDAO;
     
 	@Override
 	public boolean checkUserPermission(CheckUserPermissionParam param) {
@@ -38,29 +47,41 @@ public class AccessManagerImpl implements AccessManager{
         	return false;
         }
         Long permissionId = permissionDO.getId();
-        //1. 先校验用户-角色-权限
-        int i = permissionDAO.hasUserRolePermission(userId, permissionId, tenant);
+        //查出权限关联的菜单，用户拥有菜单，就认为拥有此权限
+        if(param.isHierarchicalObtainMenuPermission()){
+        	List<Long> menuIds = menuPermissionRefDAO.listMenuIds(permissionId);
+        	CheckUserMenuParam checkUserMenuParam = new CheckUserMenuParam();
+        	checkUserMenuParam.setAppKey(appKey);
+        	checkUserMenuParam.setUserId(userId);
+        	checkUserMenuParam.setTenant(tenant);
+        	checkUserMenuParam.setMenuIds(menuIds);
+        	if(menuDAO.checkUserMenu(checkUserMenuParam) > 0){
+        		return true;
+        	}
+        }
+        //1 校验用户-角色-权限
+        int i = permissionDAO.checkUserRolePermission(userId, permissionId, tenant);
         if(i > 0) {
             return true;
         }
 
-        //2. 在校验用户-权限
-        i = permissionDAO.hasUserDirectPermission(userId, permissionId, tenant);
+        //2 校验用户-权限
+        i = permissionDAO.checkUserDirectPermission(userId, permissionId, tenant);
         if(i > 0) {
             return true;
         }
 
-        //3. 校验用户-角色-权限组-权限
+        //3 校验用户-角色-权限组-权限
         if(param.isHierarchicalCheckRolePermissionGroup()) {
-            i = permissionDAO.hasUserRolePermissionGroupPermission(userId, permissionId, tenant);
+            i = permissionDAO.checkUserRolePermissionGroupPermission(userId, permissionId, tenant);
             if(i > 0) {
                 return true;
             }
         }
 
-        //4. 校验用户-权限组-权限
+        //4 校验用户-权限组-权限
         if(param.isHierarchicalCheckPermissionGroup()) {
-            i = permissionDAO.hasUserPermissionGroupPermission(userId, permissionId, tenant);
+            i = permissionDAO.checkUserPermissionGroupPermission(userId, permissionId, tenant);
             if(i > 0) {
                 return true;
             }

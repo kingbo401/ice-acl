@@ -31,6 +31,10 @@ public class CheckUserPermissionParam extends BaseParam{
      * 授权对象是用户时，是否进行级联查询角色关联的权限组上的数据
      */
     private boolean hierarchicalCheckRolePermissionGroup = false;
+    /**
+     * 是否用户拥有菜单，就认为用户级联拥有菜单下的权限
+     */
+    private boolean hierarchicalObtainMenuPermission = false;
     
 	public String getUserId() {
 		return userId;
@@ -67,5 +71,11 @@ public class CheckUserPermissionParam extends BaseParam{
 	}
 	public void setHierarchicalCheckRolePermissionGroup(boolean hierarchicalCheckRolePermissionGroup) {
 		this.hierarchicalCheckRolePermissionGroup = hierarchicalCheckRolePermissionGroup;
+	}
+	public boolean isHierarchicalObtainMenuPermission() {
+		return hierarchicalObtainMenuPermission;
+	}
+	public void setHierarchicalObtainMenuPermission(boolean hierarchicalObtainMenuPermission) {
+		this.hierarchicalObtainMenuPermission = hierarchicalObtainMenuPermission;
 	}
 }

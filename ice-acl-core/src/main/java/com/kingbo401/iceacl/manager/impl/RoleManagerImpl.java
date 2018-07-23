@@ -76,6 +76,9 @@ public class RoleManagerImpl implements RoleManager{
 	public RoleDTO getRoleById(long id) {
 		Assert.isTrue(id > 0, "id必须大于0");
 		RoleDO roleDO = roleDAO.getRoleById(id);
+		if(roleDO == null){
+			return null;
+		}
 		return buildRoleDTO(roleDO);
 	}
 

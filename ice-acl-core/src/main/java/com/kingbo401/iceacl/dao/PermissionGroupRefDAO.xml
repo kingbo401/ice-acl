@@ -40,6 +40,9 @@
 		<if test="permissionType != null and permissionType != ''">
 			and t2.permission_type=#{permissionType}
 		</if>
+		<if test = "permissionKey != null and permissionKey != ''">
+		    and t2.permission_key = #{permissionKey}
+		</if>
 		<if test="tag1 != null and tag1 != ''">
 			and t2.tag1=#{tag1}
 		</if>

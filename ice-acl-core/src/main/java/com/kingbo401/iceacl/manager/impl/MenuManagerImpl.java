@@ -18,6 +18,7 @@ import com.kingbo401.iceacl.model.db.MenuDO;
 import com.kingbo401.iceacl.model.dto.MenuDTO;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
+import kingbo401.iceacl.common.enums.MenuType;
 import kingbo401.iceacl.common.model.MenuTreeNode;
 
 @Service
@@ -94,6 +95,7 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.hasText(menuDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(menuDTO.getMenuName(), "menuName不能为空");
 		Assert.hasText(menuDTO.getMenuUrl(), "menuUrl不能为空");
+		Assert.isTrue(MenuType.isValid(menuDTO.getMenuType()), "菜单类型非法");
 		Date now = new Date();
 		menuDTO.setCreateTime(now);
 		menuDTO.setUpdateTime(now);
@@ -111,6 +113,7 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.hasText(menuDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(menuDTO.getMenuName(), "menuName不能为空");
 		Assert.hasText(menuDTO.getMenuUrl(), "menuUrl不能为空");
+		Assert.isTrue(MenuType.isValid(menuDTO.getMenuType()), "菜单类型非法");
 		Long id = menuDTO.getId();
 		Assert.notNull(id, "id不能null");
 		MenuDO menuDO = menuDAO.getMenuById(id);
@@ -132,6 +135,20 @@ public class MenuManagerImpl implements MenuManager{
 		menuDO.setUpdateTime(new Date());
 		menuDAO.updateMenu(menuDO);
 		return true;
+	}
+
+	@Override
+	public MenuDTO getMenu(String appKey, Long id) {
+		Assert.hasText(appKey, "appKey不能为空");
+		Assert.notNull(id, "id不能为空");
+		MenuDO menuDO = menuDAO.getMenuById(id);
+		if(menuDO == null){
+			return null;
+		}
+		Assert.isTrue(appKey.equals(menuDO.getAppKey()), "appkey菜单不匹配");
+		MenuDTO menuDTO = new MenuDTO();
+		BeanUtils.copyProperties(menuDO, menuDTO);
+		return menuDTO;
 	}
 
 	@Override

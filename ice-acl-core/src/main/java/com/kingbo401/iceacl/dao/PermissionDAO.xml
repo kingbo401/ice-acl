@@ -119,43 +119,55 @@
 		select * from ice_permission where app_key = #{appKey} and permission_key=#{permissionKey} and status != 0 limit 1
 	</select>
 
-	<select id="hasUserRolePermission" resultType="int">
-		select count(1) from ice_user_role_ref t1, ice_role_permission_ref t2, ice_role t3
-		where t1.user_id=#{userId} and t1.tenant=#{tenant} and
-		t2.permission_id=#{permissionId}
-		and t1.role_id=t2.role_id and t1.role_id = t3.id and 
-		t1.status=1 and t2.status=1 and t3.status=1
-		and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
-		limit 1
+	<select id="checkUserRolePermission" resultType="int">
+		select count(1) from
+		(
+			select t1.* from ice_user_role_ref t1, ice_role_permission_ref t2, ice_role t3
+			where t1.user_id=#{userId} and t1.tenant=#{tenant} and
+			t2.permission_id=#{permissionId}
+			and t1.role_id=t2.role_id and t1.role_id = t3.id and 
+			t1.status=1 and t2.status=1 and t3.status=1
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			limit 1
+		) t0
 	</select>
 
-	<select id="hasUserDirectPermission" resultType="int">
-		select count(1) from ice_user_permission_ref
-		where user_id = #{userId} and tenant = #{tenant} 
-		and permission_id = #{permissionId} and status = 1
-		and (expire_time &gt;= now() or expire_time is null) and (effective_time &lt;= now() or effective_time is null)
-		limit 1
+	<select id="checkUserDirectPermission" resultType="int">
+		select count(1) from
+		(
+			select * from ice_user_permission_ref
+			where user_id = #{userId} and tenant = #{tenant} 
+			and permission_id = #{permissionId} and status = 1
+			and (expire_time &gt;= now() or expire_time is null) and (effective_time &lt;= now() or effective_time is null)
+			limit 1
+		) t0
 	</select>
 
-	<select id="hasUserPermissionGroupPermission" resultType="int">
-		select count(1) from ice_user_permission_group_ref t1,
-		ice_permission_group_ref t2, ice_permission_group t3
-		where t1.group_id = t2.group_id and t1.group_id=t3.id 
-		and t1.status=1 and t2.status=1 and t3.status=1
-		and t1.user_id=#{userId} and t1.tenant = #{tenant} and
-		t2.permission_id = #{permissionId}
-		and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
-		limit 1
+	<select id="checkUserPermissionGroupPermission" resultType="int">
+		select count(1) from
+		(
+			select t1.* from ice_user_permission_group_ref t1,
+			ice_permission_group_ref t2, ice_permission_group t3
+			where t1.group_id = t2.group_id and t1.group_id=t3.id 
+			and t1.status=1 and t2.status=1 and t3.status=1
+			and t1.user_id=#{userId} and t1.tenant = #{tenant} and
+			t2.permission_id = #{permissionId}
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			limit 1
+		) t0
 	</select>
 
-	<select id="hasUserRolePermissionGroupPermission" resultType="int">
-		select count(1) from ice_user_role_ref t1, ice_role t2,
-		ice_role_permission_group_ref t3, ice_permission_group_ref t4
-		where t1.user_id = #{userId} and t1.tenant = #{tenant}
-		and t1.role_id = t2.id and t2.id = t3.role_id and t3.group_id = t4.group_id
-		and t1.status = 1 and t2.status = 1 and t3.status = 1 and t4.status = 1
-		and t4.permission_id = #{permissionId}
-		and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
-		limit 1
+	<select id="checkUserRolePermissionGroupPermission" resultType="int">
+		select count(1) from
+		(
+			select t1.* from ice_user_role_ref t1, ice_role t2,
+			ice_role_permission_group_ref t3, ice_permission_group_ref t4
+			where t1.user_id = #{userId} and t1.tenant = #{tenant}
+			and t1.role_id = t2.id and t2.id = t3.role_id and t3.group_id = t4.group_id
+			and t1.status = 1 and t2.status = 1 and t3.status = 1 and t4.status = 1
+			and t4.permission_id = #{permissionId}
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			limit 1
+		) t0
 	</select>
 </mapper>

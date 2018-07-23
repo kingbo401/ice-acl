@@ -6,7 +6,7 @@ import com.kingbo401.commons.model.param.BaseParam;
 
 public class RoleMenuIdRefParam extends BaseParam{
 	private String appKey;
-	private long roleId;
+	private Long roleId;
 	private List<Long> menuIds;
 	private boolean multiApp = false;
 	
@@ -16,10 +16,10 @@ public class RoleMenuIdRefParam extends BaseParam{
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
-	public long getRoleId() {
+	public Long getRoleId() {
 		return roleId;
 	}
-	public void setRoleId(long roleId) {
+	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
 	}
 	public List<Long> getMenuIds() {
