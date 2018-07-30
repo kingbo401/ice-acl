@@ -59,18 +59,20 @@ public class AccessManagerImpl implements AccessManager{
         		return true;
         	}
         }
-        //1 校验用户-角色-权限
-        int i = permissionDAO.checkUserRolePermission(userId, permissionId, tenant);
+        //1 校验用户-权限
+        int i = permissionDAO.checkUserDirectPermission(userId, permissionId, tenant);
         if(i > 0) {
             return true;
         }
-
-        //2 校验用户-权限
-        i = permissionDAO.checkUserDirectPermission(userId, permissionId, tenant);
-        if(i > 0) {
-            return true;
+        
+        //2 校验用户-角色-权限
+        if(param.isHierarchicalCheckRole()){
+	        i = permissionDAO.checkUserRolePermission(userId, permissionId, tenant);
+	        if(i > 0) {
+	            return true;
+	        }
         }
-
+        
         //3 校验用户-角色-权限组-权限
         if(param.isHierarchicalCheckRolePermissionGroup()) {
             i = permissionDAO.checkUserRolePermissionGroupPermission(userId, permissionId, tenant);

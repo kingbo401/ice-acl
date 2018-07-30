@@ -8,7 +8,7 @@ public class DataCheckParam extends BaseDataGrantParam{
 	
 	private Map<String, String> data;
 	
-	private boolean hierarchicalRole = false;
+	private boolean hierarchicalCheckRole = false;
 	
 	private boolean hierarchicalCheckPermissionGroup = false;
 	
@@ -26,11 +26,11 @@ public class DataCheckParam extends BaseDataGrantParam{
 	public void setData(Map<String, String> data) {
 		this.data = data;
 	}
-	public boolean isHierarchicalRole() {
-		return hierarchicalRole;
+	public boolean isHierarchicalCheckRole() {
+		return hierarchicalCheckRole;
 	}
-	public void setHierarchicalRole(boolean hierarchicalRole) {
-		this.hierarchicalRole = hierarchicalRole;
+	public void setHierarchicalCheckRole(boolean hierarchicalCheckRole) {
+		this.hierarchicalCheckRole = hierarchicalCheckRole;
 	}
 	public boolean isHierarchicalCheckPermissionGroup() {
 		return hierarchicalCheckPermissionGroup;

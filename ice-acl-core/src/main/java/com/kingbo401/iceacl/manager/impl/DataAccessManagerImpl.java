@@ -522,7 +522,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			}
 			
 			//获取用户拥有有数据的角色
-			if(dataCheckParam.isHierarchicalRole()){
+			if(dataCheckParam.isHierarchicalCheckRole()){
 				List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant);
 				if(CollectionUtil.isNotEmpty(userRoleIds)){
 					dataCheckParam.setGrantTargetType(GrantTargetType.ROLE.getCode());

@@ -22,7 +22,11 @@ public class CheckUserPermissionParam extends BaseParam{
      * 应用id
      */
     private String appKey;
-
+    
+    /**
+     * 当授权对象类型为用户时，是否校验关角色上的数据
+     */
+	private boolean hierarchicalCheckRole = false;
     /**
      * 当授权对象类型为用户时，是否校验关联权限组上的数据
      */
@@ -59,6 +63,12 @@ public class CheckUserPermissionParam extends BaseParam{
 	}
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
+	}
+	public boolean isHierarchicalCheckRole() {
+		return hierarchicalCheckRole;
+	}
+	public void setHierarchicalCheckRole(boolean hierarchicalCheckRole) {
+		this.hierarchicalCheckRole = hierarchicalCheckRole;
 	}
 	public boolean isHierarchicalCheckPermissionGroup() {
 		return hierarchicalCheckPermissionGroup;
