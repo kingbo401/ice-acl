@@ -5,26 +5,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import kingbo401.iceacl.common.constant.IceAclConstant;
+import kingbo401.iceacl.common.utils.MixAll;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.dao.UserPermissionGroupRefDAO;
 import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.UserPermissionGroupRefManager;
-import com.kingbo401.iceacl.model.db.PermissionGroupLite;
 import com.kingbo401.iceacl.model.db.UserPermissionGroupRefDO;
 import com.kingbo401.iceacl.model.db.param.UserPermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.model.db.vo.UserPermissionGroupRefVO;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
 import com.kingbo401.iceacl.model.dto.param.UserPermissionGroupRefParam;
-
-import kingbo401.iceacl.common.constant.IceAclConstant;
-import kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRefManager{
@@ -169,7 +167,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	}
 
 	@Override
-	public List<Long> listUserPermissionGroupIds(UserPermissionGroupRefQueryParam param, boolean getChildGroup) {
+	public List<Long> listUserPermissionGroupIds(UserPermissionGroupRefQueryParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -180,48 +178,11 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 			return null;
 		}
 		
-		if(!getChildGroup){
-			List<Long> groupIds = Lists.newArrayList();
-			for(UserPermissionGroupRefVO userPermissionGroupRefVO : parentPermissionGroupVOs){
-				groupIds.add(userPermissionGroupRefVO.getGroupId());
-			}
-			return groupIds;
+		List<Long> groupIds = Lists.newArrayList();
+		for(UserPermissionGroupRefVO userPermissionGroupRefVO : parentPermissionGroupVOs){
+			groupIds.add(userPermissionGroupRefVO.getGroupId());
 		}
-		
-		// 查询出全部权限组
-		List<PermissionGroupLite> permissionGroupLites = permissionGroupManager.listPermissionGroupLite(appKey, tenant);
-		if(CollectionUtil.isEmpty(permissionGroupLites)){
-			return null;
-		}
-		Map<Long, List<PermissionGroupLite>> permissionGroupMap = Maps.newHashMap();
-		for (PermissionGroupLite permissionGroup : permissionGroupLites) {
-			Long groupPid = permissionGroup.getGroupPid();
-			List<PermissionGroupLite> list = permissionGroupMap.get(groupPid);
-			if (list == null) {
-				list = Lists.newArrayList();
-				list.add(permissionGroup);
-				permissionGroupMap.put(groupPid, list);
-			} else {
-				list.add(permissionGroup);
-			}
-		}
-		List<Long> dataList = Lists.newArrayList();
-		for (UserPermissionGroupRefVO userPermissionGroupRefVO : parentPermissionGroupVOs) {
-			dataList.add(userPermissionGroupRefVO.getGroupId());
-			this.recursivePermissionGroupLite(dataList, userPermissionGroupRefVO.getGroupId(), permissionGroupMap);
-		}
-		return dataList;
-	}
-
-	private void recursivePermissionGroupLite(List<Long> dataList, long groupPid,
-			Map<Long, List<PermissionGroupLite>> permissionGroupMap) {
-		List<PermissionGroupLite> children = permissionGroupMap.get(groupPid);
-		if (CollectionUtil.isNotEmpty(children)) {
-			for (PermissionGroupLite permissionGroupLite : children) {
-				dataList.add(permissionGroupLite.getId());
-				this.recursivePermissionGroupLite(dataList, permissionGroupLite.getId(), permissionGroupMap);
-			}
-		}
+		return groupIds;
 	}
 	
 	@Override

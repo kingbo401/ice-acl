@@ -5,12 +5,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import kingbo401.iceacl.common.constant.IceAclConstant;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.dao.RolePermissionGroupRefDAO;
@@ -19,7 +20,6 @@ import com.kingbo401.iceacl.manager.RoleManager;
 import com.kingbo401.iceacl.manager.RolePermissionGroupRefManager;
 import com.kingbo401.iceacl.manager.UserRoleRefManager;
 import com.kingbo401.iceacl.model.db.PermissionGroupDO;
-import com.kingbo401.iceacl.model.db.PermissionGroupLite;
 import com.kingbo401.iceacl.model.db.RolePermissionGroupRefDO;
 import com.kingbo401.iceacl.model.db.param.RolePermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.model.db.param.UserRoleRefQueryParam;
@@ -28,8 +28,6 @@ import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
 import com.kingbo401.iceacl.model.dto.RoleDTO;
 import com.kingbo401.iceacl.model.dto.param.RolePermissionGroupRefParam;
 import com.kingbo401.iceacl.utils.BizUtils;
-
-import kingbo401.iceacl.common.constant.IceAclConstant;
 
 @Service
 public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRefManager{
@@ -174,40 +172,13 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		if (CollectionUtil.isEmpty(parentPermissionGroupDOs)) {
 			return null;
 		}
-		// 查询出全部权限组
-		List<PermissionGroupLite> permissionGroupLites = permissionGroupManager.listPermissionGroupLite(appKey, tenant);
-		if(CollectionUtil.isEmpty(permissionGroupLites)){
-			return null;
+		
+		List<Long> groupIds = Lists.newArrayList();
+		for(PermissionGroupDO permissionGroupDO : parentPermissionGroupDOs){
+			groupIds.add(permissionGroupDO.getId());
 		}
-		Map<Long, List<PermissionGroupLite>> permissionGroupMap = Maps.newHashMap();
-		for (PermissionGroupLite permissionGroup : permissionGroupLites) {
-			Long groupPid = permissionGroup.getGroupPid();
-			List<PermissionGroupLite> list = permissionGroupMap.get(groupPid);
-			if (list == null) {
-				list = Lists.newArrayList();
-				list.add(permissionGroup);
-				permissionGroupMap.put(groupPid, list);
-			} else {
-				list.add(permissionGroup);
-			}
-		}
-		List<Long> dataList = Lists.newArrayList();
-		for (PermissionGroupDO parentPermissionGroupDO : parentPermissionGroupDOs) {
-			dataList.add(parentPermissionGroupDO.getId());
-			this.recursivePermissionGroupLite(dataList, parentPermissionGroupDO.getId(), permissionGroupMap);
-		}
-		return dataList;
-	}
-	
-	private void recursivePermissionGroupLite(List<Long> dataList, long groupPid,
-			Map<Long, List<PermissionGroupLite>> permissionGroupMap) {
-		List<PermissionGroupLite> children = permissionGroupMap.get(groupPid);
-		if (CollectionUtil.isNotEmpty(children)) {
-			for (PermissionGroupLite permissionGroupLite : children) {
-				dataList.add(permissionGroupLite.getId());
-				this.recursivePermissionGroupLite(dataList, permissionGroupLite.getId(), permissionGroupMap);
-			}
-		}
+		return groupIds;
+		
 	}
 	
 	private void checkRolePermissionGroupRefParam(RolePermissionGroupRefParam param){

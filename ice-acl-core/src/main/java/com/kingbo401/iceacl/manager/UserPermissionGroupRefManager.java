@@ -14,7 +14,7 @@ public interface UserPermissionGroupRefManager {
 	boolean freezeUserPermissionGroupRef(UserPermissionGroupRefParam param);
 	boolean unfreezeUserPermissionGroupRef(UserPermissionGroupRefParam param);
     boolean removeRefsByGroupId(String appKey, long groupId);
-	List<Long> listUserPermissionGroupIds(UserPermissionGroupRefQueryParam param, boolean getChildGroup); 
+	List<Long> listUserPermissionGroupIds(UserPermissionGroupRefQueryParam param); 
 	PageVO<UserPermissionGroupRefVO> pageUserPermissionGroup(UserPermissionGroupRefQueryParam param);
 	boolean hasUserUse(long groupId);
 }

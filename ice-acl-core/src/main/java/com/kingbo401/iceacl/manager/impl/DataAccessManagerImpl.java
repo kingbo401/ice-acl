@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import kingbo401.iceacl.common.constant.IceAclConstant;
+import kingbo401.iceacl.common.enums.GrantTargetType;
+import kingbo401.iceacl.common.model.PropertyValue;
+import kingbo401.iceacl.common.utils.MixAll;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -49,11 +54,6 @@ import com.kingbo401.iceacl.model.dto.param.DataGrantParam;
 import com.kingbo401.iceacl.model.dto.param.DataGrantQueryParam;
 import com.kingbo401.iceacl.model.dto.param.DataRevokeParam;
 import com.kingbo401.iceacl.model.dto.param.DatasCheckParam;
-
-import kingbo401.iceacl.common.constant.IceAclConstant;
-import kingbo401.iceacl.common.enums.GrantTargetType;
-import kingbo401.iceacl.common.model.PropertyValue;
-import kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class DataAccessManagerImpl implements DataAccessManager{
@@ -523,7 +523,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			
 			//获取用户拥有有数据的角色
 			if(dataCheckParam.isHierarchicalRole()){
-				List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant, dataModelDTO.getId(), dataOperationDTO.getId(), false);
+				List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant);
 				if(CollectionUtil.isNotEmpty(userRoleIds)){
 					dataCheckParam.setGrantTargetType(GrantTargetType.ROLE.getCode());
 					rst = checkDataPermission0(dataCheckParam, userRoleIds, dataModelDTO, dataOperationDTO, propertyCodeMap);
@@ -535,14 +535,14 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			List<String> userPermissionGroupIds = Lists.newArrayList();
 			//获取用户通过角色的权限组
 			if(dataCheckParam.isHierarchicalCheckRolePermissionGroup()){//是否关联校验权角色上关联的权限组
-				List<String> groupIds = getUserRolePermissionGroupIds(grantTargetAppKey, grantTargetId, tenant, dataModelDTO.getId(), dataOperationDTO.getId(), false);
+				List<String> groupIds = getUserRolePermissionGroupIds(grantTargetAppKey, grantTargetId, tenant);
 				if(CollectionUtil.isNotEmpty(groupIds)){
 					userPermissionGroupIds.addAll(groupIds);
 				}
 			}
 			//直接挂在用户上的权限组
 			if(dataCheckParam.isHierarchicalCheckPermissionGroup()){//是否关联校验权用户权限组
-				List<String> groupIds = getUserPermissionGroupIds(grantTargetAppKey, grantTargetId, tenant, dataModelDTO.getId(), dataOperationDTO.getId(), false);
+				List<String> groupIds = getUserPermissionGroupIds(grantTargetAppKey, grantTargetId, tenant);
 				if(CollectionUtil.isNotEmpty(groupIds)){
 					userPermissionGroupIds.addAll(groupIds);
 				}
@@ -780,8 +780,6 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		String tenant = dataGrantQueryParam.getTenant();
 		String grantTargetAppKey = dataGrantQueryParam.getAppKey();//此appkey可能跟modelCode的appkey不同
 		Assert.hasText(grantTargetAppKey, "appKey不能为空");
-		Long modelId = dataGrantPropertyValueParam.getModelId();
-		Long operationId = dataGrantPropertyValueParam.getOperationId();
 		int grantTargetType = dataGrantQueryParam.getGrantTargetType();
 		if(MapUtils.isNotEmpty(dataGrantQueryParam.getData())){//根据属性值查询
 			List<Long> recordIds = dataGrantRecordDAO.listIdByPropertyValues(dataGrantPropertyValueParam);
@@ -791,7 +789,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			if(GrantTargetType.USER.getCode() == grantTargetType){
 				if(hierarchicalRole){
 					//获取到用户拥有的角色
-					List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant, modelId, operationId, true);
+					List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant);
 					if(CollectionUtil.isNotEmpty(userRoleIds)){
 						dataGrantPropertyValueParam.setGrantTargetType(GrantTargetType.ROLE.getCode());
 						dataGrantPropertyValueParam.setGrantTargetIds(userRoleIds);
@@ -804,13 +802,13 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				//获取到用户拥有的权限组
 				List<String> userPermissionGroupIds = Lists.newArrayList();
 				if(hierarchicalRolePermissionGroup){
-					List<String> groupIds = getUserRolePermissionGroupIds(grantTargetAppKey, grantTargetId, tenant, modelId, operationId, true);
+					List<String> groupIds = getUserRolePermissionGroupIds(grantTargetAppKey, grantTargetId, tenant);
 					if(CollectionUtil.isNotEmpty(groupIds)){
 						userPermissionGroupIds.addAll(groupIds);
 					}
 				}
 				if(hierarchicalPermissionGroup){
-					List<String> groupIds = getUserPermissionGroupIds(grantTargetAppKey, grantTargetId, tenant, modelId, operationId, true);
+					List<String> groupIds = getUserPermissionGroupIds(grantTargetAppKey, grantTargetId, tenant);
 					if(CollectionUtil.isNotEmpty(groupIds)){
 						userPermissionGroupIds.addAll(groupIds);
 					}
@@ -832,7 +830,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			if(GrantTargetType.USER.getCode() == grantTargetType){
 				if(hierarchicalRole){
 					//获取到用户拥有的角色
-					List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant, modelId, operationId, true);
+					List<String> userRoleIds = getUserRoleIds(grantTargetAppKey, grantTargetId, tenant);
 					if(CollectionUtil.isNotEmpty(userRoleIds)){
 						dataGrantPropertyValueParam.setGrantTargetType(GrantTargetType.ROLE.getCode());
 						dataGrantPropertyValueParam.setGrantTargetIds(userRoleIds);
@@ -845,13 +843,13 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				//获取到用户拥有的权限组
 				List<String> userPermissionGroupIds = Lists.newArrayList();
 				if(hierarchicalRolePermissionGroup){
-					List<String> groupIds = getUserRolePermissionGroupIds(grantTargetAppKey, grantTargetId, tenant, modelId, operationId, true);
+					List<String> groupIds = getUserRolePermissionGroupIds(grantTargetAppKey, grantTargetId, tenant);
 					if(CollectionUtil.isNotEmpty(groupIds)){
 						userPermissionGroupIds.addAll(groupIds);
 					}
 				}
 				if(hierarchicalPermissionGroup){
-					List<String> groupIds = getUserPermissionGroupIds(grantTargetAppKey, grantTargetId, tenant, modelId, operationId, true);
+					List<String> groupIds = getUserPermissionGroupIds(grantTargetAppKey, grantTargetId, tenant);
 					if(CollectionUtil.isNotEmpty(groupIds)){
 						userPermissionGroupIds.addAll(groupIds);
 					}
@@ -902,7 +900,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return pageVO;
 	}
 	
-	private List<String> getUserRoleIds(String appKey, String userId, String tenant, Long modelId, Long operationId, boolean returnNotEffective){
+	private List<String> getUserRoleIds(String appKey, String userId, String tenant){
 		List<String> userRoleIds = Lists.newArrayList();
 		//查出用户所有的角色
 		UserRoleRefQueryParam param = new UserRoleRefQueryParam();
@@ -920,7 +918,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return userRoleIds;
 	}
 	
-	private List<String> getUserRolePermissionGroupIds(String appKey, String userId, String tenant, Long modelId, Long operationId, boolean returnNotEffective){
+	private List<String> getUserRolePermissionGroupIds(String appKey, String userId, String tenant){
 		List<String> groupIds = Lists.newArrayList();
 		List<Long> permissionGroupIds = rolePermissionGroupRefManager.listUserRolePermissionGroupIds(userId, appKey, tenant);
 		if(CollectionUtil.isEmpty(permissionGroupIds)){
@@ -932,13 +930,13 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return groupIds;
 	}
 	
-	private List<String> getUserPermissionGroupIds(String appKey, String userId, String tenant, Long modelId, Long operationId, boolean returnNotEffective){
+	private List<String> getUserPermissionGroupIds(String appKey, String userId, String tenant){
 		List<String> groupIds = Lists.newArrayList();
 		UserPermissionGroupRefQueryParam param = new UserPermissionGroupRefQueryParam();
 		param.setUserId(userId);
 		param.setAppKey(appKey);
 		param.setTenant(tenant);
-		List<Long> permissionGroupIds = userPermissionGroupRefManager.listUserPermissionGroupIds(param, true);
+		List<Long> permissionGroupIds = userPermissionGroupRefManager.listUserPermissionGroupIds(param);
 		if(CollectionUtil.isEmpty(permissionGroupIds)){
 			return groupIds;
 		}
