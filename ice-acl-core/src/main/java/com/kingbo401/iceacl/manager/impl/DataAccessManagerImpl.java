@@ -936,6 +936,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		param.setUserId(userId);
 		param.setAppKey(appKey);
 		param.setTenant(tenant);
+		param.setReturnNotEffective(false);
 		List<Long> permissionGroupIds = userPermissionGroupRefManager.listUserPermissionGroupIds(param);
 		if(CollectionUtil.isEmpty(permissionGroupIds)){
 			return groupIds;
