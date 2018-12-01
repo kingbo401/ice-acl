@@ -3,6 +3,10 @@ package com.kingbo401.iceacl.manager.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import kingbo401.iceacl.common.constant.IceAclConstant;
+import kingbo401.iceacl.common.utils.MixAll;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +14,7 @@ import org.springframework.util.Assert;
 
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
+import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.dao.UserPermissionRefDAO;
 import com.kingbo401.iceacl.manager.PermissionManager;
 import com.kingbo401.iceacl.manager.UserPermissionRefManager;
@@ -18,9 +23,6 @@ import com.kingbo401.iceacl.model.db.param.UserPermissionRefQueryParam;
 import com.kingbo401.iceacl.model.db.vo.UserPermissionRefVO;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.param.UserPermissionRefParam;
-
-import kingbo401.iceacl.common.constant.IceAclConstant;
-import kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
@@ -43,7 +45,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.hasText(userId, "userId不能为空");
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
-		assertPermissions(appKey, permissionIds);
+		assertPermissions(appKey, param.getPermissionType(), permissionIds);
 		List<UserPermissionRefDO> userPermissionRefDOs = new ArrayList<UserPermissionRefDO>();
 		Date now  = new Date();
 		for(Long permissionId : permissionIds){
@@ -90,7 +92,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 			}
 			userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
-		assertPermissions(appKey, permissionIds);
+		assertPermissions(appKey, param.getPermissionType(), permissionIds);
 		List<UserPermissionRefDO> userPermissionRefDOs = new ArrayList<UserPermissionRefDO>();
 		Date now  = new Date();
 		for(Long permissionId : permissionIds){
@@ -181,12 +183,20 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		return pageVO;
 	}
 
-	private void assertPermissions(String appKey, List<Long> permissionIds){
+	private void assertPermissions(String appKey, String permissionType, List<Long> permissionIds){
 		if(CollectionUtil.isEmpty(permissionIds)){
 			return;
 		}
 		List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(appKey, permissionIds);
 		Assert.notEmpty(permissionDTOs, "权限不存在");
+		Map<Object, PermissionDTO> idMap = CollectionUtil.toIdMap(permissionDTOs);
+		for(Long permissionId : permissionIds){
+			PermissionDTO permissionDTO = idMap.get(permissionId);
+			Assert.notNull(permissionDTO, "权限不存在");
+			if(StringUtil.isNotBlank(permissionType)){
+				Assert.isTrue(permissionType.equals(permissionDTO.getPermissionType()), "权限类型不匹配");
+			}
+		}
 	}
 
 	@Override

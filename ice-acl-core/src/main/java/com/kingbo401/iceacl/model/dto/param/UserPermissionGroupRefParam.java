@@ -9,6 +9,7 @@ public class UserPermissionGroupRefParam extends BasePojo{
 	private String appKey;
 	private String userId;
 	private String tenant;
+	private String groupType;
 	private List<Long> groupIds;
 	private Date effectiveTime;
 	private Date expireTime;
@@ -23,6 +24,12 @@ public class UserPermissionGroupRefParam extends BasePojo{
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	public String getGroupType() {
+		return groupType;
+	}
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
 	}
 	public String getTenant() {
 		return tenant;

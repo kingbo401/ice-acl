@@ -9,6 +9,7 @@ public class UserPermissionRefParam extends BasePojo{
 	private String appKey;
 	private String userId;
 	private String tenant;
+	private String permissionType;
 	private List<Long> permissionIds;
 	private Date effectiveTime;
 	private Date expireTime;
@@ -30,6 +31,12 @@ public class UserPermissionRefParam extends BasePojo{
 	}
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
+	}
+	public String getPermissionType() {
+		return permissionType;
+	}
+	public void setPermissionType(String permissionType) {
+		this.permissionType = permissionType;
 	}
 	public List<Long> getPermissionIds() {
 		return permissionIds;

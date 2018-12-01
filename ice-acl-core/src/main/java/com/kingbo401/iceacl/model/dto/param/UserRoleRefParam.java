@@ -9,6 +9,7 @@ public class UserRoleRefParam extends BasePojo{
 	private String appKey;
 	private String userId;
 	private String tenant;
+	private String roleType;
 	private List<Long> roleIds;
 	private Date effectiveTime;
 	private Date expireTime;
@@ -30,6 +31,12 @@ public class UserRoleRefParam extends BasePojo{
 	}
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
+	}
+	public String getRoleType() {
+		return roleType;
+	}
+	public void setRoleType(String roleType) {
+		this.roleType = roleType;
 	}
 	public List<Long> getRoleIds() {
 		return roleIds;

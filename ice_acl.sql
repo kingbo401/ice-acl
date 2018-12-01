@@ -37,9 +37,9 @@ CREATE TABLE `ice_menu` (
   KEY `idx_appkey` (`app_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单表';
 -- ----------------------------
---  Table structure for `acl_menu_permission_ref`
+--  Table structure for `ice_menu_permission_ref`
 -- ----------------------------
-CREATE TABLE `acl_menu_permission_ref` (
+CREATE TABLE `ice_menu_permission_ref` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `menu_id` bigint(20) NOT NULL COMMENT '菜单id',
   `permission_id` bigint(20) NOT NULL COMMENT '权限id',
@@ -65,7 +65,7 @@ CREATE TABLE `ice_permission` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_app_priv` (`app_key`,`permission_key`) USING BTREE
+  UNIQUE KEY `uk_app_permission_key` (`app_key`,`permission_key`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='权限实体表';
 
 -- ----------------------------
@@ -101,7 +101,7 @@ CREATE TABLE `ice_permission_group_ref` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_group_permission` (`group_id`,`permission_id`)
+  UNIQUE KEY `uk_group_permission_id` (`group_id`,`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -136,7 +136,7 @@ CREATE TABLE `ice_role_ permission_ref` (
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ukey` (`role_id`,`permission_id`),
-  KEY `idx_permission` (`permission_id`)
+  KEY `idx_permission_id` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色权限关联表';
 
 -- ----------------------------
@@ -199,7 +199,7 @@ CREATE TABLE `ice_user_permission_ref` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_privid_tenant` (`user_id`,`permission_id`,`tenant`) USING BTREE
+  UNIQUE KEY `uk_user_permission_tenant` (`user_id`,`permission_id`,`tenant`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户权限关联表';
 
 -- ----------------------------

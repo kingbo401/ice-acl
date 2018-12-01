@@ -15,6 +15,7 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Lists;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
+import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.dao.UserPermissionGroupRefDAO;
 import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.UserPermissionGroupRefManager;
@@ -45,7 +46,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.hasText(userId, "userId不能为空");
 		Assert.notEmpty(groupIds, "groupIds不能为空");
-		assertPermissionGroup(appKey, groupIds);
+		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
 		List<UserPermissionGroupRefDO> userPermissionGroupRefDOs = new ArrayList<UserPermissionGroupRefDO>();
 		Date now  = new Date();
 		for(Long groupId : groupIds){
@@ -78,7 +79,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.hasText(userId, "userId不能为空");
-		
+		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
 		UserPermissionGroupRefQueryParam userPermissionGroupRefQueryParam = new UserPermissionGroupRefQueryParam();
 		userPermissionGroupRefQueryParam.setAppKey(appKey);
 		userPermissionGroupRefQueryParam.setUserId(userId);
@@ -92,7 +93,6 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 			userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
 		
-		assertPermissionGroup(appKey, groupIds);
 		List<UserPermissionGroupRefDO> userPermissionGroupRefDOs = new ArrayList<UserPermissionGroupRefDO>();
 		Date now  = new Date();
 		for(Long groupId : groupIds){
@@ -121,7 +121,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.hasText(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, groupIds);
+		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
 		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, IceAclConstant.STATUS_REMOVE);
 		return true;
 	}
@@ -136,7 +136,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.hasText(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, groupIds);
+		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
 		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, IceAclConstant.STATUS_FREEZE);
 		return true;
 	}
@@ -151,7 +151,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.hasText(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, groupIds);
+		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
 		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, IceAclConstant.STATUS_NORMAL);
 		return true;
 	}
@@ -202,7 +202,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		return pageVO;
 	}
 	
-	private void assertPermissionGroup(String appKey, List<Long> groupIds){
+	private void assertPermissionGroup(String appKey, String groupType, List<Long> groupIds){
 		if(CollectionUtil.isEmpty(groupIds)){
 			return;
 		}
@@ -210,7 +210,11 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notEmpty(permissionGroupDTOs, "权限组不存在");
 		Map<Object, PermissionGroupDTO> permissionGroupMap = CollectionUtil.toIdMap(permissionGroupDTOs);
 		for(Long groupId : groupIds){
-			Assert.notNull(permissionGroupMap.get(groupId), "权限组不存在:" + groupId);
+			PermissionGroupDTO permissionGroup = permissionGroupMap.get(groupId);
+			Assert.notNull(permissionGroup, "权限组不存在:" + groupId);
+			if(StringUtil.isNotBlank(groupType)){
+				Assert.isTrue(groupType.equals(permissionGroup.getGroupType()), "权限组类型不匹配");
+			}
 		}
 	}
 
