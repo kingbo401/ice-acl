@@ -73,7 +73,7 @@
          order by menu_order asc
     </select>
     
-    <select id="hasAnyUserMenu" resultType="MenuDO">
+    <select id="checkUserMenu" resultType="MenuDO">
     	select count(1) from t0
     	(
     		 select t4.*

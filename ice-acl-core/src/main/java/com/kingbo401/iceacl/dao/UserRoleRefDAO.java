@@ -20,6 +20,6 @@ public interface UserRoleRefDAO {
 	int countUser(UsersRoleRefQueryParam param);
 	List<UserRoleRefVO> listUsersRoleRef(UsersRoleRefQueryParam param);
 	UserRoleRefDO hasUserUse(@Param("roleId")long roleId);
-	int hasUserRole(@Param("userId")String userId, @Param("tenant") String tenant, @Param("roleId")long roleId);
+	int checkUserRole(@Param("userId")String userId, @Param("tenant") String tenant, @Param("roleId")long roleId);
 	List<String> listUserTenant(@Param("userId")String userId, @Param("appKey")String appKey, @Param("roleKeys")List<String> roleKeys);
 }

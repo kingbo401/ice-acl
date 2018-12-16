@@ -99,7 +99,7 @@ public class AccessManagerImpl implements AccessManager{
         Assert.hasText(tenant, "tenant 不能为空");
         RoleDO sysRoleDO = roleDAO.getRoleByKey(appKey, roleKey);
         Assert.notNull(sysRoleDO, "角色不存在");
-        int count = userRoleRefDAO.hasUserRole(userId, tenant, sysRoleDO.getId());
+        int count = userRoleRefDAO.checkUserRole(userId, tenant, sysRoleDO.getId());
         return count > 0;
 	}
 }
