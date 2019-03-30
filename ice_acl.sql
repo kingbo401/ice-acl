@@ -345,6 +345,7 @@ CREATE TABLE `ice_data_property` (
 -- ----------------------------
 CREATE TABLE `ice_data_property_access` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `app_key` varchar(50) NOT NULL COMMENT 'app唯一建',
   `model_id` bigint(20) NOT NULL COMMENT '模型id',
   `property_id` bigint(20) NOT NULL COMMENT '属性id',
   `grant_target_id` varchar(100) COLLATE utf8_bin NOT NULL COMMENT '被禁止访问的目标id',
@@ -355,7 +356,7 @@ CREATE TABLE `ice_data_property_access` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_idx` (`model_id`,`property_id`,`grant_target_type`,`tenant`,`grant_target_id`)
+  UNIQUE KEY `uk_idx` (`app_key`,`model_id`,`property_id`,`grant_target_type`,`tenant`,`grant_target_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='模型字段禁止查看表';
 
 

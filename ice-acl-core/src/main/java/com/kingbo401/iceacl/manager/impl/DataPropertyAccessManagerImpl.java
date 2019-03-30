@@ -54,6 +54,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(param, "参数不能为空");
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "访问类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
+		Assert.hasText(appKey, "appKey不能为空");
 		String modelCode = param.getModelCode();
 		List<String> propertyCodes = param.getPropertyCodes();
 		String grantTargetId = param.getGrantTargetId();
@@ -64,16 +65,17 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		// 校验模型是否存在
-		DataModelDTO modelDTO = modelManager.getDataModel(appKey, modelCode);
+		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(appKey, propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getAppKey(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		Date now = new Date();
 		List<DataPropertyAccessPO> dataPropertyAccessPOs = new ArrayList<DataPropertyAccessPO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
 			DataPropertyAccessPO dataPropertyAccessPO = new DataPropertyAccessPO();
+			dataPropertyAccessPO.setAppKey(appKey);
 			dataPropertyAccessPO.setCreateTime(now);
 			dataPropertyAccessPO.setUpdateTime(now);
 			dataPropertyAccessPO.setAccessType(param.getAccessType());
@@ -94,6 +96,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(param, "参数不能为空");
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "访问类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
+		Assert.hasText(appKey, "appKey不能为空");
 		String modelCode = param.getModelCode();
 		List<String> propertyCodes = param.getPropertyCodes();
 		String grantTargetId = param.getGrantTargetId();
@@ -104,11 +107,11 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		// 校验模型是否存在
-		DataModelDTO modelDTO = modelManager.getDataModel(appKey, modelCode);
+		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(appKey, propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getAppKey(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		
 		//删除老数据
@@ -122,6 +125,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		List<DataPropertyAccessPO> dataPropertyAccessPOs = new ArrayList<DataPropertyAccessPO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
 			DataPropertyAccessPO dataPropertyAccessPO = new DataPropertyAccessPO();
+			dataPropertyAccessPO.setAppKey(appKey);
 			dataPropertyAccessPO.setCreateTime(now);
 			dataPropertyAccessPO.setUpdateTime(now);
 			dataPropertyAccessPO.setAccessType(param.getAccessType());
@@ -141,6 +145,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(param, "参数不能为空");
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "控制类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
+		Assert.hasText(appKey, "appKey不能为空");
 		String modelCode = param.getModelCode();
 		List<String> propertyCodes = param.getPropertyCodes();
 		String grantTargetId = param.getGrantTargetId();
@@ -151,11 +156,11 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		// 校验模型是否存在
-		DataModelDTO modelDTO = modelManager.getDataModel(appKey, modelCode);
+		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(appKey, propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getAppKey(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		List<Long> propertyIds = new ArrayList<Long>();
 		for(DataPropertyDTO dataPropertyDTO : dataProperties){
@@ -190,6 +195,8 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(param, "param 不能为空");
 		Assert.hasText(param.getGrantTargetId(), "targetId 不能为空");
 		Assert.hasText(param.getTenant(), "tenant 不能为空");
+		String appKey = param.getAppKey();
+		Assert.hasText(appKey, "appKey不能为空");
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		String modelCode = param.getModelCode();

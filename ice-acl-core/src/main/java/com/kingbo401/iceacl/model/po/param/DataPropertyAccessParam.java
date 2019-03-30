@@ -5,6 +5,8 @@ import java.util.List;
 import com.kingbo401.commons.model.param.OrderParam;
 
 public class DataPropertyAccessParam extends OrderParam{
+	private String appKey;
+	
     private Long modelId;
 
     private String grantTargetId;
@@ -19,7 +21,15 @@ public class DataPropertyAccessParam extends OrderParam{
 
     private List<Long> propertyIds;
 
-    public Long getModelId() {
+    public String getAppKey() {
+		return appKey;
+	}
+
+	public void setAppKey(String appKey) {
+		this.appKey = appKey;
+	}
+
+	public Long getModelId() {
         return modelId;
     }
 

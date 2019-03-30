@@ -3,6 +3,7 @@ package com.kingbo401.iceacl.model.po;
 import kingbo401.iceacl.common.model.BasePO;
 
 public class DataPropertyAccessPO extends BasePO{
+	private String appKey;
     private Long modelId;
     private Long propertyId;
     private String grantTargetId;
@@ -11,7 +12,15 @@ public class DataPropertyAccessPO extends BasePO{
     private Integer accessType;
     private Integer status;
 
-    public Long getModelId() {
+    public String getAppKey() {
+		return appKey;
+	}
+
+	public void setAppKey(String appKey) {
+		this.appKey = appKey;
+	}
+
+	public Long getModelId() {
         return modelId;
     }
 
