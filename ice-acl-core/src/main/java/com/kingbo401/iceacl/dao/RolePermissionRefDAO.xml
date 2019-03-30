@@ -47,7 +47,7 @@
 		</if>
 	</sql>
 	
-	<select id="listPermission" resultType="PermissionDO">
+	<select id="listPermission" resultType="PermissionPO">
 		select t2.* from ice_role_permission_ref t1,ice_permission t2
 		<include refid="queryPermissionSubSql" />
 		<if test="orderField != null and orderField != ''">
@@ -55,7 +55,7 @@
 		</if>
 	</select>
 
-	<select id="pagePermission" resultType="PermissionDO">
+	<select id="pagePermission" resultType="PermissionPO">
 		select t2.* from ice_role_permission_ref t1,ice_permission t2
 		<include refid="queryPermissionSubSql" />
 		<if test="orderField != null and orderField != ''">

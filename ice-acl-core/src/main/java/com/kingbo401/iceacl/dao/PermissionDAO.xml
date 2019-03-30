@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.iceacl.dao.PermissionDAO">
-	<select id="getPermissionByIds" resultType="PermissionDO">
+	<select id="getPermissionByIds" resultType="PermissionPO">
 		select * from ice_permission where status != 0 and id in
 		<foreach collection="ids" open="(" close=")" item="id"
 			separator=",">
@@ -11,7 +11,7 @@
 		</foreach>
 	</select>
 
-	<select id="getPermissionByKeys" resultType="PermissionDO">
+	<select id="getPermissionByKeys" resultType="PermissionPO">
 		select * from ice_permission where status != 0 and app_key=#{appKey}
 		and permission_key in
 		<foreach collection="permissionKeys" open="(" close=")"
@@ -39,7 +39,7 @@
 		</if>
 	</sql>
 
-	<select id="listPermission" resultType="PermissionDO">
+	<select id="listPermission" resultType="PermissionPO">
 		select * from ice_permission
 		<include refid="queryPermissionSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -52,7 +52,7 @@
 		<include refid="queryPermissionSubSql" />
 	</select>
 
-	<select id="pagePermission" resultType="PermissionDO">
+	<select id="pagePermission" resultType="PermissionPO">
 		select * from ice_permission 
 		<include refid="queryPermissionSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -61,7 +61,7 @@
 		limit #{offset}, #{pageSize}
 	</select>
 
-	<insert id="create" parameterType="PermissionDO"
+	<insert id="create" parameterType="PermissionPO"
 		useGeneratedKeys="true" keyProperty="id">
 		insert into ice_permission(permission_key,permission_name,permission_type,app_key,description,tag1,update_time,create_time,status)
 		values
@@ -81,7 +81,7 @@
 		description=values{description},tag1=values{tag1},update_time = values{updateTime}
 	</insert>
 
-	<update id="update" parameterType="PermissionDO">
+	<update id="update" parameterType="PermissionPO">
 		update ice_permission
 		<set>
 			<if test="permissionKey != null and permissionKey != ''">
@@ -111,11 +111,11 @@
 		update ice_permission set status = 0,update_time = now() where id = #{id}
 	</update>
 
-	<select id="getById" resultType="PermissionDO">
+	<select id="getById" resultType="PermissionPO">
 		select * from ice_permission where id = #{id} and status != 0 limit 1
 	</select>
 	
-	<select id="getByKey" resultType="PermissionDO">
+	<select id="getByKey" resultType="PermissionPO">
 		select * from ice_permission where app_key = #{appKey} and permission_key=#{permissionKey} and status != 0 limit 1
 	</select>
 

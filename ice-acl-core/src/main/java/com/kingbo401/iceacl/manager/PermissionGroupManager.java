@@ -3,9 +3,9 @@ package com.kingbo401.iceacl.manager;
 import java.util.List;
 
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.model.db.PermissionGroupLite;
-import com.kingbo401.iceacl.model.db.param.PermissionGroupQueryParam;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
+import com.kingbo401.iceacl.model.po.PermissionGroupLite;
+import com.kingbo401.iceacl.model.po.param.PermissionGroupQueryParam;
 
 import kingbo401.iceacl.common.model.PermissionGroupTreeNode;
 

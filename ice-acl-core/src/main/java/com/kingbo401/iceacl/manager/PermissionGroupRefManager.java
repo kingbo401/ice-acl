@@ -3,9 +3,9 @@ package com.kingbo401.iceacl.manager;
 import java.util.List;
 
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.model.db.param.PermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.param.PermissionGroupRefParam;
+import com.kingbo401.iceacl.model.po.param.PermissionGroupRefQueryParam;
 
 public interface PermissionGroupRefManager {
 	boolean addPermissionGroupRef(PermissionGroupRefParam param);

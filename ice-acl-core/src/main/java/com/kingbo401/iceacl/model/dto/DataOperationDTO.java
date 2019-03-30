@@ -1,8 +1,8 @@
 package com.kingbo401.iceacl.model.dto;
 
-import com.kingbo401.iceacl.model.db.BaseDO;
+import kingbo401.iceacl.common.model.BasePO;
 
-public class DataOperationDTO extends BaseDO{
+public class DataOperationDTO extends BasePO{
 	private Long modelId;
 	private String code;
 	private String name;

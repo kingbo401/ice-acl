@@ -1,6 +1,6 @@
 package com.kingbo401.iceacl.manager;
 
-import com.kingbo401.iceacl.model.db.param.CheckUserPermissionParam;
+import com.kingbo401.iceacl.model.po.param.CheckUserPermissionParam;
 
 public interface AccessManager {
 	/**

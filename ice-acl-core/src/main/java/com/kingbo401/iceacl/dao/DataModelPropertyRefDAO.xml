@@ -3,19 +3,19 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.iceacl.dao.DataModelPropertyRefDAO">
-	<select id="listDataPropertyByModelId" resultType="DataPropertyDO">
+	<select id="listDataPropertyByModelId" resultType="DataPropertyPO">
 		select b.* from ice_data_model_property_ref a,ice_data_property b
 		where a.property_id = b.id and a.`status` != 0 and b.`status` =1 and
 		a.model_id = #{modelId}
 	</select>
 
-	<select id="listDataModelByPropertyId" resultType="DataModelDO">
+	<select id="listDataModelByPropertyId" resultType="DataModelPO">
 		select b.* from ice_data_model_property_ref a,ice_data_model b
 		where a.model_id = b.id and a.`status` != 0 and b.`status` =1 and
 		a.property_id = #{propertyId}
 	</select>
 
-	<select id="listRefsByModelId" resultType="DataModelPropertyRefDO">
+	<select id="listRefsByModelId" resultType="DataModelPropertyRefPO">
 		select * from ice_data_model_property_ref
 		where model_id = #{modelId} and status != 0
 	</select>

@@ -14,12 +14,12 @@ import com.kingbo401.iceacl.dao.MenuPermissionRefDAO;
 import com.kingbo401.iceacl.manager.MenuManager;
 import com.kingbo401.iceacl.manager.MenuPermissionRefManager;
 import com.kingbo401.iceacl.manager.PermissionManager;
-import com.kingbo401.iceacl.model.db.MenuPermissionRefDO;
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.param.MenuPermissionRefQueryParam;
 import com.kingbo401.iceacl.model.dto.MenuDTO;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.param.MenuPermissionRefParam;
+import com.kingbo401.iceacl.model.po.MenuPermissionRefPO;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.param.MenuPermissionRefQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
@@ -41,16 +41,16 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		checkMenuPermissionIdRefParam(param);
-		List<MenuPermissionRefDO> list = new ArrayList<MenuPermissionRefDO>();
+		List<MenuPermissionRefPO> list = new ArrayList<MenuPermissionRefPO>();
 		Date now = new Date();
 		for(Long permissionId : permissionIds){
-			MenuPermissionRefDO menuPermissionRefDO = new MenuPermissionRefDO();
-			menuPermissionRefDO.setPermissionId(permissionId);
-			menuPermissionRefDO.setMenuId(menuId);
-			menuPermissionRefDO.setCreateTime(now);
-			menuPermissionRefDO.setUpdateTime(now);
-			menuPermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(menuPermissionRefDO);
+			MenuPermissionRefPO menuPermissionRefPO = new MenuPermissionRefPO();
+			menuPermissionRefPO.setPermissionId(permissionId);
+			menuPermissionRefPO.setMenuId(menuId);
+			menuPermissionRefPO.setCreateTime(now);
+			menuPermissionRefPO.setUpdateTime(now);
+			menuPermissionRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(menuPermissionRefPO);
 		}
 		menuPermissionRefDAO.batchCreate(list);
 		return true;
@@ -68,25 +68,25 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		if(!param.isMultiApp()){
 			menuPermissionRefQueryParam.setPermissionAppKey(appKey);
 		}
-		List<PermissionDO> permissionDOs =  menuPermissionRefDAO.listPermission(menuPermissionRefQueryParam);
-		if(CollectionUtil.isNotEmpty(permissionDOs)){
+		List<PermissionPO> permissionPOs =  menuPermissionRefDAO.listPermission(menuPermissionRefQueryParam);
+		if(CollectionUtil.isNotEmpty(permissionPOs)){
 			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(PermissionDO permissionDO : permissionDOs){
-				permissionIdsRemove.add(permissionDO.getId());
+			for(PermissionPO permissionPO : permissionPOs){
+				permissionIdsRemove.add(permissionPO.getId());
 			}
 			menuPermissionRefDAO.updateRefsStatus(menuId, permissionIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
 		
-		List<MenuPermissionRefDO> list = new ArrayList<MenuPermissionRefDO>();
+		List<MenuPermissionRefPO> list = new ArrayList<MenuPermissionRefPO>();
 		Date now = new Date();
 		for(Long permissionId : permissionIds){
-			MenuPermissionRefDO menuPermissionRefDO = new MenuPermissionRefDO();
-			menuPermissionRefDO.setPermissionId(permissionId);
-			menuPermissionRefDO.setMenuId(menuId);
-			menuPermissionRefDO.setCreateTime(now);
-			menuPermissionRefDO.setUpdateTime(now);
-			menuPermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(menuPermissionRefDO);
+			MenuPermissionRefPO menuPermissionRefPO = new MenuPermissionRefPO();
+			menuPermissionRefPO.setPermissionId(permissionId);
+			menuPermissionRefPO.setMenuId(menuId);
+			menuPermissionRefPO.setCreateTime(now);
+			menuPermissionRefPO.setUpdateTime(now);
+			menuPermissionRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(menuPermissionRefPO);
 		}
 		menuPermissionRefDAO.batchCreate(list);
 		return true;
@@ -122,8 +122,8 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		MenuDTO menuDTO = menuManager.getMenu(appKey, menuId);
 		Assert.notNull(menuDTO, "菜单不存在");
-		List<PermissionDO> permissionDOs = menuPermissionRefDAO.listPermission(param);
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		List<PermissionPO> permissionPOs = menuPermissionRefDAO.listPermission(param);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 
 	@Override
@@ -143,8 +143,8 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 				return pageVO;
 			}
 		}
-		List<PermissionDO> permissionDOs = menuPermissionRefDAO.pagePermission(param);
-		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionDOs));
+		List<PermissionPO> permissionPOs = menuPermissionRefDAO.pagePermission(param);
+		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionPOs));
 		return pageVO;
 	}
 

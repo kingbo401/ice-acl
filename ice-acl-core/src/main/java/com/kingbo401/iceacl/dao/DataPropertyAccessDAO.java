@@ -4,15 +4,15 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.DataPropertyAccessDO;
-import com.kingbo401.iceacl.model.db.param.DataPropertyAccessParam;
+import com.kingbo401.iceacl.model.po.DataPropertyAccessPO;
+import com.kingbo401.iceacl.model.po.param.DataPropertyAccessParam;
 
 public interface DataPropertyAccessDAO {
-    List<DataPropertyAccessDO> listDataPropertyAccess(DataPropertyAccessParam param);
+    List<DataPropertyAccessPO> listDataPropertyAccess(DataPropertyAccessParam param);
     
-    int create(DataPropertyAccessDO dataPropertyAccessDO);
+    int create(DataPropertyAccessPO dataPropertyAccess);
 
-    int batchCreate(@Param("datas")List<DataPropertyAccessDO> dataPropertyAccessDOs);
+    int batchCreate(@Param("datas")List<DataPropertyAccessPO> dataPropertyAccessList);
     
     int updateRefsStatus(DataPropertyAccessParam param);
 }

@@ -54,7 +54,7 @@
 		</if>
 	</sql>
 
-	<select id="listPermissionGroup" resultType="PermissionGroupDO">
+	<select id="listPermissionGroup" resultType="PermissionGroupPO">
 		select t2.* from ice_role_permission_group_ref t1,ice_permission_gorup t2
 		<include refid="queryPermissionGroupSubSql" />
 		<if test="orderField != null and orderField != ''">
@@ -62,7 +62,7 @@
 		</if>
 	</select>
 
-	<select id="pagePermissionGroup" resultType="PermissionGroupDO">
+	<select id="pagePermissionGroup" resultType="PermissionGroupPO">
 		select t2.* from ice_role_permission_group_ref t1,ice_permission_gorup t2
 		<include refid="queryPermissionGroupSubSql" />
 		<if test="orderField != null and orderField != ''">
@@ -76,7 +76,7 @@
 		<include refid="queryPermissionGroupSubSql" />
 	</select>
 
-	<select id="getPermissionGroupsByRoleIds" resultType="PermissionGroupDO"
+	<select id="getPermissionGroupsByRoleIds" resultType="PermissionGroupPO"
 		parameterType="RolePermissionGroupRefParam">
 		select t2.* from ice_role_permission_group_ref t1,ice_permission_group t2
 		where t1.group_id = t2.id and t1.`status` != 0 and t2.`status` = 1

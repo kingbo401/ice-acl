@@ -3,12 +3,12 @@ package com.kingbo401.iceacl.model.dto;
 import java.util.Date;
 import java.util.Map;
 
-import com.kingbo401.iceacl.model.db.BaseDO;
-
+import kingbo401.iceacl.common.model.BasePO;
 import kingbo401.iceacl.common.model.PropertyValue;
 
 
-public class DataGrantRecordDTO extends BaseDO{
+public class DataGrantRecordDTO extends BasePO{
+	private String appKey;
 	private String modelCode;
 	private String operationCode;
 	private String operationName;
@@ -19,6 +19,12 @@ public class DataGrantRecordDTO extends BaseDO{
 	private Integer status;
 	private Date effectiveTime;
 	private Date expireTime;
+	public String getAppKey() {
+		return appKey;
+	}
+	public void setAppKey(String appKey) {
+		this.appKey = appKey;
+	}
 	public String getModelCode() {
 		return modelCode;
 	}

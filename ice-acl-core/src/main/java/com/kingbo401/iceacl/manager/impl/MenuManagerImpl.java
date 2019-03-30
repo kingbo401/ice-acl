@@ -14,11 +14,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kingbo401.iceacl.dao.MenuDAO;
 import com.kingbo401.iceacl.manager.MenuManager;
-import com.kingbo401.iceacl.model.db.MenuDO;
 import com.kingbo401.iceacl.model.dto.MenuDTO;
+import com.kingbo401.iceacl.model.po.MenuPO;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
-import kingbo401.iceacl.common.enums.MenuType;
+import kingbo401.iceacl.common.enums.MenuShowType;
 import kingbo401.iceacl.common.model.MenuTreeNode;
 
 @Service
@@ -29,33 +29,33 @@ public class MenuManagerImpl implements MenuManager{
 	@Override
 	public List<MenuTreeNode> getAppMenuTree(String appKey) {
 		Assert.hasText(appKey, "appKey不能为空");
-		List<MenuDO> menuDOs = menuDAO.listMenu(appKey, null);
-		return buildMenuTree(menuDOs);
+		List<MenuPO> menuPOs = menuDAO.listMenu(appKey, null);
+		return buildMenuTree(menuPOs);
 	}
 	
-	private List<MenuTreeNode> buildMenuTree(List<MenuDO> menuDOs){
-		if(CollectionUtils.isEmpty(menuDOs)){
+	private List<MenuTreeNode> buildMenuTree(List<MenuPO> menuPOs){
+		if(CollectionUtils.isEmpty(menuPOs)){
 			return null;
 		}
-		List<MenuDO> rootMenus = Lists.newArrayList();
-		Map<Long, List<MenuDO>> menusMap = Maps.newHashMap();
-		for (MenuDO menuDO : menuDOs) {
-			Long menuPid = menuDO.getMenuPid();
+		List<MenuPO> rootMenus = Lists.newArrayList();
+		Map<Long, List<MenuPO>> menusMap = Maps.newHashMap();
+		for (MenuPO menuPO : menuPOs) {
+			Long menuPid = menuPO.getMenuPid();
 			if (menuPid == 0) {
-				rootMenus.add(menuDO);
+				rootMenus.add(menuPO);
 				continue;
 			}
-			List<MenuDO> list = menusMap.get(menuPid);
+			List<MenuPO> list = menusMap.get(menuPid);
 			if (list == null) {
 				list = Lists.newArrayList();
 				menusMap.put(menuPid, list);
 			}
-			list.add(menuDO);
+			list.add(menuPO);
 		}
 
 		List<MenuTreeNode> treeNodeDTOs = Lists.newArrayList();
 		//遍历菜单和权限
-		for (MenuDO rootMenu : rootMenus) {
+		for (MenuPO rootMenu : rootMenus) {
 			MenuTreeNode menuTreeNode = new MenuTreeNode();
 			BeanUtils.copyProperties(rootMenu, menuTreeNode);
 			this.recursiveMenu(menuTreeNode, menusMap, 1);
@@ -64,14 +64,14 @@ public class MenuManagerImpl implements MenuManager{
 		return treeNodeDTOs;
 	}
 	
-	private void recursiveMenu(MenuTreeNode treeNodeDTO, Map<Long, List<MenuDO>> menusMap, int level) {
+	private void recursiveMenu(MenuTreeNode treeNodeDTO, Map<Long, List<MenuPO>> menusMap, int level) {
 		level++;
 		Long menuId = treeNodeDTO.getId();
-		List<MenuDO> childMenus = menusMap.get(menuId);
+		List<MenuPO> childMenus = menusMap.get(menuId);
 		if (CollectionUtils.isEmpty(childMenus)) {
 			return;
 		}
-		for (MenuDO childMenu : childMenus) {
+		for (MenuPO childMenu : childMenus) {
 			MenuTreeNode childTreeNode = new MenuTreeNode();
 			BeanUtils.copyProperties(childMenu, childTreeNode);
 			childTreeNode.setLevel(level);
@@ -85,8 +85,8 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.hasText(userId, "userId不能为空");
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
-		List<MenuDO> menuDOs = menuDAO.listUserMenu(userId, appKey, tenant);
-		return buildMenuTree(menuDOs);
+		List<MenuPO> menuPOs = menuDAO.listUserMenu(userId, appKey, tenant);
+		return buildMenuTree(menuPOs);
 	}
 
 	@Override
@@ -95,15 +95,15 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.hasText(menuDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(menuDTO.getMenuName(), "menuName不能为空");
 		Assert.hasText(menuDTO.getMenuUrl(), "menuUrl不能为空");
-		Assert.isTrue(MenuType.isValid(menuDTO.getMenuType()), "菜单类型非法");
+		Assert.isTrue(MenuShowType.isValid(menuDTO.getMenuShowType()), "菜单显示类型非法");
 		Date now = new Date();
 		menuDTO.setCreateTime(now);
 		menuDTO.setUpdateTime(now);
 		menuDTO.setStatus(IceAclConstant.STATUS_NORMAL);
-		MenuDO menuDO = new MenuDO();
-		BeanUtils.copyProperties(menuDTO, menuDO);
-		menuDAO.createMenu(menuDO);
-		menuDTO.setId(menuDO.getId());
+		MenuPO menuPO = new MenuPO();
+		BeanUtils.copyProperties(menuDTO, menuPO);
+		menuDAO.createMenu(menuPO);
+		menuDTO.setId(menuPO.getId());
 		return menuDTO;
 	}
 
@@ -113,27 +113,27 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.hasText(menuDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(menuDTO.getMenuName(), "menuName不能为空");
 		Assert.hasText(menuDTO.getMenuUrl(), "menuUrl不能为空");
-		Assert.isTrue(MenuType.isValid(menuDTO.getMenuType()), "菜单类型非法");
+		Assert.isTrue(MenuShowType.isValid(menuDTO.getMenuShowType()), "菜单显示类型非法");
 		Long id = menuDTO.getId();
 		Assert.notNull(id, "id不能null");
-		MenuDO menuDO = menuDAO.getMenuById(id);
-		Assert.notNull(menuDO, "菜单不存在");
+		MenuPO menuPO = menuDAO.getMenuById(id);
+		Assert.notNull(menuPO, "菜单不存在");
 		Date now = new Date();
 		menuDTO.setUpdateTime(now);
-		BeanUtils.copyProperties(menuDTO, menuDO);
-		menuDAO.updateMenu(menuDO);
+		BeanUtils.copyProperties(menuDTO, menuPO);
+		menuDAO.updateMenu(menuPO);
 		return menuDTO;
 	}
 	
 	private boolean updateMenuStatus(String appKey, Long id, int status){
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "id不能为空");
-		MenuDO menuDO = menuDAO.getMenuById(id);
-		Assert.notNull(menuDO, "菜单不存在");
-		Assert.isTrue(appKey.equals(menuDO.getAppKey()), "appkey菜单不匹配");
-		menuDO.setStatus(status);
-		menuDO.setUpdateTime(new Date());
-		menuDAO.updateMenu(menuDO);
+		MenuPO menuPO = menuDAO.getMenuById(id);
+		Assert.notNull(menuPO, "菜单不存在");
+		Assert.isTrue(appKey.equals(menuPO.getAppKey()), "appkey菜单不匹配");
+		menuPO.setStatus(status);
+		menuPO.setUpdateTime(new Date());
+		menuDAO.updateMenu(menuPO);
 		return true;
 	}
 
@@ -141,13 +141,13 @@ public class MenuManagerImpl implements MenuManager{
 	public MenuDTO getMenu(String appKey, Long id) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "id不能为空");
-		MenuDO menuDO = menuDAO.getMenuById(id);
-		if(menuDO == null){
+		MenuPO menuPO = menuDAO.getMenuById(id);
+		if(menuPO == null){
 			return null;
 		}
-		Assert.isTrue(appKey.equals(menuDO.getAppKey()), "appkey菜单不匹配");
+		Assert.isTrue(appKey.equals(menuPO.getAppKey()), "appkey菜单不匹配");
 		MenuDTO menuDTO = new MenuDTO();
-		BeanUtils.copyProperties(menuDO, menuDTO);
+		BeanUtils.copyProperties(menuPO, menuDTO);
 		return menuDTO;
 	}
 

@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.iceacl.dao.RoleDAO">
-	<insert id="createRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
+	<insert id="createRole" parameterType="RolePO" useGeneratedKeys="true" keyProperty="id">
 		insert into ice_role (app_key,role_key,role_name,role_type,level,description,tenant,
 		tag1,status,create_time, update_time)
 		values (#{appKey},#{roleKey},#{roleName},#{roleType},#{level},#{description},#{tenant},
@@ -12,7 +12,7 @@
 		level=#{level},description=#{description},tenant=#{tenant},tag1=#{tag1},update_time = now()
 	</insert>
 	
-	<update id="updateRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
+	<update id="updateRole" parameterType="RolePO" useGeneratedKeys="true" keyProperty="id">
 		update ice_role 
 		<set >
 			<if test="roleName != null" >
@@ -38,11 +38,11 @@
 		where id=#{id}
 	</update>
 	
-    <select id="getRoleByKey" resultType="RoleDO">
+    <select id="getRoleByKey" resultType="RolePO">
 		select * from ice_role where app_key=#{appKey} and role_key=#{roleKey} and status != 0
 	</select>
 	
-	<select id="getRoleById" resultType="RoleDO">
+	<select id="getRoleById" resultType="RolePO">
 		select * from ice_role where id=#{id} and status != 0
 	</select>
 	
@@ -83,7 +83,7 @@
 		</if>
 	</sql>
 	
-	<select id="pageRole" parameterType="RoleQueryParam" resultType="RoleDO">
+	<select id="pageRole" parameterType="RoleQueryParam" resultType="RolePO">
 		select * from ice_role 
 		<include refid="queryPermissionSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -92,7 +92,7 @@
 		limit #{offset},#{pageSize}
 	</select>
 	
-	<select id="listRole"  parameterType="RoleQueryParam" resultType="RoleDO">
+	<select id="listRole"  parameterType="RoleQueryParam" resultType="RolePO">
 		select * from ice_role
 		<include refid="queryPermissionSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -105,14 +105,14 @@
 		<include refid="queryPermissionSubSql" />
 	</select>
 
-	<select id="getRoleByIds" resultType="RoleDO">
+	<select id="getRoleByIds" resultType="RolePO">
 		select * from ice_role where status != 0 and id in
 		 <foreach collection="ids" open="(" close=")" separator="," item="id">
 			 #{id}
 		 </foreach>
 	</select>
 	
-	<select id="getRoleByKeys" resultType="RoleDO">
+	<select id="getRoleByKeys" resultType="RolePO">
 		select * from ice_role where status != 0 and app_key=#{appKey} and role_key in
 		 <foreach collection="roleKeys" open="(" close=")" separator="," item="roleKey">
 			 #{roleKey}

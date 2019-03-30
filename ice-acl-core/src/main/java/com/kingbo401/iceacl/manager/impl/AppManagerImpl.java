@@ -10,9 +10,9 @@ import com.kingbo401.commons.encrypt.SecurityUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.iceacl.dao.AppDAO;
 import com.kingbo401.iceacl.manager.AppManager;
-import com.kingbo401.iceacl.model.db.AppDO;
-import com.kingbo401.iceacl.model.db.param.AppQueryParam;
 import com.kingbo401.iceacl.model.dto.AppDTO;
+import com.kingbo401.iceacl.model.po.AppPO;
+import com.kingbo401.iceacl.model.po.param.AppQueryParam;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
 
@@ -30,42 +30,42 @@ public class AppManagerImpl implements AppManager{
 	@Override
 	public AppDTO getAppByKey(String appKey) {
 		Assert.hasText(appKey, "appKey不能为空");
-		AppDO appDO = appDao.getByKey(appKey);
-		if(appDO != null){
-			Assert.isTrue(appDO.getStatus() == IceAclConstant.STATUS_NORMAL, "应用已被禁用");
+		AppPO appPO = appDao.getByKey(appKey);
+		if(appPO != null){
+			Assert.isTrue(appPO.getStatus() == IceAclConstant.STATUS_NORMAL, "应用已被禁用");
 		}
-		return buildAppDTO(appDO);
+		return buildAppDTO(appPO);
 	}
 	
 	@Override
 	public AppDTO getAppById(Long appId) {
 		Assert.notNull(appId, "appId不能为空");
-		AppDO appDO = appDao.getById(appId);
-		if(appDO != null){
-			Assert.isTrue(appDO.getStatus() == IceAclConstant.STATUS_NORMAL, "应用已被禁用");
+		AppPO appPO = appDao.getById(appId);
+		if(appPO != null){
+			Assert.isTrue(appPO.getStatus() == IceAclConstant.STATUS_NORMAL, "应用已被禁用");
 		}
-		return buildAppDTO(appDO);
+		return buildAppDTO(appPO);
 	}
 
 	@Override
 	public String getAppSecret(String appKey) {
 		Assert.hasText(appKey, "appKey不能为空");
-		AppDO appDO = appDao.getByKey(appKey);
-		if(appDO == null){
+		AppPO appPO = appDao.getByKey(appKey);
+		if(appPO == null){
 			return null;
 		}
-		Assert.isTrue(appDO.getStatus() == IceAclConstant.STATUS_NORMAL, "应用已被禁用");
-		return appDO.getAppSecret();
+		Assert.isTrue(appPO.getStatus() == IceAclConstant.STATUS_NORMAL, "应用已被禁用");
+		return appPO.getAppSecret();
 	}
 
 	@Override
 	public Map<String, AppDTO> getAppMap(List<String> appKeys) {
 		Assert.notEmpty(appKeys, "appKeys不能为空");
-		List<AppDO> apDOs = appDao.getByKeys(appKeys);
+		List<AppPO> apPOs = appDao.getByKeys(appKeys);
 		Map<String, AppDTO> rstMap = new HashMap<String, AppDTO>();
-		if(CollectionUtils.isNotEmpty(apDOs)) {
-			for(AppDO appDO : apDOs) {
-				rstMap.put(appDO.getAppKey(), buildAppDTO(appDO));
+		if(CollectionUtils.isNotEmpty(apPOs)) {
+			for(AppPO appPO : apPOs) {
+				rstMap.put(appPO.getAppKey(), buildAppDTO(appPO));
 			}
 		}
 		return rstMap;
@@ -79,18 +79,18 @@ public class AppManagerImpl implements AppManager{
 		Assert.hasText(appName, "appName 不能为空");
 		Assert.hasText(description, "description 不能为空");
 		Assert.isNull(appDTO.getAppKey(), "appKey不能设置值");
-		AppDO appDO = appDao.getByName(appName);
-		Assert.isNull(appDO, "应用名已被使用");
+		AppPO appPO = appDao.getByName(appName);
+		Assert.isNull(appPO, "应用名已被使用");
 		appDTO.setAppKey(SecurityUtil.getUUID());
 		appDTO.setStatus(IceAclConstant.STATUS_NORMAL);
 		Date now = new Date();
-		appDO.setCreateTime(now);
-		appDO.setUpdateTime(now);
-		appDO = new AppDO();
-		BeanUtils.copyProperties(appDTO, appDO);
-		appDO.setAppSecret(SecurityUtil.getUUID());
-		appDao.createApp(appDO);
-		return buildAppDTO(appDO);
+		appPO.setCreateTime(now);
+		appPO.setUpdateTime(now);
+		appPO = new AppPO();
+		BeanUtils.copyProperties(appDTO, appPO);
+		appPO.setAppSecret(SecurityUtil.getUUID());
+		appDao.createApp(appPO);
+		return buildAppDTO(appPO);
 	}
 
 	@Override
@@ -103,35 +103,35 @@ public class AppManagerImpl implements AppManager{
 		
 		Assert.hasText(description, "description 不能为空");
 		Assert.hasText(appKey, "appKey不能为空");
-		AppDO appDO = appDao.getByKey(appKey);
-		Assert.notNull(appDO, "应用不存在");
-		if(!appName.equals(appDO.getAppName())){
+		AppPO appPO = appDao.getByKey(appKey);
+		Assert.notNull(appPO, "应用不存在");
+		if(!appName.equals(appPO.getAppName())){
 			Assert.isNull(appDao.getByName(appName), "应用名已被使用");
 		}
-		BeanUtils.copyProperties(appDTO, appDO);
+		BeanUtils.copyProperties(appDTO, appPO);
 		Date now = new Date();
-		appDO.setUpdateTime(now);
-		appDao.updateApp(appDO);
+		appPO.setUpdateTime(now);
+		appDao.updateApp(appPO);
 		return true;
 	}
 
 	@Override
 	public boolean freezeApp(String appKey) {
-		AppDO appDO = appDao.getByKey(appKey);
-		Assert.notNull(appDO, "应用不存在");
-		appDO.setStatus(IceAclConstant.STATUS_FREEZE);
-		appDO.setUpdateTime(new Date());
-		appDao.updateApp(appDO);
+		AppPO appPO = appDao.getByKey(appKey);
+		Assert.notNull(appPO, "应用不存在");
+		appPO.setStatus(IceAclConstant.STATUS_FREEZE);
+		appPO.setUpdateTime(new Date());
+		appDao.updateApp(appPO);
 		return true;
 	}
 
 	@Override
 	public boolean unfreezeApp(String appKey) {
-		AppDO appDO = appDao.getByKey(appKey);
-		Assert.notNull(appDO, "应用不存在");
-		appDO.setStatus(IceAclConstant.STATUS_NORMAL);
-		appDO.setUpdateTime(new Date());
-		appDao.updateApp(appDO);
+		AppPO appPO = appDao.getByKey(appKey);
+		Assert.notNull(appPO, "应用不存在");
+		appPO.setStatus(IceAclConstant.STATUS_NORMAL);
+		appPO.setUpdateTime(new Date());
+		appDao.updateApp(appPO);
 		return true;
 	}
 
@@ -140,11 +140,11 @@ public class AppManagerImpl implements AppManager{
 		if(param == null){
 			param = new AppQueryParam();
 		}
-		List<AppDO> appDOs = appDao.listApp(param);
+		List<AppPO> appPOs = appDao.listApp(param);
 		List<AppDTO> datas = Lists.newArrayList();
-		if(CollectionUtils.isNotEmpty(appDOs)) {
-			for(AppDO appDO : appDOs) {
-				datas.add(buildAppDTO(appDO));
+		if(CollectionUtils.isNotEmpty(appPOs)) {
+			for(AppPO appPO : appPOs) {
+				datas.add(buildAppDTO(appPO));
 			}
 		}
 		return datas;
@@ -166,23 +166,23 @@ public class AppManagerImpl implements AppManager{
 			}
 		}
 		
-		List<AppDO> sysAppDOs = appDao.pageApp(param);
-		if(CollectionUtils.isNotEmpty(sysAppDOs)) {
+		List<AppPO> sysappPOs = appDao.pageApp(param);
+		if(CollectionUtils.isNotEmpty(sysappPOs)) {
 			List<AppDTO> datas = Lists.newArrayList();
-			for(AppDO appDO : sysAppDOs) {
-				datas.add(buildAppDTO(appDO));
+			for(AppPO appPO : sysappPOs) {
+				datas.add(buildAppDTO(appPO));
 			}
 			pageVO.setItems(datas);
 		}
 		return pageVO;
 	}
 	
-	private AppDTO buildAppDTO(AppDO appDO){
-		if(appDO == null) {
+	private AppDTO buildAppDTO(AppPO appPO){
+		if(appPO == null) {
 			return null;
 		}
 		AppDTO appDTO = new AppDTO();
-		BeanUtils.copyProperties(appDO, appDTO);
+		BeanUtils.copyProperties(appPO, appDTO);
 		return appDTO;
 	}
 }

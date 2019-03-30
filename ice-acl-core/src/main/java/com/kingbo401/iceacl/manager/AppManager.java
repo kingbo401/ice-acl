@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.model.db.param.AppQueryParam;
 import com.kingbo401.iceacl.model.dto.AppDTO;
+import com.kingbo401.iceacl.model.po.param.AppQueryParam;
 
 public interface AppManager {
 	AppDTO getAppByKey(String appKey);

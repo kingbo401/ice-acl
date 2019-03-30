@@ -4,25 +4,25 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.AppDO;
-import com.kingbo401.iceacl.model.db.param.AppQueryParam;
+import com.kingbo401.iceacl.model.po.AppPO;
+import com.kingbo401.iceacl.model.po.param.AppQueryParam;
 
 public interface AppDAO {
-	AppDO getByKey(@Param("appKey")String appKey);
+	AppPO getByKey(@Param("appKey")String appKey);
 	
-	AppDO getByName(@Param("appName")String appName);
+	AppPO getByName(@Param("appName")String appName);
 	
-	AppDO getById(@Param("appId")Long appId);
+	AppPO getById(@Param("appId")Long appId);
 
-	List<AppDO> getByKeys(@Param("appKeys")List<String> appKeys);
+	List<AppPO> getByKeys(@Param("appKeys")List<String> appKeys);
 
-	int createApp(AppDO appDO);
+	int createApp(AppPO app);
 
-	int updateApp(AppDO appDO);
+	int updateApp(AppPO app);
 
 	long countApp(AppQueryParam param);
 
-	List<AppDO> pageApp(AppQueryParam param);
+	List<AppPO> pageApp(AppQueryParam param);
 
-	List<AppDO> listApp(AppQueryParam param);
+	List<AppPO> listApp(AppQueryParam param);
 }

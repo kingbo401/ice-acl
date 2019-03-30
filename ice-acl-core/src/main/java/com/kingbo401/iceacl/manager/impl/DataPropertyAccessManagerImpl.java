@@ -17,13 +17,13 @@ import com.kingbo401.iceacl.manager.DataModelManager;
 import com.kingbo401.iceacl.manager.DataModelPropertyRefManager;
 import com.kingbo401.iceacl.manager.DataPropertyAccessManager;
 import com.kingbo401.iceacl.manager.DataPropertyManager;
-import com.kingbo401.iceacl.model.db.DataPropertyAccessDO;
-import com.kingbo401.iceacl.model.db.param.DataPropertyAccessParam;
 import com.kingbo401.iceacl.model.dto.DataModelDTO;
 import com.kingbo401.iceacl.model.dto.DataModelPropertyRefDTO;
 import com.kingbo401.iceacl.model.dto.DataPropertyAccessDTO;
 import com.kingbo401.iceacl.model.dto.DataPropertyDTO;
 import com.kingbo401.iceacl.model.dto.param.DataPropertyCodeAccessParam;
+import com.kingbo401.iceacl.model.po.DataPropertyAccessPO;
+import com.kingbo401.iceacl.model.po.param.DataPropertyAccessParam;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
 import kingbo401.iceacl.common.enums.GrantTargetType;
@@ -71,21 +71,21 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(appKey, propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		Date now = new Date();
-		List<DataPropertyAccessDO> dataPropertyAccessDOs = new ArrayList<DataPropertyAccessDO>();
+		List<DataPropertyAccessPO> dataPropertyAccessPOs = new ArrayList<DataPropertyAccessPO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
-			DataPropertyAccessDO dataPropertyAccessDO = new DataPropertyAccessDO();
-			dataPropertyAccessDO.setCreateTime(now);
-			dataPropertyAccessDO.setUpdateTime(now);
-			dataPropertyAccessDO.setAccessType(param.getAccessType());
-			dataPropertyAccessDO.setGrantTargetId(grantTargetId);
-			dataPropertyAccessDO.setGrantTargetType(grantTargetType);
-			dataPropertyAccessDO.setModelId(modelDTO.getId());
-			dataPropertyAccessDO.setPropertyId(propertyDTO.getId());
-			dataPropertyAccessDO.setTenant(tenant);
-			dataPropertyAccessDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			dataPropertyAccessDOs.add(dataPropertyAccessDO);
+			DataPropertyAccessPO dataPropertyAccessPO = new DataPropertyAccessPO();
+			dataPropertyAccessPO.setCreateTime(now);
+			dataPropertyAccessPO.setUpdateTime(now);
+			dataPropertyAccessPO.setAccessType(param.getAccessType());
+			dataPropertyAccessPO.setGrantTargetId(grantTargetId);
+			dataPropertyAccessPO.setGrantTargetType(grantTargetType);
+			dataPropertyAccessPO.setModelId(modelDTO.getId());
+			dataPropertyAccessPO.setPropertyId(propertyDTO.getId());
+			dataPropertyAccessPO.setTenant(tenant);
+			dataPropertyAccessPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			dataPropertyAccessPOs.add(dataPropertyAccessPO);
 		}
-		dataPropertyAccessDAO.batchCreate(dataPropertyAccessDOs);
+		dataPropertyAccessDAO.batchCreate(dataPropertyAccessPOs);
 		return true;
 	}
 
@@ -119,21 +119,21 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		dataPropertyAccessDAO.updateRefsStatus(dataPropertyAccessParam);
 		
 		Date now = new Date();
-		List<DataPropertyAccessDO> dataPropertyAccessDOs = new ArrayList<DataPropertyAccessDO>();
+		List<DataPropertyAccessPO> dataPropertyAccessPOs = new ArrayList<DataPropertyAccessPO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
-			DataPropertyAccessDO dataPropertyAccessDO = new DataPropertyAccessDO();
-			dataPropertyAccessDO.setCreateTime(now);
-			dataPropertyAccessDO.setUpdateTime(now);
-			dataPropertyAccessDO.setAccessType(param.getAccessType());
-			dataPropertyAccessDO.setGrantTargetId(grantTargetId);
-			dataPropertyAccessDO.setGrantTargetType(grantTargetType);
-			dataPropertyAccessDO.setModelId(modelDTO.getId());
-			dataPropertyAccessDO.setPropertyId(propertyDTO.getId());
-			dataPropertyAccessDO.setTenant(tenant);
-			dataPropertyAccessDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			dataPropertyAccessDOs.add(dataPropertyAccessDO);
+			DataPropertyAccessPO dataPropertyAccessPO = new DataPropertyAccessPO();
+			dataPropertyAccessPO.setCreateTime(now);
+			dataPropertyAccessPO.setUpdateTime(now);
+			dataPropertyAccessPO.setAccessType(param.getAccessType());
+			dataPropertyAccessPO.setGrantTargetId(grantTargetId);
+			dataPropertyAccessPO.setGrantTargetType(grantTargetType);
+			dataPropertyAccessPO.setModelId(modelDTO.getId());
+			dataPropertyAccessPO.setPropertyId(propertyDTO.getId());
+			dataPropertyAccessPO.setTenant(tenant);
+			dataPropertyAccessPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			dataPropertyAccessPOs.add(dataPropertyAccessPO);
 		}
-		dataPropertyAccessDAO.batchCreate(dataPropertyAccessDOs);
+		dataPropertyAccessDAO.batchCreate(dataPropertyAccessPOs);
 		return true;
 	}
 	
@@ -216,20 +216,20 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		DataPropertyAccessParam dataPropertyAccessParam = new DataPropertyAccessParam();
 		BeanUtils.copyProperties(param, dataPropertyAccessParam);
 		dataPropertyAccessParam.setModelId(modelDTO.getId());
-		List<DataPropertyAccessDO> dataPropertyAccessDOs = dataPropertyAccessDAO
+		List<DataPropertyAccessPO> dataPropertyAccessPOs = dataPropertyAccessDAO
 				.listDataPropertyAccess(dataPropertyAccessParam);
 		//如果访问控制为空，直接返回模型属性关系里的默认访问控制
-		if(CollectionUtil.isEmpty(dataPropertyAccessDOs)){
+		if(CollectionUtil.isEmpty(dataPropertyAccessPOs)){
 			return dataPropertyAccessDTOs;
 		}
 		
 		//覆盖默认访问控制
-		for (DataPropertyAccessDO dataPropertyAccessDO : dataPropertyAccessDOs) {
-			DataPropertyAccessDTO dataPropertyControlDTO = propertyAccessMap.get(dataPropertyAccessDO.getPropertyId());
+		for (DataPropertyAccessPO dataPropertyAccessPO : dataPropertyAccessPOs) {
+			DataPropertyAccessDTO dataPropertyControlDTO = propertyAccessMap.get(dataPropertyAccessPO.getPropertyId());
 			if(dataPropertyControlDTO == null){
 				continue;
 			}
-			dataPropertyControlDTO.setAccessType(dataPropertyAccessDO.getAccessType());
+			dataPropertyControlDTO.setAccessType(dataPropertyAccessPO.getAccessType());
 		}
 		return dataPropertyAccessDTOs;
 	}

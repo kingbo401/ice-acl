@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.iceacl.dao.MenuDAO">
-    <select id="listMenu" resultType="MenuDO">
+    <select id="listMenu" resultType="MenuPO">
 		select * from ice_menu where group_id=#{appKey} and status != 0 
 		<if test="status != null">
           	status = #{status},
@@ -11,12 +11,12 @@
 		order by menu_order asc
 	</select>
 	
-    <insert id="createMenu" parameterType="MenuDO" useGeneratedKeys="true" keyProperty="id">
-          insert into ice_menu(app_key,menu_name,menu_order,menu_pid,menu_url,menu_icon,menu_type,update_time,create_time,status)
-          values(#{appKey},#{menuName},#{menuOrder},#{menuPid},#{menuUrl},#{menuIcon},#{menuType},#{updateTime},#{createTime},#{status});
+    <insert id="createMenu" parameterType="MenuPO" useGeneratedKeys="true" keyProperty="id">
+          insert into ice_menu(app_key,menu_name,menu_order,menu_pid,menu_url,menu_icon,menu_show_type,update_time,create_time,status)
+          values(#{appKey},#{menuName},#{menuOrder},#{menuPid},#{menuUrl},#{menuIcon},#{menuShowType},#{updateTime},#{createTime},#{status});
     </insert>
 
-    <update id="updateMenu" parameterType="MenuDO">
+    <update id="updateMenu" parameterType="MenuPO">
           update ice_menu
           <set>
               <if test="menuName != null and menuName != ''">
@@ -34,8 +34,8 @@
               <if test="menuPid != null and menuPid != ''">
                   menu_pid = #{menuPid},
               </if>
-              <if test="menuType != null and menuType != ''">
-                  menu_type = #{menuType},
+              <if test="menuShowType != null and menuShowType != ''">
+                  menu_show_type = #{menuShowType},
               </if>
               <if test="menuIcon != null and menuIcon != ''">
                   menu_icon = #{menuIcon},
@@ -46,11 +46,11 @@
     </update>
 
     <!--根据id查询-->
-    <select id="getMenuById" resultType="MenuDO">
+    <select id="getMenuById" resultType="MenuPO">
         select * from ice_menu where id = #{id} and status != 0
     </select>
     
-    <select id="getMenuByIds" resultType="MenuDO">
+    <select id="getMenuByIds" resultType="MenuPO">
         select * from ice_menu where id in
         <foreach collection="ids" open="(" close=")" item="id" separator=",">
             #{id}
@@ -59,12 +59,12 @@
     </select>
 
     <!--根据pid查询-->
-    <select id="listMenuByPid" resultType="MenuDO">
+    <select id="listMenuByPid" resultType="MenuPO">
         select * from ice_menu where menu_pid = #{menuPid} and status != 0 order by menu_order asc
     </select>
 
     <!--查询用户拥有权限的菜单-->
-    <select id="listUserMenu" resultType="MenuDO">
+    <select id="listUserMenu" resultType="MenuPO">
          select t4.*
          from ice_user_role_ref t1, ice_role t2, ice_role_menu_ref t3, ice_menu t4
          where t1.user_id=#{userId} and t1.tenant=#{tenant} and t4.app_key=#{appKey}
@@ -73,7 +73,7 @@
          order by menu_order asc
     </select>
     
-    <select id="checkUserMenu" resultType="MenuDO">
+    <select id="checkUserMenu" resultType="MenuPO">
     	select count(1) from t0
     	(
     		 select t4.*

@@ -4,25 +4,25 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.DataPropertyDO;
-import com.kingbo401.iceacl.model.db.param.DataPropertyQueryParam;
+import com.kingbo401.iceacl.model.po.DataPropertyPO;
+import com.kingbo401.iceacl.model.po.param.DataPropertyQueryParam;
 
 public interface DataPropertyDAO {
-	int create(DataPropertyDO dataProperty);
+	int create(DataPropertyPO dataProperty);
 
-	int update(DataPropertyDO dataProperty);
+	int update(DataPropertyPO dataProperty);
 
     int removeById(@Param("id") long id);
 
-	List<DataPropertyDO> getByCodes(@Param("appKey") String appKey,@Param("propertyCodes")List<String> propertyCodes);
+	List<DataPropertyPO> getByCodes(@Param("appKey") String appKey,@Param("propertyCodes")List<String> propertyCodes);
 
-	DataPropertyDO getByCode(@Param("appKey")String appKey, @Param("code")String code);
+	DataPropertyPO getByCode(@Param("appKey")String appKey, @Param("code")String code);
 
-	List<DataPropertyDO> getByIds(@Param("ids")List<Long> ids);
+	List<DataPropertyPO> getByIds(@Param("ids")List<Long> ids);
 
-	List<DataPropertyDO> listDataProperty(DataPropertyQueryParam param);
+	List<DataPropertyPO> listDataProperty(DataPropertyQueryParam param);
 
-	List<DataPropertyDO> pageDataProperty(DataPropertyQueryParam param);
+	List<DataPropertyPO> pageDataProperty(DataPropertyQueryParam param);
 
 	int countDataProperty(DataPropertyQueryParam param);
 }

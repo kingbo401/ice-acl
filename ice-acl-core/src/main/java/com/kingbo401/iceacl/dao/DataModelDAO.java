@@ -4,23 +4,23 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.DataModelDO;
-import com.kingbo401.iceacl.model.db.param.DataModelQueryParam;
+import com.kingbo401.iceacl.model.po.DataModelPO;
+import com.kingbo401.iceacl.model.po.param.DataModelQueryParam;
 
 public interface DataModelDAO {
-	int create(DataModelDO dataModel);
+	int create(DataModelPO dataModel);
 
-	int update(DataModelDO dataModel);
+	int update(DataModelPO dataModel);
 
-	DataModelDO getModelById(@Param("id") long id);
+	DataModelPO getModelById(@Param("id") long id);
 
-	DataModelDO getModelByCode(@Param("modelCode") String modelCode);
+	DataModelPO getModelByCode(@Param("modelCode") String modelCode);
 
-	List<DataModelDO> getModelsByIds(@Param("ids") List<Long> modelIds);
+	List<DataModelPO> getModelsByIds(@Param("ids") List<Long> modelIds);
 
-	List<DataModelDO> listDataModel(DataModelQueryParam dataModelQueryParam);
+	List<DataModelPO> listDataModel(DataModelQueryParam dataModelQueryParam);
 
-	List<DataModelDO> pageDataModel(DataModelQueryParam dataModelQueryParam);
+	List<DataModelPO> pageDataModel(DataModelQueryParam dataModelQueryParam);
 
 	int countDataModel(DataModelQueryParam dataModelQueryParam);
 }

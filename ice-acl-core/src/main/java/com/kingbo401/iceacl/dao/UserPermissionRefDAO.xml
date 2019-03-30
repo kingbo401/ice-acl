@@ -61,7 +61,7 @@
 		and t2.status=1 and t1.status!=0
 	</sql>
 	
-	<select id = "listUserPermissionRef"  resultType="UserPermissionRefVO">
+	<select id = "listUserPermissionRef"  resultType="com.kingbo401.iceacl.model.dto.UserPermissionRefDTO">
 		select t1.*,t2.app_key,t2.tenant as permission_tenant,t2.permission_key,
 		t2.permission_type,t2.permission_name,t2.description,t2.tag1
 		from ice_user_permission_ref t1, ice_permission t2
@@ -76,7 +76,7 @@
 		<include refid="queryUserPermissionRefSubSql" />
 	</select>
 	
-	<select id = "pageUserPermissionRef"  resultType="UserPermissionRefVO">
+	<select id = "pageUserPermissionRef"  resultType="com.kingbo401.iceacl.model.dto.UserPermissionRefDTO">
 		select t1.*,t2.app_key,t2.tenant as permission_tenant,t2.permission_key,
 		t2.permission_type,t2.permission_name,t2.description,t2.tag1
 		from ice_user_permission_ref t1, ice_permission t2
@@ -87,7 +87,7 @@
 		limit #{offset},#{pageSize}
 	</select>
 	
-	<select id = "hasUserUse" resultType="UserPermissionRefDO">
+	<select id = "hasUserUse" resultType="UserPermissionRefPO">
 		select * from ice_user_permission_ref 
 		where permission_id=#{permissionId} and status!=0
 		and	(expire_time &gt;= now() or expire_time is null)

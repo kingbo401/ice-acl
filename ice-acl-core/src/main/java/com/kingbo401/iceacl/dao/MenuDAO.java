@@ -4,23 +4,23 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.MenuDO;
-import com.kingbo401.iceacl.model.db.param.CheckUserMenuParam;
+import com.kingbo401.iceacl.model.po.MenuPO;
+import com.kingbo401.iceacl.model.po.param.CheckUserMenuParam;
 
 public interface MenuDAO {
-	List<MenuDO> listMenu(@Param("appKey")String appKey, @Param("status")Integer status);
+	List<MenuPO> listMenu(@Param("appKey")String appKey, @Param("status")Integer status);
 
-	int createMenu(MenuDO menuDO);
+	int createMenu(MenuPO menu);
 
-	int updateMenu(MenuDO menuDO);
+	int updateMenu(MenuPO menu);
 
-	MenuDO getMenuById(@Param("id")Long id);
+	MenuPO getMenuById(@Param("id")Long id);
 	
-	List<MenuDO> getMenuByIds(@Param("ids") List<Long> ids);
+	List<MenuPO> getMenuByIds(@Param("ids") List<Long> ids);
 
-	List<MenuDO> listMenuByPid(@Param("menuPid") Long menuPid);
+	List<MenuPO> listMenuByPid(@Param("menuPid") Long menuPid);
 	
-	List<MenuDO> listUserMenu(@Param("userId") String userId, @Param("appKey") String appKey,@Param("tenant") String tenant);
+	List<MenuPO> listUserMenu(@Param("userId") String userId, @Param("appKey") String appKey,@Param("tenant") String tenant);
 	
 	int checkUserMenu(CheckUserMenuParam param);
 }

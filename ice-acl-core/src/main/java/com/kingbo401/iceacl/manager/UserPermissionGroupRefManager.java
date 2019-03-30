@@ -3,9 +3,9 @@ package com.kingbo401.iceacl.manager;
 import java.util.List;
 
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.model.db.param.UserPermissionGroupRefQueryParam;
-import com.kingbo401.iceacl.model.db.vo.UserPermissionGroupRefVO;
+import com.kingbo401.iceacl.model.dto.UserPermissionGroupRefDTO;
 import com.kingbo401.iceacl.model.dto.param.UserPermissionGroupRefParam;
+import com.kingbo401.iceacl.model.po.param.UserPermissionGroupRefQueryParam;
 
 public interface UserPermissionGroupRefManager {
 	boolean addUserPermissionGroupRef(UserPermissionGroupRefParam param);
@@ -15,6 +15,6 @@ public interface UserPermissionGroupRefManager {
 	boolean unfreezeUserPermissionGroupRef(UserPermissionGroupRefParam param);
     boolean removeRefsByGroupId(String appKey, long groupId);
 	List<Long> listUserPermissionGroupIds(UserPermissionGroupRefQueryParam param); 
-	PageVO<UserPermissionGroupRefVO> pageUserPermissionGroup(UserPermissionGroupRefQueryParam param);
+	PageVO<UserPermissionGroupRefDTO> pageUserPermissionGroup(UserPermissionGroupRefQueryParam param);
 	boolean hasUserUse(long groupId);
 }

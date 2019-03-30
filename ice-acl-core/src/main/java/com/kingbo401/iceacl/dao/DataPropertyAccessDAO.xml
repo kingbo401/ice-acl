@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.iceacl.dao.DataPropertyAccessDAO">
-	<select id="listDataPropertyAccess" resultType="DataPropertyAccessDO"
+	<select id="listDataPropertyAccess" resultType="DataPropertyAccessPO"
 		parameterType="DataPropertyAccessParam">
 		select * from ice_data_property_access
 		where status != 0 and model_id = #{modelId}
@@ -21,7 +21,7 @@
 		</if>
 	</select>
 
-	<insert id="create" parameterType="DataPropertyAccessDO">
+	<insert id="create" parameterType="DataPropertyAccessPO">
 		insert into ice_data_property_access (model_id, property_id,
 		grant_target_id, grant_target_type, tenant,
 		access_type, status, create_time, update_time)
@@ -32,7 +32,7 @@
 		status=#{status},access_type=#{accessType},update_time = #{updateTime}
 	</insert>
 
-	<insert id="batchCreate" parameterType="DataPropertyAccessDO">
+	<insert id="batchCreate" parameterType="DataPropertyAccessPO">
 		insert into ice_data_property_access (model_id, property_id,
 		grant_target_id, grant_target_type, tenant
 		,access_type, status, create_time, update_time ) values

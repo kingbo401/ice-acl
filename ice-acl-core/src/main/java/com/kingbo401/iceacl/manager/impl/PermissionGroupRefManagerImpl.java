@@ -15,12 +15,12 @@ import com.kingbo401.iceacl.dao.PermissionDAO;
 import com.kingbo401.iceacl.dao.PermissionGroupRefDAO;
 import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.PermissionGroupRefManager;
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.PermissionGroupRefDO;
-import com.kingbo401.iceacl.model.db.param.PermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
 import com.kingbo401.iceacl.model.dto.param.PermissionGroupRefParam;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.PermissionGroupRefPO;
+import com.kingbo401.iceacl.model.po.param.PermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
@@ -40,16 +40,16 @@ public class PermissionGroupRefManagerImpl implements PermissionGroupRefManager{
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		checkPermissionGroupRefParam(param);
-		List<PermissionGroupRefDO> list = new ArrayList<PermissionGroupRefDO>();
+		List<PermissionGroupRefPO> list = new ArrayList<PermissionGroupRefPO>();
 		Date now = new Date();
 		for(Long permissionId : permissionIds){
-			PermissionGroupRefDO permissionGroupRefDO = new PermissionGroupRefDO();
-			permissionGroupRefDO.setPermissionId(permissionId);
-			permissionGroupRefDO.setGroupId(param.getGroupId());
-			permissionGroupRefDO.setCreateTime(now);
-			permissionGroupRefDO.setUpdateTime(now);
-			permissionGroupRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(permissionGroupRefDO);
+			PermissionGroupRefPO permissionGroupRefPO = new PermissionGroupRefPO();
+			permissionGroupRefPO.setPermissionId(permissionId);
+			permissionGroupRefPO.setGroupId(param.getGroupId());
+			permissionGroupRefPO.setCreateTime(now);
+			permissionGroupRefPO.setUpdateTime(now);
+			permissionGroupRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(permissionGroupRefPO);
 		}
 		permissionGroupRefDAO.batchCreate(list);
 		return true;
@@ -67,24 +67,24 @@ public class PermissionGroupRefManagerImpl implements PermissionGroupRefManager{
 		if(!param.isMultiApp()){
 			permissionGroupRefQueryParam.setPermissionAppKey(appKey);
 		}
-		List<PermissionDO> permissionDOs =  permissionGroupRefDAO.listPermission(permissionGroupRefQueryParam);
-		if(CollectionUtil.isNotEmpty(permissionDOs)){
+		List<PermissionPO> permissionPOs =  permissionGroupRefDAO.listPermission(permissionGroupRefQueryParam);
+		if(CollectionUtil.isNotEmpty(permissionPOs)){
 			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(PermissionDO permissionDO : permissionDOs){
-				permissionIdsRemove.add(permissionDO.getId());
+			for(PermissionPO permissionPO : permissionPOs){
+				permissionIdsRemove.add(permissionPO.getId());
 			}
 			permissionGroupRefDAO.updateRefsStatus(groupId, permissionIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
-		List<PermissionGroupRefDO> list = new ArrayList<PermissionGroupRefDO>();
+		List<PermissionGroupRefPO> list = new ArrayList<PermissionGroupRefPO>();
 		Date now = new Date();
 		for(Long permissionId : permissionIds){
-			PermissionGroupRefDO permissionGroupRefDO = new PermissionGroupRefDO();
-			permissionGroupRefDO.setPermissionId(permissionId);
-			permissionGroupRefDO.setGroupId(param.getGroupId());
-			permissionGroupRefDO.setCreateTime(now);
-			permissionGroupRefDO.setUpdateTime(now);
-			permissionGroupRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(permissionGroupRefDO);
+			PermissionGroupRefPO permissionGroupRefPO = new PermissionGroupRefPO();
+			permissionGroupRefPO.setPermissionId(permissionId);
+			permissionGroupRefPO.setGroupId(param.getGroupId());
+			permissionGroupRefPO.setCreateTime(now);
+			permissionGroupRefPO.setUpdateTime(now);
+			permissionGroupRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(permissionGroupRefPO);
 		}
 		permissionGroupRefDAO.batchCreate(list);		
 		return true;
@@ -129,8 +129,8 @@ public class PermissionGroupRefManagerImpl implements PermissionGroupRefManager{
 				return pageVO;
 			}
 		}
-		List<PermissionDO> permissionDOs = permissionGroupRefDAO.pagePermission(param);
-		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionDOs));
+		List<PermissionPO> permissionPOs = permissionGroupRefDAO.pagePermission(param);
+		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionPOs));
 		return pageVO;
 	}
 
@@ -144,8 +144,8 @@ public class PermissionGroupRefManagerImpl implements PermissionGroupRefManager{
 		PermissionGroupDTO permissionGroupDTO = permissionGroupManager.getPermissionGroupById(groupId);
 		Assert.notNull(permissionGroupDTO, "权限组不存在");
 		Assert.isTrue(appKey.equals(permissionGroupDTO.getAppKey()), "权限组appkey不匹配");
-		List<PermissionDO> permissionDOs = permissionGroupRefDAO.listPermission(param);
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		List<PermissionPO> permissionPOs = permissionGroupRefDAO.listPermission(param);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 
 	private void checkPermissionGroupRefParam(PermissionGroupRefParam param){
@@ -159,15 +159,15 @@ public class PermissionGroupRefManagerImpl implements PermissionGroupRefManager{
 		Assert.isTrue(appKey.equals(permissionGroupDTO.getAppKey()), "权限组appKey不匹配");
 		List<Long> permissionIds = param.getPermissionIds();
 		if(CollectionUtil.isNotEmpty(permissionIds)){
-			List<PermissionDO> permissionDOs = permissionDAO.getPermissionByIds(permissionIds);
-			Assert.notEmpty(permissionDOs, "权限不存在");
-			Map<Object, PermissionDO> permissionMap = CollectionUtil.toIdMap(permissionDOs);
+			List<PermissionPO> permissionPOs = permissionDAO.getPermissionByIds(permissionIds);
+			Assert.notEmpty(permissionPOs, "权限不存在");
+			Map<Object, PermissionPO> permissionMap = CollectionUtil.toIdMap(permissionPOs);
 			for(Long permissionId : permissionIds){
 				Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
 			}
 			if(!param.isMultiApp()){
-				for(PermissionDO permissionDO : permissionDOs){
-					Assert.isTrue(appKey.equals(permissionDO.getAppKey()), "权限appkey不匹配:" + permissionDO.getId());
+				for(PermissionPO permissionPO : permissionPOs){
+					Assert.isTrue(appKey.equals(permissionPO.getAppKey()), "权限appkey不匹配:" + permissionPO.getId());
 				}
 			}
 		}

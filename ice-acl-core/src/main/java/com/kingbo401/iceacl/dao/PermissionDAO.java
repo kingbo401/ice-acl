@@ -4,30 +4,30 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.param.PermissonQueryParam;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.param.PermissonQueryParam;
 
 public interface PermissionDAO {
-	int create(PermissionDO PermissionDO);
+	int create(PermissionPO permission);
 
-	int batchCreate(@Param("list") List<PermissionDO> PermissionDOs);
+	int batchCreate(@Param("list") List<PermissionPO> permissions);
 
-	int update(PermissionDO PermissionDO);
+	int update(PermissionPO permission);
 
-	List<PermissionDO> getPermissionByIds(@Param("ids") List<Long> ids);
+	List<PermissionPO> getPermissionByIds(@Param("ids") List<Long> ids);
 
-	List<PermissionDO> getPermissionByKeys(@Param("appKey") String appKey,
+	List<PermissionPO> getPermissionByKeys(@Param("appKey") String appKey,
 			@Param("permissionKeys") List<String> permissionKeys);
 
-	PermissionDO getById(@Param("id") Long id);
+	PermissionPO getById(@Param("id") Long id);
 	
-	PermissionDO getByKey(@Param("appKey") String appKey, @Param("permissionKey") String permissionKey);
+	PermissionPO getByKey(@Param("appKey") String appKey, @Param("permissionKey") String permissionKey);
 
-	List<PermissionDO> listPermission(PermissonQueryParam param);
+	List<PermissionPO> listPermission(PermissonQueryParam param);
 
 	long countPermission(PermissonQueryParam param);
 
-	List<PermissionDO> pagePermission(PermissonQueryParam param);
+	List<PermissionPO> pagePermission(PermissonQueryParam param);
 
 	/**
 	 * 校验用户是否有该角色下面的权限

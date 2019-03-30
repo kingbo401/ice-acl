@@ -4,33 +4,31 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.iceacl.model.db.DataGrantRecordDO;
-import com.kingbo401.iceacl.model.db.param.DataGrantPropertyValueParam;
-import com.kingbo401.iceacl.model.db.param.DataGrantRecordParam;
-import com.kingbo401.iceacl.model.db.param.DataGrantRecordQueryParam;
+import com.kingbo401.iceacl.model.po.DataGrantRecordPO;
+import com.kingbo401.iceacl.model.po.param.DataGrantPropertyValueParam;
+import com.kingbo401.iceacl.model.po.param.DataGrantRecordParam;
+import com.kingbo401.iceacl.model.po.param.DataGrantRecordQueryParam;
 
 public interface DataGrantRecordDAO {
-	int create(DataGrantRecordDO dataGrantRecordDO);
+	int create(DataGrantRecordPO dataGrantRecord);
 	
 	int removeByIds(@Param("ids")List<Long> ids);
 	
 	int removeById(@Param("id")long id);
 	
-	DataGrantRecordDO getById(@Param("id")long id);
+	DataGrantRecordPO getById(@Param("id")long id);
 	
-	List<DataGrantRecordDO> getByIds(@Param("ids")List<Long> ids);
+	List<DataGrantRecordPO> getByIds(@Param("ids")List<Long> ids);
 	
 	int removeByParam(DataGrantRecordParam param);
 	
-	int update(DataGrantRecordDO dataGrantRecord);
+	int update(DataGrantRecordPO dataGrantRecord);
 	
-	List<DataGrantRecordDO> listDataGrantRecord(DataGrantRecordQueryParam param);
+	List<DataGrantRecordPO> listDataGrantRecord(DataGrantRecordQueryParam param);
 	
-	List<DataGrantRecordDO> pageDataGrantRecord(DataGrantRecordQueryParam param);
+	List<DataGrantRecordPO> pageDataGrantRecord(DataGrantRecordQueryParam param);
 	
 	long countDataGrantRecord(DataGrantRecordQueryParam param);
-	
-	List<String> listTargetIds(DataGrantRecordQueryParam param);
 	
 	List<Long> listIdByPropertyValues(DataGrantPropertyValueParam param);
 	
@@ -38,6 +36,6 @@ public interface DataGrantRecordDAO {
 	
 	long countIdByPropertyValues(DataGrantPropertyValueParam param);
 	
-	DataGrantRecordDO getOneDataGrantRecord(@Param("modelId")Long modelId, @Param("operationId")Long operationId, @Param("propertyId")Long propertyId);
+	DataGrantRecordPO getOneDataGrantRecord(@Param("modelId")Long modelId, @Param("operationId")Long operationId, @Param("propertyId")Long propertyId);
 
 }

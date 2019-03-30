@@ -16,9 +16,9 @@ import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.dao.PermissionDAO;
 import com.kingbo401.iceacl.manager.PermissionManager;
 import com.kingbo401.iceacl.manager.UserPermissionRefManager;
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.param.PermissonQueryParam;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.param.PermissonQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
@@ -33,11 +33,11 @@ public class PermissionManagerImpl implements PermissionManager{
 	private boolean updatePermissionStatus(String appKey, Long id, int status){
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "permissionId不能为空");
-		PermissionDO permissionDO = permissionDAO.getById(id);
-		Assert.notNull(permissionDO, "权限不存在");
-		Assert.isTrue(appKey.equals(permissionDO.getAppKey()), "appKey, permissionId不匹配");
-		permissionDO.setStatus(status);
-		permissionDAO.update(permissionDO);
+		PermissionPO permissionPO = permissionDAO.getById(id);
+		Assert.notNull(permissionPO, "权限不存在");
+		Assert.isTrue(appKey.equals(permissionPO.getAppKey()), "appKey, permissionId不匹配");
+		permissionPO.setStatus(status);
+		permissionDAO.update(permissionPO);
 		return true;
 	}
 	@Override
@@ -60,64 +60,64 @@ public class PermissionManagerImpl implements PermissionManager{
 	public PermissionDTO getPermissionByKey(String appKey, String permissionKey) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(permissionKey, "permissionKey不能为空");
-		PermissionDO permissionDO = permissionDAO.getByKey(appKey, permissionKey);
-		return BizUtils.buildPermissionDTO(permissionDO);
+		PermissionPO permissionPO = permissionDAO.getByKey(appKey, permissionKey);
+		return BizUtils.buildPermissionDTO(permissionPO);
 	}
 
 	@Override
 	public PermissionDTO getPermissionById(String appKey, Long permissionId) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(permissionId, "permissionId不能为空");
-		PermissionDO permissionDO = permissionDAO.getById(permissionId);
-		if(permissionDO == null){
+		PermissionPO permissionPO = permissionDAO.getById(permissionId);
+		if(permissionPO == null){
 			return null;
 		}
-		Assert.isTrue(appKey.equals(permissionDO.getAppKey()), "appKey, permissionId不匹配");
-		return BizUtils.buildPermissionDTO(permissionDO);
+		Assert.isTrue(appKey.equals(permissionPO.getAppKey()), "appKey, permissionId不匹配");
+		return BizUtils.buildPermissionDTO(permissionPO);
 	}
 
 	@Override
 	public List<PermissionDTO> getPermissionByKeys(String appKey, List<String> permissionKeys) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(permissionKeys, "permissionKeys不能为空");
-		List<PermissionDO> permissionDOs = permissionDAO.getPermissionByKeys(appKey, permissionKeys);
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		List<PermissionPO> permissionPOs = permissionDAO.getPermissionByKeys(appKey, permissionKeys);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 
 	@Override
 	public List<PermissionDTO> getPermissionByIds(String appKey, List<Long> permissionIds) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
-		List<PermissionDO> permissionDOs = permissionDAO.getPermissionByIds(permissionIds);
-		Assert.notEmpty(permissionDOs, "权限不存在");
-		for(PermissionDO permissionDO : permissionDOs){
-			Assert.isTrue(appKey.equals(permissionDO.getAppKey()), "appKey, permissionId不匹配");
+		List<PermissionPO> permissionPOs = permissionDAO.getPermissionByIds(permissionIds);
+		Assert.notEmpty(permissionPOs, "权限不存在");
+		for(PermissionPO permissionPO : permissionPOs){
+			Assert.isTrue(appKey.equals(permissionPO.getAppKey()), "appKey, permissionId不匹配");
 		}
-		Map<Object, PermissionDO> permissionMap = CollectionUtil.toIdMap(permissionDOs);
+		Map<Object, PermissionPO> permissionMap = CollectionUtil.toIdMap(permissionPOs);
 		for(Long permissionId : permissionIds){
 			Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
 		}
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 	
 	@Override
 	public List<PermissionDTO> getPermissionByIds(List<Long> permissionIds) {
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
-		List<PermissionDO> permissionDOs = permissionDAO.getPermissionByIds(permissionIds);
-		Assert.notEmpty(permissionDOs, "权限不存在");
-		Map<Object, PermissionDO> permissionMap = CollectionUtil.toIdMap(permissionDOs);
+		List<PermissionPO> permissionPOs = permissionDAO.getPermissionByIds(permissionIds);
+		Assert.notEmpty(permissionPOs, "权限不存在");
+		Map<Object, PermissionPO> permissionMap = CollectionUtil.toIdMap(permissionPOs);
 		for(Long permissionId : permissionIds){
 			Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
 		}
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 
 	@Override
 	public List<PermissionDTO> listPermission(PermissonQueryParam param) {
 		Assert.notNull(param, "参数不能为空");
 		Assert.notNull(param.getAppKey(), "appKey不能为空");
-		List<PermissionDO> permissionDOs = permissionDAO.listPermission(param);
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		List<PermissionPO> permissionPOs = permissionDAO.listPermission(param);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 
 	@Override
@@ -132,8 +132,8 @@ public class PermissionManagerImpl implements PermissionManager{
 				return pageVO;
 			}
 		}
-		List<PermissionDO> permissionDOs = permissionDAO.listPermission(param);
-		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionDOs));
+		List<PermissionPO> permissionPOs = permissionDAO.listPermission(param);
+		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionPOs));
 		return pageVO;
 	}
 
@@ -149,12 +149,12 @@ public class PermissionManagerImpl implements PermissionManager{
 		Date now = new Date();
 		permissionDTO.setCreateTime(now);
 		permissionDTO.setUpdateTime(now);
-		PermissionDO permissoinDO = permissionDAO.getByKey(appKey, permissionKey);
-		Assert.isNull(permissoinDO, "权限已存在");
-		permissoinDO = new PermissionDO();
-		BeanUtils.copyProperties(permissionDTO, permissoinDO);
-		permissionDAO.create(permissoinDO);
-		BeanUtils.copyProperties(permissoinDO, permissionDTO);
+		PermissionPO permissoinPO = permissionDAO.getByKey(appKey, permissionKey);
+		Assert.isNull(permissoinPO, "权限已存在");
+		permissoinPO = new PermissionPO();
+		BeanUtils.copyProperties(permissionDTO, permissoinPO);
+		permissionDAO.create(permissoinPO);
+		BeanUtils.copyProperties(permissoinPO, permissionDTO);
 		return permissionDTO;
 	}
 
@@ -168,16 +168,16 @@ public class PermissionManagerImpl implements PermissionManager{
 		String permissionKey = permissionDTO.getPermissionKey();
 		Assert.hasText(permissionKey, "permissionKey不能为空");
 		Assert.hasText(permissionDTO.getPermissionName(), "permissionName不能为空");
-		PermissionDO permissoinDO = permissionDAO.getById(id);
-		Assert.notNull(permissoinDO, "权限不存在");
+		PermissionPO permissoinPO = permissionDAO.getById(id);
+		Assert.notNull(permissoinPO, "权限不存在");
 		Date now = new Date();
-		permissoinDO.setUpdateTime(now);
-		permissoinDO.setPermissionKey(permissionKey);
-		permissoinDO.setDescription(permissionDTO.getDescription());
-		permissoinDO.setPermissionName(permissionDTO.getPermissionName());
-		permissoinDO.setPermissionType(permissionDTO.getPermissionType());
-		permissionDAO.update(permissoinDO);
-		BeanUtils.copyProperties(permissoinDO, permissionDTO);
+		permissoinPO.setUpdateTime(now);
+		permissoinPO.setPermissionKey(permissionKey);
+		permissoinPO.setDescription(permissionDTO.getDescription());
+		permissoinPO.setPermissionName(permissionDTO.getPermissionName());
+		permissoinPO.setPermissionType(permissionDTO.getPermissionType());
+		permissionDAO.update(permissoinPO);
+		BeanUtils.copyProperties(permissoinPO, permissionDTO);
 		return permissionDTO;
 	}
 
@@ -185,7 +185,7 @@ public class PermissionManagerImpl implements PermissionManager{
 	public int createPermissions(String appKey, List<PermissionDTO> permissions) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(permissions, "权限不能为空");
-		List<PermissionDO> permissionDOs = new ArrayList<PermissionDO>();
+		List<PermissionPO> permissionPOs = new ArrayList<PermissionPO>();
 		Date now = new Date();
 		for(PermissionDTO permissionDTO : permissions){
 			Assert.hasText(permissionDTO.getPermissionKey(), "permissionKey不能为空");
@@ -196,10 +196,10 @@ public class PermissionManagerImpl implements PermissionManager{
 			Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appKey不匹配");
 			permissionDTO.setCreateTime(now);
 			permissionDTO.setUpdateTime(now);
-			PermissionDO permissionDO = new PermissionDO();
-			BeanUtils.copyProperties(permissionDTO, permissionDO);
-			permissionDOs.add(permissionDO);
+			PermissionPO permissionPO = new PermissionPO();
+			BeanUtils.copyProperties(permissionDTO, permissionPO);
+			permissionPOs.add(permissionPO);
 		}
-		return permissionDAO.batchCreate(permissionDOs);
+		return permissionDAO.batchCreate(permissionPOs);
 	}
 }

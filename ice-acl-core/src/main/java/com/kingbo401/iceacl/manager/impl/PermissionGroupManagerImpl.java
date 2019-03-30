@@ -17,10 +17,10 @@ import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.iceacl.dao.PermissionGroupDAO;
 import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.UserPermissionGroupRefManager;
-import com.kingbo401.iceacl.model.db.PermissionGroupDO;
-import com.kingbo401.iceacl.model.db.PermissionGroupLite;
-import com.kingbo401.iceacl.model.db.param.PermissionGroupQueryParam;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
+import com.kingbo401.iceacl.model.po.PermissionGroupPO;
+import com.kingbo401.iceacl.model.po.PermissionGroupLite;
+import com.kingbo401.iceacl.model.po.param.PermissionGroupQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
@@ -45,10 +45,10 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		permissionGroupDTO.setUpdateTime(now);
 		permissionGroupDTO.setStatus(IceAclConstant.STATUS_NORMAL);
 
-		PermissionGroupDO permissionGroupDO = new PermissionGroupDO();
-		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupDO);
-		permissionGroupDAO.create(permissionGroupDO);
-		permissionGroupDTO.setId(permissionGroupDO.getId());
+		PermissionGroupPO permissionGroupPO = new PermissionGroupPO();
+		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupPO);
+		permissionGroupDAO.create(permissionGroupPO);
+		permissionGroupDTO.setId(permissionGroupPO.getId());
 		return permissionGroupDTO;
 	}
 
@@ -59,22 +59,22 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		Assert.hasText(permissionGroupDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(permissionGroupDTO.getGroupName(), "groupName不能为空");
 		Assert.hasText(permissionGroupDTO.getTenant(), "tenant不能为空");
-		PermissionGroupDO permissionGroupDO = permissionGroupDAO.getById(permissionGroupDTO.getId());
-		Assert.notNull(permissionGroupDO, "权限组不存在");
-		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupDO);
-		permissionGroupDO.setUpdateTime(new Date());
-		permissionGroupDAO.update(permissionGroupDO);
+		PermissionGroupPO permissionGroupPO = permissionGroupDAO.getById(permissionGroupDTO.getId());
+		Assert.notNull(permissionGroupPO, "权限组不存在");
+		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupPO);
+		permissionGroupPO.setUpdateTime(new Date());
+		permissionGroupDAO.update(permissionGroupPO);
 		return true;
 	}
 
 	private boolean updatePermissionGroupStatus(String appKey, Long id, int status){
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "id不能为空");
-		PermissionGroupDO permissionGroupDO = permissionGroupDAO.getById(id);
-		Assert.notNull(permissionGroupDO, "权限组不存在");
-		Assert.isTrue(appKey.equals(permissionGroupDO.getAppKey()), "appkey权限组不匹配");
-		permissionGroupDO.setStatus(status);
-		permissionGroupDAO.update(permissionGroupDO);
+		PermissionGroupPO permissionGroupPO = permissionGroupDAO.getById(id);
+		Assert.notNull(permissionGroupPO, "权限组不存在");
+		Assert.isTrue(appKey.equals(permissionGroupPO.getAppKey()), "appkey权限组不匹配");
+		permissionGroupPO.setStatus(status);
+		permissionGroupDAO.update(permissionGroupPO);
 		return true;
 	}
 	
@@ -99,18 +99,18 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		Assert.notNull(permissionGroupQueryParam, "permissionGroupQueryParam不能为空");
 		String appKey = permissionGroupQueryParam.getAppKey();
 		Assert.hasText(appKey, "appKey 不能为空");
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.listPermissionGroup(permissionGroupQueryParam);
-		if (CollectionUtils.isEmpty(permissionGroupDOs)) {
+		List<PermissionGroupPO> permissionGroupPOs = permissionGroupDAO.listPermissionGroup(permissionGroupQueryParam);
+		if (CollectionUtils.isEmpty(permissionGroupPOs)) {
 			return null;
 		}
-		List<PermissionGroupDO> rootPermissionGroups = new ArrayList<PermissionGroupDO>();// 根权限组
-		Map<Long, List<PermissionGroupDO>> permissionGroupMap = Maps.newHashMap();
-		for (PermissionGroupDO permissionGroup : permissionGroupDOs) {
+		List<PermissionGroupPO> rootPermissionGroups = new ArrayList<PermissionGroupPO>();// 根权限组
+		Map<Long, List<PermissionGroupPO>> permissionGroupMap = Maps.newHashMap();
+		for (PermissionGroupPO permissionGroup : permissionGroupPOs) {
 			Long groupPid = permissionGroup.getGroupPid();
 			if (groupPid == 0) {
 				rootPermissionGroups.add(permissionGroup);
 			}
-			List<PermissionGroupDO> list = permissionGroupMap.get(groupPid);
+			List<PermissionGroupPO> list = permissionGroupMap.get(groupPid);
 			if (list == null) {
 				list = Lists.newArrayList();
 				permissionGroupMap.put(groupPid, list);
@@ -120,7 +120,7 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		
 		List<PermissionGroupTreeNode> treeNodes = new ArrayList<PermissionGroupTreeNode>();
 		if (!CollectionUtils.isEmpty(rootPermissionGroups)) {
-			for (PermissionGroupDO rootPermissionGroup : rootPermissionGroups) {
+			for (PermissionGroupPO rootPermissionGroup : rootPermissionGroups) {
 				PermissionGroupTreeNode permissionGroupTreeNode = new PermissionGroupTreeNode();
 				BeanUtils.copyProperties(rootPermissionGroup, permissionGroupTreeNode);
 				permissionGroupTreeNode.setLevel(1);
@@ -132,13 +132,13 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 	}
 	
 	private void recursivePermissionGroup(PermissionGroupTreeNode parentTreePermissionGroup,
-			Map<Long, List<PermissionGroupDO>> permissionGroupMap, int level) {
-		List<PermissionGroupDO> permissionGroupChildren = permissionGroupMap.get(parentTreePermissionGroup.getId());
+			Map<Long, List<PermissionGroupPO>> permissionGroupMap, int level) {
+		List<PermissionGroupPO> permissionGroupChildren = permissionGroupMap.get(parentTreePermissionGroup.getId());
 		if (!CollectionUtils.isEmpty(permissionGroupChildren)) {
-			for (PermissionGroupDO permissionGroupDO : permissionGroupChildren) {
+			for (PermissionGroupPO permissionGroupPO : permissionGroupChildren) {
 				PermissionGroupTreeNode permissionGroupTreeNode = new PermissionGroupTreeNode();
 				permissionGroupTreeNode.setLevel(level);
-				BeanUtils.copyProperties(permissionGroupDO, permissionGroupTreeNode);
+				BeanUtils.copyProperties(permissionGroupPO, permissionGroupTreeNode);
 				parentTreePermissionGroup.getChildren().add(permissionGroupTreeNode);
 				this.recursivePermissionGroup(permissionGroupTreeNode, permissionGroupMap, level++);
 			}
@@ -149,8 +149,8 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 	public List<PermissionGroupDTO> listPermissionGroup(PermissionGroupQueryParam permissionGroupQueryParam) {
 		Assert.notNull(permissionGroupQueryParam, "permissionGroupQueryParam不能为空");
 		Assert.hasText(permissionGroupQueryParam.getAppKey(), "appKey 不能为空");
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.listPermissionGroup(permissionGroupQueryParam);
-		return BizUtils.buildPermissionGroupDTOs(permissionGroupDOs);
+		List<PermissionGroupPO> permissionGroupPOs = permissionGroupDAO.listPermissionGroup(permissionGroupQueryParam);
+		return BizUtils.buildPermissionGroupDTOs(permissionGroupPOs);
 	}
 
 	@Override
@@ -167,8 +167,8 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 				return pageDTO;
 			}
 		}
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.pagePermissionGroup(permissionGroupQueryParam);
-		pageDTO.setItems(BizUtils.buildPermissionGroupDTOs(permissionGroupDOs));
+		List<PermissionGroupPO> permissionGroupPOs = permissionGroupDAO.pagePermissionGroup(permissionGroupQueryParam);
+		pageDTO.setItems(BizUtils.buildPermissionGroupDTOs(permissionGroupPOs));
 		return pageDTO;
 	}
 
@@ -176,30 +176,30 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 	public List<PermissionGroupDTO> getPermissionGroupByIds(String appKey, List<Long> groupIds) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(groupIds, "groupIds不能为空");
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.getByIds(groupIds);
-		if(CollectionUtils.isEmpty(permissionGroupDOs)){
+		List<PermissionGroupPO> permissionGroupPOs = permissionGroupDAO.getByIds(groupIds);
+		if(CollectionUtils.isEmpty(permissionGroupPOs)){
 			return null;
 		}
-		for(PermissionGroupDO permissionGroupDO : permissionGroupDOs){
-			Assert.isTrue(appKey.equals(permissionGroupDO.getAppKey()), "appKey权限组不匹配");
+		for(PermissionGroupPO permissionGroupPO : permissionGroupPOs){
+			Assert.isTrue(appKey.equals(permissionGroupPO.getAppKey()), "appKey权限组不匹配");
 		}
-		return BizUtils.buildPermissionGroupDTOs(permissionGroupDOs);
+		return BizUtils.buildPermissionGroupDTOs(permissionGroupPOs);
 	}
 
 	@Override
 	public List<PermissionGroupDTO> getPermissionGroupByIds(List<Long> groupIds) {
 		Assert.notEmpty(groupIds, "groupIds不能为空");
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.getByIds(groupIds);
-		if(CollectionUtils.isEmpty(permissionGroupDOs)){
+		List<PermissionGroupPO> permissionGroupPOs = permissionGroupDAO.getByIds(groupIds);
+		if(CollectionUtils.isEmpty(permissionGroupPOs)){
 			return null;
 		}
-		return BizUtils.buildPermissionGroupDTOs(permissionGroupDOs);
+		return BizUtils.buildPermissionGroupDTOs(permissionGroupPOs);
 	}
 
 	@Override
 	public PermissionGroupDTO getPermissionGroupById(long id) {
-		PermissionGroupDO permissionGroupDO = permissionGroupDAO.getById(id);
-		return BizUtils.buildPermissionGroupDTO(permissionGroupDO);
+		PermissionGroupPO permissionGroupPO = permissionGroupDAO.getById(id);
+		return BizUtils.buildPermissionGroupDTO(permissionGroupPO);
 	}
 
 	@Override

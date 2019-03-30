@@ -35,25 +35,25 @@ import com.kingbo401.iceacl.manager.DataOperationManager;
 import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.RolePermissionGroupRefManager;
 import com.kingbo401.iceacl.manager.UserPermissionGroupRefManager;
-import com.kingbo401.iceacl.model.db.DataGrantRecordDO;
-import com.kingbo401.iceacl.model.db.DataGrantRecordDetailDO;
-import com.kingbo401.iceacl.model.db.RoleDO;
-import com.kingbo401.iceacl.model.db.param.DataGrantPropertyValueParam;
-import com.kingbo401.iceacl.model.db.param.DataGrantRecordParam;
-import com.kingbo401.iceacl.model.db.param.UserPermissionGroupRefQueryParam;
-import com.kingbo401.iceacl.model.db.param.UserRoleRefQueryParam;
-import com.kingbo401.iceacl.model.db.vo.UserRoleRefVO;
 import com.kingbo401.iceacl.model.dto.DataGrantRecordDTO;
 import com.kingbo401.iceacl.model.dto.DataModelDTO;
 import com.kingbo401.iceacl.model.dto.DataOperationDTO;
 import com.kingbo401.iceacl.model.dto.DataPropertyDTO;
 import com.kingbo401.iceacl.model.dto.DatasCheckResult;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
+import com.kingbo401.iceacl.model.dto.UserRoleRefDTO;
 import com.kingbo401.iceacl.model.dto.param.DataCheckParam;
 import com.kingbo401.iceacl.model.dto.param.DataGrantParam;
 import com.kingbo401.iceacl.model.dto.param.DataGrantQueryParam;
 import com.kingbo401.iceacl.model.dto.param.DataRevokeParam;
 import com.kingbo401.iceacl.model.dto.param.DatasCheckParam;
+import com.kingbo401.iceacl.model.po.DataGrantRecordPO;
+import com.kingbo401.iceacl.model.po.DataGrantRecordDetailPO;
+import com.kingbo401.iceacl.model.po.RolePO;
+import com.kingbo401.iceacl.model.po.param.DataGrantPropertyValueParam;
+import com.kingbo401.iceacl.model.po.param.DataGrantRecordParam;
+import com.kingbo401.iceacl.model.po.param.UserPermissionGroupRefQueryParam;
+import com.kingbo401.iceacl.model.po.param.UserRoleRefQueryParam;
 
 @Service
 public class DataAccessManagerImpl implements DataAccessManager{
@@ -109,18 +109,18 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			Assert.isTrue(permissionGroupDTO.getAppKey().equals(appKey), "此权限组不属于app:" + appKey);
 		}
 		if(grantTargetType == GrantTargetType.ROLE.getCode()){//如果授权对象是角色，判断角色是否为空
-			RoleDO roleDO = null;
+			RolePO rolePO = null;
 			if(grantTargetId.contains("#")){
 				String[] targets = grantTargetId.split("#");
 				Assert.isTrue(targets.length == 2, "角色信息格式为appkey#role");
-				roleDO = roleDAO.getRoleByKey(targets[0], targets[1]);
+				rolePO = roleDAO.getRoleByKey(targets[0], targets[1]);
 			}else{
 				long roleId = NumberUtils.toLong(grantTargetId);
 				Assert.isTrue(roleId > 0, "角色id必须为整数");
-				roleDO = roleDAO.getRoleById(roleId);
+				rolePO = roleDAO.getRoleById(roleId);
 			}
-			Assert.notNull(roleDO, "角色不存在");
-			Assert.isTrue(roleDO.getAppKey().equals(appKey), "此角色不属于app:" + appKey);
+			Assert.notNull(rolePO, "角色不存在");
+			Assert.isTrue(rolePO.getAppKey().equals(appKey), "此角色不属于app:" + appKey);
 		}
 		
 		List<Map<String, PropertyValue>> datas = dataGrantParam.getDatas();
@@ -159,31 +159,32 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				values.add(IceAclConstant.GRANTED_ALL_DATA_SYMBOL);
 				propertyValuesMap.put(dataPropertyDTO.getId(), values);
 			}
-			DataGrantPropertyValueParam dataGrantPropertyDataParam = new DataGrantPropertyValueParam(); 
+			DataGrantPropertyValueParam dataGrantPropertyValueParam = new DataGrantPropertyValueParam(); 
+			dataGrantPropertyValueParam.setAppKey(appKey);
 			List<String> grantTargetIds = Lists.newArrayList();
 			grantTargetIds.add(grantTargetId);
-			dataGrantPropertyDataParam.setGrantTargetIds(grantTargetIds);
-			dataGrantPropertyDataParam.setGrantTargetType(grantTargetType);
-			dataGrantPropertyDataParam.setModelId(dataModelDTO.getId());
-			dataGrantPropertyDataParam.setOperationId(dataOperationDTO.getId());
-			dataGrantPropertyDataParam.setTenant(tenant);
-			dataGrantPropertyDataParam.setPropertyValuesMap(propertyValuesMap);
-			dataGrantPropertyDataParam.setReturnNotEffective(true);
-			List<Long> recordIds = dataGrantRecordDAO.listIdByPropertyValues(dataGrantPropertyDataParam);
+			dataGrantPropertyValueParam.setGrantTargetIds(grantTargetIds);
+			dataGrantPropertyValueParam.setGrantTargetType(grantTargetType);
+			dataGrantPropertyValueParam.setModelId(dataModelDTO.getId());
+			dataGrantPropertyValueParam.setOperationId(dataOperationDTO.getId());
+			dataGrantPropertyValueParam.setTenant(tenant);
+			dataGrantPropertyValueParam.setPropertyValuesMap(propertyValuesMap);
+			dataGrantPropertyValueParam.setReturnNotEffective(true);
+			List<Long> recordIds = dataGrantRecordDAO.listIdByPropertyValues(dataGrantPropertyValueParam);
 			Date now = new Date();
 			if(CollectionUtil.isNotEmpty(recordIds)){//说明存在已授权的数据，做更新
-				List<DataGrantRecordDO> dataGrantRecordDOs = dataGrantRecordDAO.getByIds(recordIds);
-				for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs){//recordIds长度一般不会超过2个,所以这里不会特别影响效率
+				List<DataGrantRecordPO> dataGrantRecordPOs = dataGrantRecordDAO.getByIds(recordIds);
+				for(DataGrantRecordPO dataGrantRecordPO : dataGrantRecordPOs){//recordIds长度一般不会超过2个,所以这里不会特别影响效率
 					boolean valueMatch = true;
 					boolean descMatch = true;
-					List<DataGrantRecordDetailDO> detailDOs = dataGrantRecordDetailDAO.listDetailByRecordId(dataGrantRecordDO.getId());
-					for(DataGrantRecordDetailDO detailDO : detailDOs){
-						DataPropertyDTO dataPropertyDTO = propertyIdMap.get(detailDO.getPropertyId());
+					List<DataGrantRecordDetailPO> detailPOs = dataGrantRecordDetailDAO.listDetailByRecordId(dataGrantRecordPO.getId());
+					for(DataGrantRecordDetailPO detailPO : detailPOs){
+						DataPropertyDTO dataPropertyDTO = propertyIdMap.get(detailPO.getPropertyId());
 						PropertyValue propertyValue = data.get(dataPropertyDTO.getCode());
-						if(!StringUtils.equals(propertyValue.getPropertyValue(), detailDO.getPropertyValue())){
+						if(!StringUtils.equals(propertyValue.getPropertyValue(), detailPO.getPropertyValue())){
 							valueMatch = false;
 						}
-						if(!StringUtils.equals(propertyValue.getPropertyValueDesc(), detailDO.getPropertyValueDesc())){
+						if(!StringUtils.equals(propertyValue.getPropertyValueDesc(), detailPO.getPropertyValueDesc())){
 							descMatch = false;
 						}
 					}
@@ -192,72 +193,72 @@ public class DataAccessManagerImpl implements DataAccessManager{
 					}
 					if(!descMatch){//说明属性值描述信息有更新
 						//删除老数据，重新插入
-						dataGrantRecordDetailDAO.removeByRecordId(dataGrantRecordDO.getId());
-						List<DataGrantRecordDetailDO> newDetailDOs = buildDataGrantRecordDetailDOs(dataGrantRecordDO.getId(), data, propertyCodeMap);
-						dataGrantRecordDetailDAO.batchInsert(newDetailDOs);
+						dataGrantRecordDetailDAO.removeByRecordId(dataGrantRecordPO.getId());
+						List<DataGrantRecordDetailPO> newDetailPOs = buildDataGrantRecordDetailPOs(dataGrantRecordPO.getId(), data, propertyCodeMap);
+						dataGrantRecordDetailDAO.batchInsert(newDetailPOs);
 					}
-					if(isDataGrantChange(dataGrantRecordDO, dataGrantParam)){//失效日期有变化
-						dataGrantRecordDO.setEffectiveTime(dataGrantParam.getEffectiveTime());
-						dataGrantRecordDO.setExpireTime(dataGrantParam.getExpireTime());
-						dataGrantRecordDO.setUpdateTime(now);
-						//更新dataGrantRecordDO
-						dataGrantRecordDAO.update(dataGrantRecordDO);
+					if(isDataGrantChange(dataGrantRecordPO, dataGrantParam)){//失效日期有变化
+						dataGrantRecordPO.setEffectiveTime(dataGrantParam.getEffectiveTime());
+						dataGrantRecordPO.setExpireTime(dataGrantParam.getExpireTime());
+						dataGrantRecordPO.setUpdateTime(now);
+						//更新dataGrantRecordPO
+						dataGrantRecordDAO.update(dataGrantRecordPO);
 					}
 				}
 				continue;
 			}
-			DataGrantRecordDO dataGrantRecordDO = new DataGrantRecordDO();
-			dataGrantRecordDO.setModelId(dataModelDTO.getId());
-			dataGrantRecordDO.setOperationId(dataOperationDTO.getId());
-			dataGrantRecordDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			dataGrantRecordDO.setEffectiveTime(dataGrantParam.getEffectiveTime());
-			dataGrantRecordDO.setExpireTime(dataGrantParam.getExpireTime());
-			dataGrantRecordDO.setCreateTime(now);
-			dataGrantRecordDO.setUpdateTime(now);
-			dataGrantRecordDO.setGrantTargetId(grantTargetId);
-			dataGrantRecordDO.setGrantTargetType(grantTargetType);
-			dataGrantRecordDO.setTenant(tenant);
-			dataGrantRecordDAO.create(dataGrantRecordDO);
-			List<DataGrantRecordDetailDO> detailDOs = buildDataGrantRecordDetailDOs(dataGrantRecordDO.getId(), data, propertyCodeMap);
-			dataGrantRecordDetailDAO.batchInsert(detailDOs);
+			DataGrantRecordPO dataGrantRecordPO = new DataGrantRecordPO();
+			dataGrantRecordPO.setModelId(dataModelDTO.getId());
+			dataGrantRecordPO.setOperationId(dataOperationDTO.getId());
+			dataGrantRecordPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			dataGrantRecordPO.setEffectiveTime(dataGrantParam.getEffectiveTime());
+			dataGrantRecordPO.setExpireTime(dataGrantParam.getExpireTime());
+			dataGrantRecordPO.setCreateTime(now);
+			dataGrantRecordPO.setUpdateTime(now);
+			dataGrantRecordPO.setGrantTargetId(grantTargetId);
+			dataGrantRecordPO.setGrantTargetType(grantTargetType);
+			dataGrantRecordPO.setTenant(tenant);
+			dataGrantRecordDAO.create(dataGrantRecordPO);
+			List<DataGrantRecordDetailPO> detailPOs = buildDataGrantRecordDetailPOs(dataGrantRecordPO.getId(), data, propertyCodeMap);
+			dataGrantRecordDetailDAO.batchInsert(detailPOs);
 		}
 		return true;
 	}
 	
-	private boolean isDataGrantChange(DataGrantRecordDO dataGrantRecordDO, DataGrantParam dataGrantParam){
-		if(dataGrantRecordDO.getEffectiveTime() == null && dataGrantParam.getEffectiveTime() != null){
+	private boolean isDataGrantChange(DataGrantRecordPO dataGrantRecordPO, DataGrantParam dataGrantParam){
+		if(dataGrantRecordPO.getEffectiveTime() == null && dataGrantParam.getEffectiveTime() != null){
 			return true;
 		}
-		if(dataGrantRecordDO.getEffectiveTime() != null && !dataGrantRecordDO.getEffectiveTime().equals(dataGrantParam.getEffectiveTime())){
+		if(dataGrantRecordPO.getEffectiveTime() != null && !dataGrantRecordPO.getEffectiveTime().equals(dataGrantParam.getEffectiveTime())){
 			return true;
 		}
 		
-		if(dataGrantRecordDO.getExpireTime() == null && dataGrantParam.getExpireTime() != null){
+		if(dataGrantRecordPO.getExpireTime() == null && dataGrantParam.getExpireTime() != null){
 			return true;
 		}
-		if(dataGrantRecordDO.getExpireTime() != null && !dataGrantRecordDO.getExpireTime().equals(dataGrantParam.getExpireTime())){
+		if(dataGrantRecordPO.getExpireTime() != null && !dataGrantRecordPO.getExpireTime().equals(dataGrantParam.getExpireTime())){
 			return true;
 		}
 		return false;
 	}
 	
-	private List<DataGrantRecordDetailDO> buildDataGrantRecordDetailDOs(long dataGrantRecordId, Map<String, PropertyValue> data, Map<String, DataPropertyDTO> propertyCodeMap){
-		List<DataGrantRecordDetailDO> detailDOs = Lists.newArrayList();
+	private List<DataGrantRecordDetailPO> buildDataGrantRecordDetailPOs(long dataGrantRecordId, Map<String, PropertyValue> data, Map<String, DataPropertyDTO> propertyCodeMap){
+		List<DataGrantRecordDetailPO> detailPOs = Lists.newArrayList();
 		for(Map.Entry<String, PropertyValue> codeValueEntry : data.entrySet()){
-			DataGrantRecordDetailDO detailDO = new DataGrantRecordDetailDO();
+			DataGrantRecordDetailPO detailPO = new DataGrantRecordDetailPO();
 			String propertyCode = codeValueEntry.getKey();
 			PropertyValue propertyValue = codeValueEntry.getValue();
 			DataPropertyDTO dataPropertyDTO = propertyCodeMap.get(propertyCode);
-			detailDO.setDataGrantRecordId(dataGrantRecordId);
+			detailPO.setDataGrantRecordId(dataGrantRecordId);
 			Date now = new Date();
-			detailDO.setCreateTime(now);
-			detailDO.setUpdateTime(now);
-			detailDO.setPropertyId(dataPropertyDTO.getId());
-			detailDO.setPropertyValue(propertyValue.getPropertyValue());
-			detailDO.setPropertyValueDesc(propertyValue.getPropertyValueDesc());
-			detailDOs.add(detailDO);
+			detailPO.setCreateTime(now);
+			detailPO.setUpdateTime(now);
+			detailPO.setPropertyId(dataPropertyDTO.getId());
+			detailPO.setPropertyValue(propertyValue.getPropertyValue());
+			detailPO.setPropertyValueDesc(propertyValue.getPropertyValueDesc());
+			detailPOs.add(detailPO);
 		}
-		return detailDOs;
+		return detailPOs;
 	}
 
 	public boolean revokeDataPermission(DataRevokeParam dataRevokeParam) {
@@ -280,18 +281,18 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			Assert.isTrue(permissionGroupDTO.getAppKey().equals(appKey), "此权限组不属于app:" + appKey);
 		}
 		if(grantTargetType == GrantTargetType.ROLE.getCode()){//如果授权对象是角色，判断角色是否为空
-			RoleDO roleDO = null;
+			RolePO rolePO = null;
 			if(grantTargetId.contains("#")){
 				String[] targets = grantTargetId.split("#");
 				Assert.isTrue(targets.length == 2, "角色信息格式为appkey#role");
-				roleDO = roleDAO.getRoleByKey(targets[0], targets[1]);
+				rolePO = roleDAO.getRoleByKey(targets[0], targets[1]);
 			}else{
 				long roleId = NumberUtils.toLong(grantTargetId);
 				Assert.isTrue(roleId > 0, "角色id必须为整数");
-				roleDO = roleDAO.getRoleById(roleId);
+				rolePO = roleDAO.getRoleById(roleId);
 			}
-			Assert.notNull(roleDO, "角色不存在");
-			Assert.isTrue(roleDO.getAppKey().equals(appKey), "此角色不属于app:" + appKey);
+			Assert.notNull(rolePO, "角色不存在");
+			Assert.isTrue(rolePO.getAppKey().equals(appKey), "此角色不属于app:" + appKey);
 		}
 		
 		String tenant = dataRevokeParam.getTenant();
@@ -301,6 +302,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		
 		DataGrantRecordParam dataGrantRecordParam = new DataGrantRecordParam();
+		dataGrantRecordParam.setAppKey(appKey);
 		dataGrantRecordParam.setGrantTargetId(grantTargetId);
 		dataGrantRecordParam.setGrantTargetType(grantTargetType);
 		dataGrantRecordParam.setTenant(tenant);
@@ -317,13 +319,13 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			dataGrantRecordParam.setOperationId(dataOperationDTO.getId());
 			dataGrantRecordDAO.removeByParam(dataGrantRecordParam);
 		}else if(CollectionUtil.isNotEmpty(dataGrantRecordIds)){//回收模型dataGrantRecordIds对应的数据
-			List<DataGrantRecordDO> dataGrantRecordDOs = dataGrantRecordDAO.getByIds(dataGrantRecordIds);
-			Assert.notEmpty(dataGrantRecordDOs, "授权记录不存在");
-			for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs){
-				Assert.isTrue(dataGrantRecordDO.getModelId() == dataModelDTO.getId(), "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getGrantTargetId().equals(grantTargetId), "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getGrantTargetType() == grantTargetType, "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getTenant().equals(tenant), "参数不合法");
+			List<DataGrantRecordPO> dataGrantRecordPOs = dataGrantRecordDAO.getByIds(dataGrantRecordIds);
+			Assert.notEmpty(dataGrantRecordPOs, "授权记录不存在");
+			for(DataGrantRecordPO dataGrantRecordPO : dataGrantRecordPOs){
+				Assert.isTrue(dataGrantRecordPO.getModelId() == dataModelDTO.getId(), "参数不合法");
+				Assert.isTrue(dataGrantRecordPO.getGrantTargetId().equals(grantTargetId), "参数不合法");
+				Assert.isTrue(dataGrantRecordPO.getGrantTargetType() == grantTargetType, "参数不合法");
+				Assert.isTrue(dataGrantRecordPO.getTenant().equals(tenant), "参数不合法");
 			}
 			dataGrantRecordDAO.removeByIds(dataGrantRecordIds);
 		}
@@ -632,6 +634,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			propertyDatasMap.put(dataPropertyDTO.getId(), values);
 		}
 		DataGrantPropertyValueParam dataGrantPropertyValueParam = new DataGrantPropertyValueParam(); 
+		dataGrantPropertyValueParam.setAppKey(appKey);
 		dataGrantPropertyValueParam.setGrantTargetIds(grantTargetIds);
 		dataGrantPropertyValueParam.setGrantTargetType(grantTargetType);
 		dataGrantPropertyValueParam.setModelId(dataModelDTO.getId());
@@ -656,29 +659,30 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		DataModelDTO dataModelDTO = dataModelManager.getDataModel(modelCode);
 		Assert.notNull(dataModelDTO, "没查到modelCode对用的模型");
 		
-		DataGrantPropertyValueParam dataGrantPropertyDataParam = new DataGrantPropertyValueParam();
-		dataGrantPropertyDataParam.setModelId(dataModelDTO.getId());
+		DataGrantPropertyValueParam dataGrantPropertyValueParam = new DataGrantPropertyValueParam();
+		dataGrantPropertyValueParam.setAppKey(appKey);
+		dataGrantPropertyValueParam.setModelId(dataModelDTO.getId());
 		
 		String operationCode = dataGrantQueryParam.getOperationCode();
 		if(StringUtils.isNotBlank(operationCode)){
 			DataOperationDTO dataOperationDTO = dataOperationManager.getDataOperation(dataModelDTO.getId(), operationCode);
 			Assert.notNull(dataOperationDTO, "没查到operationCode对用的操作");
-			dataGrantPropertyDataParam.setOperationId(dataOperationDTO.getId());
+			dataGrantPropertyValueParam.setOperationId(dataOperationDTO.getId());
 		}
 		
 		String grantTargetId = dataGrantQueryParam.getGrantTargetId();
 		Assert.hasText(grantTargetId, "grantTargetId不能为空");
 		List<String> grantTargetIds = Lists.newArrayList();
 		grantTargetIds.add(grantTargetId);
-		dataGrantPropertyDataParam.setGrantTargetIds(grantTargetIds);
+		dataGrantPropertyValueParam.setGrantTargetIds(grantTargetIds);
 
 		int grantTargetType = dataGrantQueryParam.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "grantTargetType非法");
-		dataGrantPropertyDataParam.setGrantTargetType(grantTargetType);
+		dataGrantPropertyValueParam.setGrantTargetType(grantTargetType);
 
 		String tenant = dataGrantQueryParam.getTenant();
 		Assert.hasText(tenant, "租户id不能为空");
-		dataGrantPropertyDataParam.setTenant(tenant);
+		dataGrantPropertyValueParam.setTenant(tenant);
 		
 		Map<String, String> data = dataGrantQueryParam.getData();
 		if(MapUtils.isNotEmpty(data)){
@@ -701,19 +705,19 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				values.add(IceAclConstant.GRANTED_ALL_DATA_SYMBOL);
 				propertyValuesMap.put(dataPropertyDTO.getId(), values);
 			}
-			dataGrantPropertyDataParam.setPropertyValuesMap(propertyValuesMap);
+			dataGrantPropertyValueParam.setPropertyValuesMap(propertyValuesMap);
 		}
-		dataGrantPropertyDataParam.setReturnNotEffective(dataGrantQueryParam.isReturnNotEffective());
-		dataGrantPropertyDataParam.setPageNum(dataGrantQueryParam.getPageNum());
-		dataGrantPropertyDataParam.setPageSize(dataGrantQueryParam.getPageSize());
-		return dataGrantPropertyDataParam;
+		dataGrantPropertyValueParam.setReturnNotEffective(dataGrantQueryParam.isReturnNotEffective());
+		dataGrantPropertyValueParam.setPageNum(dataGrantQueryParam.getPageNum());
+		dataGrantPropertyValueParam.setPageSize(dataGrantQueryParam.getPageSize());
+		return dataGrantPropertyValueParam;
 	}
 	
 	private Map<Long, Map<String, PropertyValue>> buildRecordDetailMap(List<Long> recordIds, Map<Long, DataPropertyDTO> propertyIdMap){
-		List<DataGrantRecordDetailDO> recordDetails = dataGrantRecordDetailDAO.listDetailByRecordIds(recordIds);
+		List<DataGrantRecordDetailPO> recordDetails = dataGrantRecordDetailDAO.listDetailByRecordIds(recordIds);
 		Assert.notEmpty(recordDetails, "数据库数据错误");
 		Map<Long, Map<String, PropertyValue>> rstMap = Maps.newHashMap();
-		for(DataGrantRecordDetailDO detail : recordDetails){
+		for(DataGrantRecordDetailPO detail : recordDetails){
 			Long id = detail.getDataGrantRecordId();
 			Map<String, PropertyValue> codeValueMap = rstMap.get(id);
 			if(codeValueMap == null){
@@ -732,7 +736,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return rstMap;
 	}
 	
-	private List<DataGrantRecordDTO> buildDataGrantRecordVOs(List<DataGrantRecordDO> datas, Long modelId, String modelCode){
+	private List<DataGrantRecordDTO> buildDataGrantRecordDTOs(List<DataGrantRecordPO> datas, Long modelId, String modelCode){
 		List<DataGrantRecordDTO> items = Lists.newArrayList();
 		if(CollectionUtil.isEmpty(datas)){
 			return items;
@@ -744,8 +748,8 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			propertyIdMap.put(propertyDTO.getId(), propertyDTO);
 		}
 		List<Long> recordIds = Lists.newArrayList();
-		for(DataGrantRecordDO dataGrantRecordDO : datas){
-			recordIds.add(dataGrantRecordDO.getId());
+		for(DataGrantRecordPO dataGrantRecordPO : datas){
+			recordIds.add(dataGrantRecordPO.getId());
 		}
 		Map<Long, Map<String, PropertyValue>> recordDetailMap = this.buildRecordDetailMap(recordIds, propertyIdMap);
 		List<DataOperationDTO> operationDTOs =  dataOperationManager.listDataOperation(modelId);
@@ -754,15 +758,15 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		for(DataOperationDTO operationDTO : operationDTOs){
 			operationMap.put(operationDTO.getId(), operationDTO);
 		}
-		for(DataGrantRecordDO dataGrantRecordDO : datas){
+		for(DataGrantRecordPO dataGrantRecordPO : datas){
 			DataGrantRecordDTO dataGrantRecordDTO = new DataGrantRecordDTO();
-			BeanUtils.copyProperties(dataGrantRecordDO, dataGrantRecordDTO);
+			BeanUtils.copyProperties(dataGrantRecordPO, dataGrantRecordDTO);
 			dataGrantRecordDTO.setModelCode(modelCode);
-			DataOperationDTO operationDTO = operationMap.get(dataGrantRecordDO.getOperationId());
-			Assert.notNull(operationDTO, "操作不存在：" + dataGrantRecordDO.getOperationId());
+			DataOperationDTO operationDTO = operationMap.get(dataGrantRecordPO.getOperationId());
+			Assert.notNull(operationDTO, "操作不存在：" + dataGrantRecordPO.getOperationId());
 			dataGrantRecordDTO.setOperationCode(operationDTO.getCode());
 			dataGrantRecordDTO.setOperationName(operationDTO.getName());
-			dataGrantRecordDTO.setData(recordDetailMap.get(dataGrantRecordDO.getId()));
+			dataGrantRecordDTO.setData(recordDetailMap.get(dataGrantRecordPO.getId()));
 			items.add(dataGrantRecordDTO);
 		}
 		return items;
@@ -774,7 +778,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		boolean hierarchicalRole = dataGrantQueryParam.isHierarchicalRole();
 		boolean hierarchicalPermissionGroup = dataGrantQueryParam.isHierarchicalPermissionGroup();
 		boolean hierarchicalRolePermissionGroup = dataGrantQueryParam.isHierarchicalRolePermissionGroup();
-		List<DataGrantRecordDO> datas = Lists.newArrayList();
+		List<DataGrantRecordPO> datas = Lists.newArrayList();
 		DataGrantPropertyValueParam dataGrantPropertyValueParam = buildDataGrantPropertyValueParam(dataGrantQueryParam);
 		String grantTargetId = dataGrantQueryParam.getGrantTargetId();
 		String tenant = dataGrantQueryParam.getTenant();
@@ -834,7 +838,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 					if(CollectionUtil.isNotEmpty(userRoleIds)){
 						dataGrantPropertyValueParam.setGrantTargetType(GrantTargetType.ROLE.getCode());
 						dataGrantPropertyValueParam.setGrantTargetIds(userRoleIds);
-						List<DataGrantRecordDO> roleDatas = dataGrantRecordDAO.listDataGrantRecord(dataGrantPropertyValueParam);
+						List<DataGrantRecordPO> roleDatas = dataGrantRecordDAO.listDataGrantRecord(dataGrantPropertyValueParam);
 						if(CollectionUtil.isNotEmpty(roleDatas)){
 							datas.addAll(roleDatas);
 						}
@@ -857,21 +861,21 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				if(CollectionUtil.isNotEmpty(userPermissionGroupIds)){
 					dataGrantPropertyValueParam.setGrantTargetType(GrantTargetType.PERMISSION_GROUP.getCode());
 					dataGrantPropertyValueParam.setGrantTargetIds(userPermissionGroupIds);
-					List<DataGrantRecordDO> permissionGroupDatas = dataGrantRecordDAO.listDataGrantRecord(dataGrantPropertyValueParam);
+					List<DataGrantRecordPO> permissionGroupDatas = dataGrantRecordDAO.listDataGrantRecord(dataGrantPropertyValueParam);
 					if(CollectionUtil.isNotEmpty(permissionGroupDatas)){
 						datas.addAll(permissionGroupDatas);
 					}
 				}
 			}
 		}
-		return buildDataGrantRecordVOs(datas, dataGrantPropertyValueParam.getModelId(), dataGrantQueryParam.getModelCode());
+		return buildDataGrantRecordDTOs(datas, dataGrantPropertyValueParam.getModelId(), dataGrantQueryParam.getModelCode());
 	}
 
 	@Override
 	public PageVO<DataGrantRecordDTO> pageDataGrantRecord(DataGrantQueryParam dataGrantQueryParam) {
 		Assert.notNull(dataGrantQueryParam, "参数不能为空");
 		PageVO<DataGrantRecordDTO> pageVO = new PageVO<DataGrantRecordDTO>(dataGrantQueryParam);
-		List<DataGrantRecordDO> datas = null;
+		List<DataGrantRecordPO> datas = null;
 		DataGrantPropertyValueParam dataGrantPropertyValueParam = buildDataGrantPropertyValueParam(dataGrantQueryParam);
 		dataGrantPropertyValueParam.setReturnNotEffective(true);
 		
@@ -895,7 +899,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
     		}
     		datas = dataGrantRecordDAO.pageDataGrantRecord(dataGrantPropertyValueParam);
     	}
-    	List<DataGrantRecordDTO> items = buildDataGrantRecordVOs(datas, dataGrantPropertyValueParam.getModelId(), dataGrantQueryParam.getModelCode());
+    	List<DataGrantRecordDTO> items = buildDataGrantRecordDTOs(datas, dataGrantPropertyValueParam.getModelId(), dataGrantQueryParam.getModelCode());
 		pageVO.setItems(items);
 		return pageVO;
 	}
@@ -908,11 +912,11 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		param.setTenant(tenant);
 		param.setUserId(userId);
 		param.setReturnNotEffective(false);
-		List<UserRoleRefVO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(param);
+		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(param);
 		if(CollectionUtil.isEmpty(userRoleRefVOs)){
 			return userRoleIds;//用户没有角色，直接返回失败
 		}
-		for(UserRoleRefVO userRoleRefVO : userRoleRefVOs){
+		for(UserRoleRefDTO userRoleRefVO : userRoleRefVOs){
 			userRoleIds.add(String.valueOf(userRoleRefVO.getRoleId()));
 		}
 		return userRoleIds;

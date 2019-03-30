@@ -17,15 +17,15 @@ import com.kingbo401.iceacl.dao.DataModelPropertyRefDAO;
 import com.kingbo401.iceacl.manager.DataModelManager;
 import com.kingbo401.iceacl.manager.DataModelPropertyRefManager;
 import com.kingbo401.iceacl.manager.DataPropertyManager;
-import com.kingbo401.iceacl.model.db.DataGrantRecordDO;
-import com.kingbo401.iceacl.model.db.DataModelDO;
-import com.kingbo401.iceacl.model.db.DataModelPropertyRefDO;
-import com.kingbo401.iceacl.model.db.DataPropertyDO;
 import com.kingbo401.iceacl.model.dto.DataModelDTO;
 import com.kingbo401.iceacl.model.dto.DataModelPropertyRefDTO;
 import com.kingbo401.iceacl.model.dto.DataPropertyDTO;
 import com.kingbo401.iceacl.model.dto.param.DataModelPropertyInfoRefParam;
 import com.kingbo401.iceacl.model.dto.param.DataModelPropertyRefParam;
+import com.kingbo401.iceacl.model.po.DataGrantRecordPO;
+import com.kingbo401.iceacl.model.po.DataModelPO;
+import com.kingbo401.iceacl.model.po.DataModelPropertyRefPO;
+import com.kingbo401.iceacl.model.po.DataPropertyPO;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
@@ -57,21 +57,21 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 		List<DataPropertyDTO> propertyDTOs = dataPropertyManager.getDataProperties(appKey, propertyCodes);
 		Map<Object, DataPropertyDTO> propertyMap = CollectionUtil.toMap(propertyDTOs, "code");
 		Date now = new Date();
-		List<DataModelPropertyRefDO> refDOs = new ArrayList<DataModelPropertyRefDO>();
+		List<DataModelPropertyRefPO> refPOs = new ArrayList<DataModelPropertyRefPO>();
 		for (String propertyCode : propertyCodes) {
 			// 根据propertyCode查询
 			DataPropertyDTO dataProperty = propertyMap.get(propertyCode);
 			Assert.notNull(dataProperty, "属性:" + propertyCode + " 不存在");
-			DataModelPropertyRefDO dataModelPropertyRefDO = new DataModelPropertyRefDO();
-			dataModelPropertyRefDO.setCreateTime(now);
-			dataModelPropertyRefDO.setUpdateTime(now);
-			dataModelPropertyRefDO.setModelId(model.getId());
-			dataModelPropertyRefDO.setPropertyId(dataProperty.getId());
-			dataModelPropertyRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			dataModelPropertyRefDO.setDefaultAccessType(IceAclConstant.DATA_PROPERTY_ACCESS_ALLOW);
-			refDOs.add(dataModelPropertyRefDO);
+			DataModelPropertyRefPO dataModelPropertyRefPO = new DataModelPropertyRefPO();
+			dataModelPropertyRefPO.setCreateTime(now);
+			dataModelPropertyRefPO.setUpdateTime(now);
+			dataModelPropertyRefPO.setModelId(model.getId());
+			dataModelPropertyRefPO.setPropertyId(dataProperty.getId());
+			dataModelPropertyRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			dataModelPropertyRefPO.setDefaultAccessType(IceAclConstant.DATA_PROPERTY_ACCESS_ALLOW);
+			refPOs.add(dataModelPropertyRefPO);
 		}
-		modelPropertyRefDAO.batchCreate(refDOs);
+		modelPropertyRefDAO.batchCreate(refPOs);
 		return true;
 	}
 
@@ -99,21 +99,21 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 		List<DataPropertyDTO> propertyDTOs = dataPropertyManager.getDataProperties(appKey, propertyCodes);
 		Map<Object, DataPropertyDTO> propertyMap = CollectionUtil.toMap(propertyDTOs, "code");
 		Date now = new Date();
-		List<DataModelPropertyRefDO> refDOs = new ArrayList<DataModelPropertyRefDO>();
+		List<DataModelPropertyRefPO> refPOs = new ArrayList<DataModelPropertyRefPO>();
 		for (PropertyInfo propertyInfo : propertyInfos) {
 			String propertyCode = propertyInfo.getPropertyCode();
 			DataPropertyDTO dataProperty = propertyMap.get(propertyCode);
 			Assert.notNull(dataProperty, "属性:" + propertyCode + " 不存在");
-			DataModelPropertyRefDO dataModelPropertyRefDO = new DataModelPropertyRefDO();
-			dataModelPropertyRefDO.setCreateTime(now);
-			dataModelPropertyRefDO.setUpdateTime(now);
-			dataModelPropertyRefDO.setModelId(model.getId());
-			dataModelPropertyRefDO.setPropertyId(dataProperty.getId());
-			dataModelPropertyRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			dataModelPropertyRefDO.setDefaultAccessType(propertyInfo.getDefaultAccessControl());
-			refDOs.add(dataModelPropertyRefDO);
+			DataModelPropertyRefPO dataModelPropertyRefPO = new DataModelPropertyRefPO();
+			dataModelPropertyRefPO.setCreateTime(now);
+			dataModelPropertyRefPO.setUpdateTime(now);
+			dataModelPropertyRefPO.setModelId(model.getId());
+			dataModelPropertyRefPO.setPropertyId(dataProperty.getId());
+			dataModelPropertyRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			dataModelPropertyRefPO.setDefaultAccessType(propertyInfo.getDefaultAccessControl());
+			refPOs.add(dataModelPropertyRefPO);
 		}
-		modelPropertyRefDAO.batchCreate(refDOs);
+		modelPropertyRefDAO.batchCreate(refPOs);
 		return true;
 	}
 
@@ -131,8 +131,8 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 		List<Long> propertyIds = new ArrayList<Long>();
 		List<DataPropertyDTO> propertyDTOs = dataPropertyManager.getDataProperties(appKey, propertyCodes);
 		for(DataPropertyDTO dataPropertyDTO : propertyDTOs){
-			DataGrantRecordDO dataGrantRecordDO = dataGrantRecordDAO.getOneDataGrantRecord(model.getId(), null, dataPropertyDTO.getId());
-			Assert.isNull(dataGrantRecordDO, "此模型-属性下有已授权的数据，不能删除；请先回收掉相关数据权限");
+			DataGrantRecordPO dataGrantRecordPO = dataGrantRecordDAO.getOneDataGrantRecord(model.getId(), null, dataPropertyDTO.getId());
+			Assert.isNull(dataGrantRecordPO, "此模型-属性下有已授权的数据，不能删除；请先回收掉相关数据权限");
 			propertyIds.add(dataPropertyDTO.getId());
 		}
 		modelPropertyRefDAO.updateRefsStatus(model.getId(), propertyIds, status);
@@ -156,29 +156,29 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 
 	@Override
 	public List<DataModelPropertyRefDTO> listDataPropertyRef(long modelId) {
-		List<DataModelPropertyRefDO> refDOs = modelPropertyRefDAO.listRefsByModelId(modelId);
-		if(CollectionUtil.isEmpty(refDOs)){
+		List<DataModelPropertyRefPO> refPOs = modelPropertyRefDAO.listRefsByModelId(modelId);
+		if(CollectionUtil.isEmpty(refPOs)){
 			return null;
 		}
 		
 		List<Long> propertyIds = new ArrayList<Long>();
-		Map<Long, DataModelPropertyRefDO> refMap = new HashMap<Long, DataModelPropertyRefDO>();
-		for(DataModelPropertyRefDO refDO : refDOs){
-			propertyIds.add(refDO.getPropertyId());
-			refMap.put(refDO.getPropertyId(), refDO);
+		Map<Long, DataModelPropertyRefPO> refMap = new HashMap<Long, DataModelPropertyRefPO>();
+		for(DataModelPropertyRefPO refPO : refPOs){
+			propertyIds.add(refPO.getPropertyId());
+			refMap.put(refPO.getPropertyId(), refPO);
 		}
 		
 		List<DataPropertyDTO> dataPropertyDTOs = dataPropertyManager.getDataProperties(propertyIds);
 		Assert.notEmpty(dataPropertyDTOs, "获取到属性列表为空");
 		List<DataModelPropertyRefDTO> refDTOs = new ArrayList<DataModelPropertyRefDTO>();
 		for(DataPropertyDTO dataPropertyDTO : dataPropertyDTOs){
-			DataModelPropertyRefDO refDO = refMap.get(dataPropertyDTO.getId());
+			DataModelPropertyRefPO refPO = refMap.get(dataPropertyDTO.getId());
 			DataModelPropertyRefDTO refDTO = new DataModelPropertyRefDTO();
 			refDTO.setPropertyId(dataPropertyDTO.getId());
 			refDTO.setPropertyCode(dataPropertyDTO.getCode());
 			refDTO.setPropertyDescription(dataPropertyDTO.getDescription());
 			refDTO.setPropertyName(dataPropertyDTO.getName());
-			refDTO.setDefaultAccessType(refDO.getDefaultAccessType());
+			refDTO.setDefaultAccessType(refPO.getDefaultAccessType());
 			refDTOs.add(refDTO);
 		}
 		return refDTOs;
@@ -200,20 +200,20 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 
 	@Override
 	public List<DataPropertyDTO> listDataProperty(long modelId) {
-		List<DataPropertyDO> dataPropertyDOs = modelPropertyRefDAO.listDataPropertyByModelId(modelId);
-		return BizUtils.buildDataPropertyDTOs(dataPropertyDOs);
+		List<DataPropertyPO> dataPropertyPOs = modelPropertyRefDAO.listDataPropertyByModelId(modelId);
+		return BizUtils.buildDataPropertyDTOs(dataPropertyPOs);
 	}
 
 	@Override
 	public List<DataModelDTO> listDataModel(long propertyId) {
-		List<DataModelDO> dataModels = modelPropertyRefDAO.listDataModelByPropertyId(propertyId);
+		List<DataModelPO> dataModels = modelPropertyRefDAO.listDataModelByPropertyId(propertyId);
 		if (CollectionUtil.isEmpty(dataModels)) {
 			return null;
 		}
 		List<DataModelDTO> dataModelDTOs = new ArrayList<DataModelDTO>();
-		for(DataModelDO dataModelDO : dataModels){
+		for(DataModelPO dataModelPO : dataModels){
 			DataModelDTO dataModelDTO = new DataModelDTO();
-			BeanUtils.copyProperties(dataModelDO, dataModelDTO);
+			BeanUtils.copyProperties(dataModelPO, dataModelDTO);
 			dataModelDTOs.add(dataModelDTO);
 		}
 		return dataModelDTOs;

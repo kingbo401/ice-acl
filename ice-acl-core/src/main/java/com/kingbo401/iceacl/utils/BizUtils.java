@@ -6,69 +6,69 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
-import com.kingbo401.iceacl.model.db.DataPropertyDO;
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.PermissionGroupDO;
 import com.kingbo401.iceacl.model.dto.DataPropertyDTO;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
+import com.kingbo401.iceacl.model.po.DataPropertyPO;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.PermissionGroupPO;
 
 public class BizUtils {
-	public static PermissionDTO buildPermissionDTO(PermissionDO permissionDO){
-		if(permissionDO == null){
+	public static PermissionDTO buildPermissionDTO(PermissionPO userRoleRefPO){
+		if(userRoleRefPO == null){
 			return null;
 		}
 		PermissionDTO permissionDTO = new PermissionDTO();
-		BeanUtils.copyProperties(permissionDO, permissionDTO);
+		BeanUtils.copyProperties(userRoleRefPO, permissionDTO);
 		return permissionDTO;
 	}
 	
-	public static List<PermissionDTO> buildPermissionDTOs(List<PermissionDO> permissionDOs){
-		if(CollectionUtils.isEmpty(permissionDOs)){
+	public static List<PermissionDTO> buildPermissionDTOs(List<PermissionPO> userRoleRefPOs){
+		if(CollectionUtils.isEmpty(userRoleRefPOs)){
 			return null;
 		}
 		List<PermissionDTO> permissionDTOs = new ArrayList<PermissionDTO>();
-		for(PermissionDO permissionDO : permissionDOs){
+		for(PermissionPO userRoleRefPO : userRoleRefPOs){
 			PermissionDTO permissionDTO = new PermissionDTO();
-			BeanUtils.copyProperties(permissionDO, permissionDTO);
+			BeanUtils.copyProperties(userRoleRefPO, permissionDTO);
 			permissionDTOs.add(permissionDTO);
 		}
 		return permissionDTOs;
 	}
 	
-	public static PermissionGroupDTO buildPermissionGroupDTO(PermissionGroupDO permissionGroupDO){
-		if(permissionGroupDO == null){
+	public static PermissionGroupDTO buildPermissionGroupDTO(PermissionGroupPO permissionGroupPO){
+		if(permissionGroupPO == null){
 			return null;
 		}
 		PermissionGroupDTO permissionGroupDTO = new PermissionGroupDTO();
-		BeanUtils.copyProperties(permissionGroupDO, permissionGroupDTO);
+		BeanUtils.copyProperties(permissionGroupPO, permissionGroupDTO);
 		return permissionGroupDTO;
 	}
 	
-	public static List<PermissionGroupDTO> buildPermissionGroupDTOs(List<PermissionGroupDO> permissionGroupDOs){
-		if(CollectionUtils.isEmpty(permissionGroupDOs)){
+	public static List<PermissionGroupDTO> buildPermissionGroupDTOs(List<PermissionGroupPO> permissionGroupPOs){
+		if(CollectionUtils.isEmpty(permissionGroupPOs)){
 			return null;
 		}
 		List<PermissionGroupDTO> permissionGroupDTOs = new ArrayList<PermissionGroupDTO>();
-		for(PermissionGroupDO permissionGroupDO : permissionGroupDOs){
-			permissionGroupDTOs.add(buildPermissionGroupDTO(permissionGroupDO));
+		for(PermissionGroupPO permissionGroupPO : permissionGroupPOs){
+			permissionGroupDTOs.add(buildPermissionGroupDTO(permissionGroupPO));
 		}
 		return permissionGroupDTOs;
 	}
 	
-	public static DataPropertyDTO buildDataPropertyDTO(DataPropertyDO dataPropertyDO){
-		if(dataPropertyDO == null){
+	public static DataPropertyDTO buildDataPropertyDTO(DataPropertyPO dataPropertyPO){
+		if(dataPropertyPO == null){
 			return null;
 		}
 		DataPropertyDTO dataPropertyDTO = new DataPropertyDTO();
-		BeanUtils.copyProperties(dataPropertyDO, dataPropertyDTO);
+		BeanUtils.copyProperties(dataPropertyPO, dataPropertyDTO);
 		return dataPropertyDTO;
 	}
 
-	public static List<DataPropertyDTO> buildDataPropertyDTOs(List<DataPropertyDO> dataPropertyDOs) {
+	public static List<DataPropertyDTO> buildDataPropertyDTOs(List<DataPropertyPO> dataPropertyPOs) {
 		List<DataPropertyDTO> lists = new ArrayList<DataPropertyDTO>();
-		for (DataPropertyDO propertyDO : dataPropertyDOs) {
-			lists.add(buildDataPropertyDTO(propertyDO));
+		for (DataPropertyPO propertyPO : dataPropertyPOs) {
+			lists.add(buildDataPropertyDTO(propertyPO));
 		}
 		return lists;
 	}

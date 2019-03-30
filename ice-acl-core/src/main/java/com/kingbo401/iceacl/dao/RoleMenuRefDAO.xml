@@ -26,7 +26,7 @@
 		</if>
 	</update>
 
-	<select id="listMenu" resultType="MenuDO">
+	<select id="listMenu" resultType="MenuPO">
 		select t2.* from ice_role_menu_ref t1,ice_menu t2
 		where t1.status != 0 and t2.status = 1 and t1.role_id = #{roleId} and
 		t1.menu_id=t2.id

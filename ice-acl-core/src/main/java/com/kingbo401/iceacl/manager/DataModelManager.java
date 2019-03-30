@@ -3,8 +3,8 @@ package com.kingbo401.iceacl.manager;
 import java.util.List;
 
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.model.db.param.DataModelQueryParam;
 import com.kingbo401.iceacl.model.dto.DataModelDTO;
+import com.kingbo401.iceacl.model.po.param.DataModelQueryParam;
 
 public interface DataModelManager {
 	DataModelDTO createDataModel(DataModelDTO dataModel);

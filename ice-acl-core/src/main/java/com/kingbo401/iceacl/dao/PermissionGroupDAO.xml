@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.iceacl.dao.PermissionGroupDAO">
-	<insert id="create" parameterType="PermissionGroupDO"
+	<insert id="create" parameterType="PermissionGroupPO"
 		useGeneratedKeys="true" keyProperty="id">
 		insert into ice_permission_group (app_key,tenant,group_type,tag1,group_pid,
 		group_name, description, group_order, status, create_time, update_time)
@@ -12,7 +12,7 @@
 		)
 	</insert>
 
-	<update id="update" parameterType="PermissionGroupDO">
+	<update id="update" parameterType="PermissionGroupPO">
 		update ice_permission_group
 		<set>
 			<if test="groupName != null">
@@ -38,7 +38,7 @@
 		where id = #{id}
 	</update>
 
-	<select id="getByIds" resultType="PermissionGroupDO">
+	<select id="getByIds" resultType="PermissionGroupPO">
 		select * from ice_permission_group where status = 1 and id in
 		<foreach collection="ids" item="id" open="(" close=")"
 			separator=",">
@@ -46,7 +46,7 @@
 		</foreach>
 	</select>
 
-	<select id="getById" resultType="PermissionGroupDO">
+	<select id="getById" resultType="PermissionGroupPO">
 		select * from ice_permission_group where status != 0 and id = #{id}
 	</select>
 	
@@ -77,7 +77,7 @@
 	</sql>
     
     
-	<select id="listPermissionGroup" resultType="PermissionGroupDO"
+	<select id="listPermissionGroup" resultType="PermissionGroupPO"
 		parameterType="PermissionGroupQueryParam">
 		select * from ice_permission_group
 		<include refid="queryPermissionGroupSubSql" />
@@ -86,7 +86,7 @@
 		</if>
 	</select>
 
-	<select id="pagePermissionGroup" resultType="PermissionGroupDO"
+	<select id="pagePermissionGroup" resultType="PermissionGroupPO"
 		parameterType="PermissionGroupQueryParam">
 		select * from ice_permission_group 
 		<include refid="queryPermissionGroupSubSql" />

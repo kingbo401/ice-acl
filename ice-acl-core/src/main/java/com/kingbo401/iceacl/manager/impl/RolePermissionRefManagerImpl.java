@@ -14,12 +14,12 @@ import com.kingbo401.iceacl.dao.RolePermissionRefDAO;
 import com.kingbo401.iceacl.manager.PermissionManager;
 import com.kingbo401.iceacl.manager.RoleManager;
 import com.kingbo401.iceacl.manager.RolePermissionRefManager;
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.RolePermissionRefDO;
-import com.kingbo401.iceacl.model.db.param.RolePermissionRefQueryParam;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.RoleDTO;
 import com.kingbo401.iceacl.model.dto.param.RolePermissionIdRefParam;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.RolePermissionRefPO;
+import com.kingbo401.iceacl.model.po.param.RolePermissionRefQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
@@ -39,16 +39,16 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		checkRolePermissionIdRefParam(param);
-		List<RolePermissionRefDO> list = new ArrayList<RolePermissionRefDO>();
+		List<RolePermissionRefPO> list = new ArrayList<RolePermissionRefPO>();
 		Date now = new Date();
 		for(Long permissionId : permissionIds){
-			RolePermissionRefDO rolePermissionRefDO = new RolePermissionRefDO();
-			rolePermissionRefDO.setPermissionId(permissionId);
-			rolePermissionRefDO.setRoleId(param.getRoleId());
-			rolePermissionRefDO.setCreateTime(now);
-			rolePermissionRefDO.setUpdateTime(now);
-			rolePermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(rolePermissionRefDO);
+			RolePermissionRefPO rolePermissionRefPO = new RolePermissionRefPO();
+			rolePermissionRefPO.setPermissionId(permissionId);
+			rolePermissionRefPO.setRoleId(param.getRoleId());
+			rolePermissionRefPO.setCreateTime(now);
+			rolePermissionRefPO.setUpdateTime(now);
+			rolePermissionRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(rolePermissionRefPO);
 		}
 		rolePermissionRefDAO.batchCreate(list);
 		return true;
@@ -66,25 +66,25 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		if(!param.isMultiApp()){
 			permissionGroupRefQueryParam.setPermissionAppKey(appKey);
 		}
-		List<PermissionDO> permissionDOs =  rolePermissionRefDAO.listPermission(permissionGroupRefQueryParam);
-		if(CollectionUtil.isNotEmpty(permissionDOs)){
+		List<PermissionPO> permissionPOs =  rolePermissionRefDAO.listPermission(permissionGroupRefQueryParam);
+		if(CollectionUtil.isNotEmpty(permissionPOs)){
 			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(PermissionDO permissionDO : permissionDOs){
-				permissionIdsRemove.add(permissionDO.getId());
+			for(PermissionPO permissionPO : permissionPOs){
+				permissionIdsRemove.add(permissionPO.getId());
 			}
 			rolePermissionRefDAO.updateRefsStatus(roleId, permissionIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
 		
-		List<RolePermissionRefDO> list = new ArrayList<RolePermissionRefDO>();
+		List<RolePermissionRefPO> list = new ArrayList<RolePermissionRefPO>();
 		Date now = new Date();
 		for(Long permissionId : permissionIds){
-			RolePermissionRefDO rolePermissionRefDO = new RolePermissionRefDO();
-			rolePermissionRefDO.setPermissionId(permissionId);
-			rolePermissionRefDO.setRoleId(roleId);
-			rolePermissionRefDO.setCreateTime(now);
-			rolePermissionRefDO.setUpdateTime(now);
-			rolePermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(rolePermissionRefDO);
+			RolePermissionRefPO rolePermissionRefPO = new RolePermissionRefPO();
+			rolePermissionRefPO.setPermissionId(permissionId);
+			rolePermissionRefPO.setRoleId(roleId);
+			rolePermissionRefPO.setCreateTime(now);
+			rolePermissionRefPO.setUpdateTime(now);
+			rolePermissionRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(rolePermissionRefPO);
 		}
 		rolePermissionRefDAO.batchCreate(list);
 		return true;
@@ -120,8 +120,8 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		RoleDTO roleDTO = roleManager.getRoleById(appKey, roleId);
 		Assert.notNull(roleDTO, "角色不存在");
-		List<PermissionDO> permissionDOs = rolePermissionRefDAO.listPermission(param);
-		return BizUtils.buildPermissionDTOs(permissionDOs);
+		List<PermissionPO> permissionPOs = rolePermissionRefDAO.listPermission(param);
+		return BizUtils.buildPermissionDTOs(permissionPOs);
 	}
 
 	@Override
@@ -141,8 +141,8 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 				return pageVO;
 			}
 		}
-		List<PermissionDO> permissionDOs = rolePermissionRefDAO.pagePermission(param);
-		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionDOs));
+		List<PermissionPO> permissionPOs = rolePermissionRefDAO.pagePermission(param);
+		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionPOs));
 		return pageVO;
 	}
 

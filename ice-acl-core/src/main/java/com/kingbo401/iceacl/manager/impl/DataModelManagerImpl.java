@@ -16,10 +16,10 @@ import com.kingbo401.iceacl.dao.DataModelDAO;
 import com.kingbo401.iceacl.manager.AppManager;
 import com.kingbo401.iceacl.manager.DataModelManager;
 import com.kingbo401.iceacl.manager.DataModelPropertyRefManager;
-import com.kingbo401.iceacl.model.db.DataModelDO;
-import com.kingbo401.iceacl.model.db.param.DataModelQueryParam;
 import com.kingbo401.iceacl.model.dto.DataModelDTO;
 import com.kingbo401.iceacl.model.dto.DataPropertyDTO;
+import com.kingbo401.iceacl.model.po.DataModelPO;
+import com.kingbo401.iceacl.model.po.param.DataModelQueryParam;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
 
@@ -53,17 +53,17 @@ public class DataModelManagerImpl implements DataModelManager {
 		assertModelCode(modelCode);
 		Assert.notNull(appManager.getAppByKey(appKey), "app不存在");
 
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
-		Assert.isNull(dataModelDO, "模型code已存在");
+		DataModelPO dataModelPO = dataModelDAO.getModelByCode(modelCode);
+		Assert.isNull(dataModelPO, "模型code已存在");
 
 		dataModelDTO.setStatus(IceAclConstant.STATUS_NORMAL);
 		Date now = new Date();
 		dataModelDTO.setUpdateTime(now);
 		dataModelDTO.setCreateTime(now);
-		dataModelDO = new DataModelDO();
-		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
-		dataModelDAO.create(dataModelDO);
-		dataModelDTO.setId(dataModelDO.getId());
+		dataModelPO = new DataModelPO();
+		BeanUtils.copyProperties(dataModelDTO, dataModelPO);
+		dataModelDAO.create(dataModelPO);
+		dataModelDTO.setId(dataModelPO.getId());
 		return dataModelDTO;
 	}
 
@@ -76,27 +76,27 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.hasText(name, "name 不能为空");
 		String modelCode = dataModelDTO.getCode();
 		assertModelCode(modelCode);
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
-		Assert.notNull(dataModelDO, "模型不存在");
-		dataModelDO.setName(dataModelDTO.getName());
-		dataModelDO.setDescription(dataModelDTO.getDescription());
-		dataModelDO.setUpdateTime(new Date());
-		dataModelDAO.update(dataModelDO);
-		dataModelDTO.setId(dataModelDO.getId());
+		DataModelPO dataModelPO = dataModelDAO.getModelByCode(modelCode);
+		Assert.notNull(dataModelPO, "模型不存在");
+		dataModelPO.setName(dataModelDTO.getName());
+		dataModelPO.setDescription(dataModelDTO.getDescription());
+		dataModelPO.setUpdateTime(new Date());
+		dataModelDAO.update(dataModelPO);
+		dataModelDTO.setId(dataModelPO.getId());
 		return dataModelDTO;
 	}
 
 	private boolean updateDataModelStatus(String appKey, String modelCode, int status) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(modelCode, "modelCode不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
-		Assert.notNull(dataModelDO, "模型不存在");
-		Assert.isTrue(appKey.equals(dataModelDO.getAppKey()), "appkey模型不匹配");
-		List<DataPropertyDTO> properties = dataModelPropertyRefManager.listDataProperty(dataModelDO.getId());
+		DataModelPO dataModelPO = dataModelDAO.getModelByCode(modelCode);
+		Assert.notNull(dataModelPO, "模型不存在");
+		Assert.isTrue(appKey.equals(dataModelPO.getAppKey()), "appkey模型不匹配");
+		List<DataPropertyDTO> properties = dataModelPropertyRefManager.listDataProperty(dataModelPO.getId());
 		Assert.isTrue(CollectionUtil.isEmpty(properties), "请先解除数据模型与属性的绑定关系");
-		dataModelDO.setStatus(status);
-		dataModelDO.setUpdateTime(new Date());
-		dataModelDAO.update(dataModelDO);
+		dataModelPO.setStatus(status);
+		dataModelPO.setUpdateTime(new Date());
+		dataModelDAO.update(dataModelPO);
 		return true;
 	}
 
@@ -118,26 +118,26 @@ public class DataModelManagerImpl implements DataModelManager {
 	@Override
 	public DataModelDTO getDataModel(Long id) {
 		Assert.notNull(id, "id不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelById(id);
-		return buildDataModelDTO(dataModelDO);
+		DataModelPO dataModelPO = dataModelDAO.getModelById(id);
+		return buildDataModelDTO(dataModelPO);
 	}
 
 	@Override
 	public DataModelDTO getDataModel(String modelCode) {
 		Assert.hasText(modelCode, "modelCode 不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
-		return buildDataModelDTO(dataModelDO);
+		DataModelPO dataModelPO = dataModelDAO.getModelByCode(modelCode);
+		return buildDataModelDTO(dataModelPO);
 	}
 
 	@Override
 	public DataModelDTO getDataModel(String appKey, String modelCode) {
 		Assert.hasText(modelCode, "modelCode 不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
-		if (dataModelDO == null) {
+		DataModelPO dataModelPO = dataModelDAO.getModelByCode(modelCode);
+		if (dataModelPO == null) {
 			return null;
 		}
-		Assert.isTrue(appKey.equals(dataModelDO.getAppKey()), "appkey应用不存在");
-		return buildDataModelDTO(dataModelDO);
+		Assert.isTrue(appKey.equals(dataModelPO.getAppKey()), "appkey应用不存在");
+		return buildDataModelDTO(dataModelPO);
 	}
 
 	@Override
@@ -145,8 +145,8 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.notNull(dataModelQueryParam, "参数不能为空");
 		Assert.hasText(dataModelQueryParam.getCode(), "code 不能为空");
 		Assert.hasText(dataModelQueryParam.getAppKey(), "appKey 不能为空");
-		List<DataModelDO> dataModelDOs = dataModelDAO.listDataModel(dataModelQueryParam);
-		return buildDataModelDTOs(dataModelDOs);
+		List<DataModelPO> dataModelPOs = dataModelDAO.listDataModel(dataModelQueryParam);
+		return buildDataModelDTOs(dataModelPOs);
 	}
 
 	@Override
@@ -160,27 +160,27 @@ public class DataModelManagerImpl implements DataModelManager {
 				return pageVO;
 			}
 		}
-		List<DataModelDO> dataModelDOs = dataModelDAO.pageDataModel(dataModelQueryParam);
-		pageVO.setItems(buildDataModelDTOs(dataModelDOs));
+		List<DataModelPO> dataModelPOs = dataModelDAO.pageDataModel(dataModelQueryParam);
+		pageVO.setItems(buildDataModelDTOs(dataModelPOs));
 		return pageVO;
 	}
 
-	private DataModelDTO buildDataModelDTO(DataModelDO dataModelDO){
-		if(dataModelDO == null){
+	private DataModelDTO buildDataModelDTO(DataModelPO dataModelPO){
+		if(dataModelPO == null){
 			return null;
 		}
 		DataModelDTO dataModelDTO = new DataModelDTO();
-		BeanUtils.copyProperties(dataModelDO, dataModelDTO);
+		BeanUtils.copyProperties(dataModelPO, dataModelDTO);
 		return dataModelDTO;
 	}
 	
-	private List<DataModelDTO> buildDataModelDTOs(List<DataModelDO> dataModelDOs) {
-		if (CollectionUtil.isEmpty(dataModelDOs)) {
+	private List<DataModelDTO> buildDataModelDTOs(List<DataModelPO> dataModelPOs) {
+		if (CollectionUtil.isEmpty(dataModelPOs)) {
 			return null;
 		}
 		List<DataModelDTO> list = new ArrayList<DataModelDTO>();
-		for (DataModelDO dataModelDO : dataModelDOs) {
-			list.add(buildDataModelDTO(dataModelDO));
+		for (DataModelPO dataModelPO : dataModelPOs) {
+			list.add(buildDataModelDTO(dataModelPO));
 		}
 		return list;
 	}

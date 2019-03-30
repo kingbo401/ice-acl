@@ -21,13 +21,13 @@ import com.kingbo401.iceacl.dao.RoleMenuRefDAO;
 import com.kingbo401.iceacl.manager.AppManager;
 import com.kingbo401.iceacl.manager.RoleManager;
 import com.kingbo401.iceacl.manager.UserRoleRefManager;
-import com.kingbo401.iceacl.model.db.MenuDO;
-import com.kingbo401.iceacl.model.db.RoleDO;
-import com.kingbo401.iceacl.model.db.RoleMenuRefDO;
-import com.kingbo401.iceacl.model.db.param.RoleMenuQueryParam;
-import com.kingbo401.iceacl.model.db.param.RoleQueryParam;
 import com.kingbo401.iceacl.model.dto.RoleDTO;
 import com.kingbo401.iceacl.model.dto.param.RoleMenuIdRefParam;
+import com.kingbo401.iceacl.model.po.MenuPO;
+import com.kingbo401.iceacl.model.po.RolePO;
+import com.kingbo401.iceacl.model.po.RoleMenuRefPO;
+import com.kingbo401.iceacl.model.po.param.RoleMenuQueryParam;
+import com.kingbo401.iceacl.model.po.param.RoleQueryParam;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
 
@@ -48,52 +48,52 @@ public class RoleManagerImpl implements RoleManager{
 	public RoleDTO getRoleByKey(String appKey, String roleKey) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(roleKey, "roleKey不能为空");
-		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
-		return buildRoleDTO(roleDO);
+		RolePO rolePO = roleDAO.getRoleByKey(appKey, roleKey);
+		return buildRoleDTO(rolePO);
 	}
 
 	@Override
 	public List<RoleDTO> getRoleByKeys(String appKey, List<String> roleKeys) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(roleKeys, "roleKeys不能为空");
-		List<RoleDO> roleDOs = roleDAO.getRoleByKeys(appKey, roleKeys);
-		return buildRoleDTOs(roleDOs);
+		List<RolePO> rolePOs = roleDAO.getRoleByKeys(appKey, roleKeys);
+		return buildRoleDTOs(rolePOs);
 	}
 
 	@Override
 	public RoleDTO getRoleById(String appKey, long id) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.isTrue(id > 0, "id必须大于0");
-		RoleDO roleDO = roleDAO.getRoleById(id);
-		if(roleDO == null){
+		RolePO rolePO = roleDAO.getRoleById(id);
+		if(rolePO == null){
 			return null;
 		}
-		Assert.isTrue(roleDO.getAppKey().equals(appKey), "appKey、roleId不匹配");
-		return buildRoleDTO(roleDO);
+		Assert.isTrue(rolePO.getAppKey().equals(appKey), "appKey、roleId不匹配");
+		return buildRoleDTO(rolePO);
 	}
 
 	@Override
 	public RoleDTO getRoleById(long id) {
 		Assert.isTrue(id > 0, "id必须大于0");
-		RoleDO roleDO = roleDAO.getRoleById(id);
-		if(roleDO == null){
+		RolePO rolePO = roleDAO.getRoleById(id);
+		if(rolePO == null){
 			return null;
 		}
-		return buildRoleDTO(roleDO);
+		return buildRoleDTO(rolePO);
 	}
 
 	@Override
 	public List<RoleDTO> getRoleByIds(String appKey, List<Long> roleIds) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(roleIds, "roleIds不能为空");
-		List<RoleDO> roleDOs = roleDAO.getRoleByIds(roleIds);
-		if(CollectionUtils.isEmpty(roleDOs)){
+		List<RolePO> rolePOs = roleDAO.getRoleByIds(roleIds);
+		if(CollectionUtils.isEmpty(rolePOs)){
 			return null;
 		}
-		for(RoleDO roleDO : roleDOs){
-			Assert.isTrue(roleDO.getAppKey().equals(appKey), "appKey、roleId不匹配");
+		for(RolePO rolePO : rolePOs){
+			Assert.isTrue(rolePO.getAppKey().equals(appKey), "appKey、roleId不匹配");
 		}
-		return buildRoleDTOs(roleDOs);
+		return buildRoleDTOs(rolePOs);
 	}
 
 	@Override
@@ -123,18 +123,18 @@ public class RoleManagerImpl implements RoleManager{
 		Date now = new Date();
 		roleDTO.setCreateTime(now);
 		roleDTO.setUpdateTime(now);
-		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
-		Assert.isNull(roleDO, "角色已存在");
+		RolePO rolePO = roleDAO.getRoleByKey(appKey, roleKey);
+		Assert.isNull(rolePO, "角色已存在");
 		RoleQueryParam roleQueryParam = new RoleQueryParam();
 		roleQueryParam.setAppKey(appKey);
 		roleQueryParam.setTenant(tenant);
 		roleQueryParam.setRoleName(roleName);
-		List<RoleDO> namesRole = roleDAO.listRole(roleQueryParam);
+		List<RolePO> namesRole = roleDAO.listRole(roleQueryParam);
 		Assert.isTrue(CollectionUtils.isEmpty(namesRole), "角色名被使用");
-		roleDO = new RoleDO();
-		BeanUtils.copyProperties(roleDTO, roleDO);
-		roleDAO.createRole(roleDO);
-		BeanUtils.copyProperties(roleDO, roleDTO);
+		rolePO = new RolePO();
+		BeanUtils.copyProperties(roleDTO, rolePO);
+		roleDAO.createRole(rolePO);
+		BeanUtils.copyProperties(rolePO, roleDTO);
 		return roleDTO;
 	}
 
@@ -166,20 +166,20 @@ public class RoleManagerImpl implements RoleManager{
 		if(roleDTO.getStatus() == null){
 			roleDTO.setStatus(IceAclConstant.STATUS_NORMAL);
 		}
-		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
-		Assert.notNull(roleDO, "角色已存在");
-		Assert.isTrue(tenant.equals(roleDO.getTenant()), "tenant不能修改");
-		if(!roleName.equals(roleDO.getRoleName())){
+		RolePO rolePO = roleDAO.getRoleByKey(appKey, roleKey);
+		Assert.notNull(rolePO, "角色已存在");
+		Assert.isTrue(tenant.equals(rolePO.getTenant()), "tenant不能修改");
+		if(!roleName.equals(rolePO.getRoleName())){
 			RoleQueryParam roleQueryParam = new RoleQueryParam();
 			roleQueryParam.setAppKey(appKey);
 			roleQueryParam.setTenant(tenant);
 			roleQueryParam.setRoleName(roleName);
-			List<RoleDO> namesRole = roleDAO.listRole(roleQueryParam);
+			List<RolePO> namesRole = roleDAO.listRole(roleQueryParam);
 			Assert.isTrue(CollectionUtils.isEmpty(namesRole), "角色名被使用");
 		}
-		BeanUtils.copyProperties(roleDTO, roleDO);
-		roleDO.setUpdateTime(now);
-		roleDAO.updateRole(roleDO);
+		BeanUtils.copyProperties(roleDTO, rolePO);
+		rolePO.setUpdateTime(now);
+		roleDAO.updateRole(rolePO);
 		return roleDTO;
 	}
 
@@ -189,12 +189,12 @@ public class RoleManagerImpl implements RoleManager{
 		if(status == IceAclConstant.STATUS_REMOVE){
 			Assert.isTrue(!userRoleRefManager.hasUserUse(roleId), "角色有用户使用");
 		}
-		RoleDO roleDO = roleDAO.getRoleById(roleId);
-		Assert.notNull(roleDO, "角色不存在");
-		Assert.isTrue(appKey.equals(roleDO.getAppKey()), "appkey角色不匹配");
-		roleDO.setUpdateTime(new Date());
-		roleDO.setStatus(status);
-		roleDAO.updateRole(roleDO);
+		RolePO rolePO = roleDAO.getRoleById(roleId);
+		Assert.notNull(rolePO, "角色不存在");
+		Assert.isTrue(appKey.equals(rolePO.getAppKey()), "appkey角色不匹配");
+		rolePO.setUpdateTime(new Date());
+		rolePO.setStatus(status);
+		roleDAO.updateRole(rolePO);
 		return true;
 	}
 	
@@ -217,8 +217,8 @@ public class RoleManagerImpl implements RoleManager{
 	public List<RoleDTO> listRole(RoleQueryParam param) {
 		Assert.notNull(param);
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
-		List<RoleDO> roleDOs = roleDAO.listRole(param);
-		return buildRoleDTOs(roleDOs);
+		List<RolePO> rolePOs = roleDAO.listRole(param);
+		return buildRoleDTOs(rolePOs);
 	}
 
 	@Override
@@ -234,8 +234,8 @@ public class RoleManagerImpl implements RoleManager{
 				return pageVO;
 			}
 		}
-		List<RoleDO> roleDOs = roleDAO.pageRole(param);
-		pageVO.setItems(buildRoleDTOs(roleDOs));
+		List<RolePO> rolePOs = roleDAO.pageRole(param);
+		pageVO.setItems(buildRoleDTOs(rolePOs));
 		return pageVO;
 	}
 
@@ -254,11 +254,11 @@ public class RoleManagerImpl implements RoleManager{
 			roleMenuQueryParam.setAppKey(param.getAppKey());
 		}
 		roleMenuQueryParam.setRoleId(roleId);
-		List<MenuDO> menuDOs = roleMenuRefDAO.listMenu(roleMenuQueryParam);
-		if(!CollectionUtils.isEmpty(menuDOs)){
+		List<MenuPO> menuPOs = roleMenuRefDAO.listMenu(roleMenuQueryParam);
+		if(!CollectionUtils.isEmpty(menuPOs)){
 			List<Long> menuIds = new ArrayList<Long>();
-			for(MenuDO menuDO : menuDOs){
-				menuIds.add(menuDO.getId());
+			for(MenuPO menuPO : menuPOs){
+				menuIds.add(menuPO.getId());
 			}
 			roleMenuRefDAO.updateRefsStatus(roleId, menuIds, IceAclConstant.STATUS_REMOVE);
 		}
@@ -268,39 +268,39 @@ public class RoleManagerImpl implements RoleManager{
 			return true;
 		}
 		
-	    Map<Object, MenuDO> menuMap = CollectionUtil.toIdMap(menuDAO.getMenuByIds(menuIds));
-		List<RoleMenuRefDO> refDOs = new ArrayList<RoleMenuRefDO>();
+	    Map<Object, MenuPO> menuMap = CollectionUtil.toIdMap(menuDAO.getMenuByIds(menuIds));
+		List<RoleMenuRefPO> refPOs = new ArrayList<RoleMenuRefPO>();
 		Date now = new Date();
 		for(Long menuId : menuIds){
 			Assert.notNull(menuMap.get(menuId), "菜单:" + menuId + " 不存在");
-			RoleMenuRefDO refDO = new RoleMenuRefDO();
-			refDO.setCreateTime(now);
-			refDO.setUpdateTime(now);
-			refDO.setMenuId(menuId);
-			refDO.setRoleId(roleId);
-			refDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			refDOs.add(refDO);
+			RoleMenuRefPO refPO = new RoleMenuRefPO();
+			refPO.setCreateTime(now);
+			refPO.setUpdateTime(now);
+			refPO.setMenuId(menuId);
+			refPO.setRoleId(roleId);
+			refPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			refPOs.add(refPO);
 		}
-		roleMenuRefDAO.batchCreate(refDOs);
+		roleMenuRefDAO.batchCreate(refPOs);
 		return true;
 	}
 	
-	private RoleDTO buildRoleDTO(RoleDO roleDO){
-		if(roleDO == null){
+	private RoleDTO buildRoleDTO(RolePO rolePO){
+		if(rolePO == null){
 			return null;
 		}
 		RoleDTO roleDTO = new RoleDTO();
-		BeanUtils.copyProperties(roleDO, roleDTO);
+		BeanUtils.copyProperties(rolePO, roleDTO);
 		return roleDTO;
 	}
 	
-	private List<RoleDTO> buildRoleDTOs(List<RoleDO> roleDOs){
-		if(CollectionUtils.isEmpty(roleDOs)){
+	private List<RoleDTO> buildRoleDTOs(List<RolePO> rolePOs){
+		if(CollectionUtils.isEmpty(rolePOs)){
 			return null;
 		}
 		List<RoleDTO> roleDTOs = new ArrayList<RoleDTO>();
-		for(RoleDO roleDO : roleDOs){
-			roleDTOs.add(buildRoleDTO(roleDO));
+		for(RolePO rolePO : rolePOs){
+			roleDTOs.add(buildRoleDTO(rolePO));
 		}
 		return roleDTOs;
 	}

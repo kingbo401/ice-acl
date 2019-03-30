@@ -1,8 +1,8 @@
 package com.kingbo401.iceacl.model.dto;
 
-import com.kingbo401.iceacl.model.db.BaseDO;
+import kingbo401.iceacl.common.model.BasePO;
 
-public class RoleDTO extends BaseDO{
+public class RoleDTO extends BasePO{
 	private String appKey;
 	private String roleKey;
 	private String roleName;

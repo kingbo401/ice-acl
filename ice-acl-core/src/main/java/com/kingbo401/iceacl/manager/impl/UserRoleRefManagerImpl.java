@@ -18,13 +18,13 @@ import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.dao.UserRoleRefDAO;
 import com.kingbo401.iceacl.manager.RoleManager;
 import com.kingbo401.iceacl.manager.UserRoleRefManager;
-import com.kingbo401.iceacl.model.db.UserRoleRefDO;
-import com.kingbo401.iceacl.model.db.param.UserRoleRefQueryParam;
-import com.kingbo401.iceacl.model.db.param.UsersRoleRefQueryParam;
-import com.kingbo401.iceacl.model.db.vo.UserRoleRefVO;
 import com.kingbo401.iceacl.model.dto.RoleDTO;
+import com.kingbo401.iceacl.model.dto.UserRoleRefDTO;
 import com.kingbo401.iceacl.model.dto.UserRoleRefsDTO;
 import com.kingbo401.iceacl.model.dto.param.UserRoleRefParam;
+import com.kingbo401.iceacl.model.po.UserRoleRefPO;
+import com.kingbo401.iceacl.model.po.param.UserRoleRefQueryParam;
+import com.kingbo401.iceacl.model.po.param.UsersRoleRefQueryParam;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
 import kingbo401.iceacl.common.utils.MixAll;
@@ -53,25 +53,25 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		}
 		List<String> userIds = userRoleRefDAO.pageUser(usersRoleRefQueryParam);
 		usersRoleRefQueryParam.setUserIds(userIds);
-		List<UserRoleRefVO> userRoleRefVOs = userRoleRefDAO.listUsersRoleRef(usersRoleRefQueryParam);
+		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUsersRoleRef(usersRoleRefQueryParam);
 		if(CollectionUtils.isEmpty(userRoleRefVOs)){
 			return pageVO;
 		}
-		Map<String, List<UserRoleRefVO>> userRoleRefVOsMap = new HashMap<String, List<UserRoleRefVO>>();
-		for(UserRoleRefVO  userRoleRefVO : userRoleRefVOs){
+		Map<String, List<UserRoleRefDTO>> userRoleRefVOsMap = new HashMap<String, List<UserRoleRefDTO>>();
+		for(UserRoleRefDTO  userRoleRefVO : userRoleRefVOs){
 			String userId = userRoleRefVO.getUserId();
-			List<UserRoleRefVO> refVOs = userRoleRefVOsMap.get(userId);
+			List<UserRoleRefDTO> refVOs = userRoleRefVOsMap.get(userId);
 			if(refVOs == null){
-				refVOs = new ArrayList<UserRoleRefVO>();
+				refVOs = new ArrayList<UserRoleRefDTO>();
 				userRoleRefVOsMap.put(userId, refVOs);
 			}
 			refVOs.add(userRoleRefVO);
 		}
 		List<UserRoleRefsDTO> datas = new ArrayList<UserRoleRefsDTO>();
-		for(Entry<String, List<UserRoleRefVO>> entry : userRoleRefVOsMap.entrySet()){
+		for(Entry<String, List<UserRoleRefDTO>> entry : userRoleRefVOsMap.entrySet()){
 			UserRoleRefsDTO data = new UserRoleRefsDTO();
 			data.setUserId(entry.getKey());
-			data.setRefVOs(entry.getValue());
+			data.setRefs(entry.getValue());
 			datas.add(data);
 		}
 		pageVO.setItems(datas);
@@ -79,7 +79,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public List<UserRoleRefVO> listUserRoleRef(UserRoleRefQueryParam userRoleQueryParam) {
+	public List<UserRoleRefDTO> listUserRoleRef(UserRoleRefQueryParam userRoleQueryParam) {
 		Assert.notNull(userRoleQueryParam, "参数不能为空");
 		Assert.hasText(userRoleQueryParam.getAppKey(), "appKey不能为空");
 		Assert.hasText(userRoleQueryParam.getTenant(), "tenant不能为空");
@@ -87,11 +87,11 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public PageVO<UserRoleRefVO> pageUserRoleRef(UserRoleRefQueryParam userRoleQueryParam) {
+	public PageVO<UserRoleRefDTO> pageUserRoleRef(UserRoleRefQueryParam userRoleQueryParam) {
 		Assert.notNull(userRoleQueryParam, "参数不能为空");
 		Assert.hasText(userRoleQueryParam.getAppKey(), "appKey不能为空");
 		Assert.hasText(userRoleQueryParam.getTenant(), "tenant不能为空");
-		PageVO<UserRoleRefVO> pageVO = new PageVO<UserRoleRefVO>(userRoleQueryParam);
+		PageVO<UserRoleRefDTO> pageVO = new PageVO<UserRoleRefDTO>(userRoleQueryParam);
 		if(userRoleQueryParam.isReturnTotalCount()){
 			long total = userRoleRefDAO.countUserRoleRef(userRoleQueryParam);
 			pageVO.setTotal(total);
@@ -99,7 +99,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 				return pageVO;
 			}
 		}
-		List<UserRoleRefVO> items = userRoleRefDAO.pageUserRoleRef(userRoleQueryParam);
+		List<UserRoleRefDTO> items = userRoleRefDAO.pageUserRoleRef(userRoleQueryParam);
 		pageVO.setItems(items);
 		return pageVO;
 	}
@@ -134,21 +134,21 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		Assert.hasText(userId, "userId不能为空");
 		Assert.notEmpty(roleIds, "roleIds不能为空");
 		assertRoles(appKey, param.getRoleType(), roleIds);
-		List<UserRoleRefDO> userRoleRefDOs = new ArrayList<UserRoleRefDO>();
+		List<UserRoleRefPO> userRoleRefPOs = new ArrayList<UserRoleRefPO>();
 		Date now  = new Date();
 		for(Long roleId : roleIds){
-			UserRoleRefDO userRoleRefDO = new UserRoleRefDO();
-			userRoleRefDO.setUserId(userId);
-			userRoleRefDO.setTenant(tenant);
-			userRoleRefDO.setRoleId(roleId);
-			userRoleRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			userRoleRefDO.setCreateTime(now);
-			userRoleRefDO.setUpdateTime(now);
-			userRoleRefDO.setEffectiveTime(effectiveTime);
-			userRoleRefDO.setExpireTime(expireTime);
-			userRoleRefDOs.add(userRoleRefDO);
+			UserRoleRefPO userRoleRefPO = new UserRoleRefPO();
+			userRoleRefPO.setUserId(userId);
+			userRoleRefPO.setTenant(tenant);
+			userRoleRefPO.setRoleId(roleId);
+			userRoleRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			userRoleRefPO.setCreateTime(now);
+			userRoleRefPO.setUpdateTime(now);
+			userRoleRefPO.setEffectiveTime(effectiveTime);
+			userRoleRefPO.setExpireTime(expireTime);
+			userRoleRefPOs.add(userRoleRefPO);
 		}
-		userRoleRefDAO.batchCreate(userRoleRefDOs);
+		userRoleRefDAO.batchCreate(userRoleRefPOs);
 		return true;
 	}
 
@@ -172,29 +172,29 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		userRoleRefQueryParam.setReturnNotEffective(true);
 		userRoleRefQueryParam.setTenant(tenant);
 		userRoleRefQueryParam.setUserId(userId);
-		List<UserRoleRefVO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(userRoleRefQueryParam);
+		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(userRoleRefQueryParam);
 		if(!CollectionUtils.isEmpty(userRoleRefVOs)){
 			List<Long> removeRoleIds = new ArrayList<Long>();
-			for(UserRoleRefVO userRoleRefVO : userRoleRefVOs){
+			for(UserRoleRefDTO userRoleRefVO : userRoleRefVOs){
 				removeRoleIds.add(userRoleRefVO.getRoleId());
 			}
 			userRoleRefDAO.updateRefsStatus(userId, tenant, removeRoleIds, IceAclConstant.STATUS_REMOVE);
 		}
-		List<UserRoleRefDO> userRoleRefDOs = new ArrayList<UserRoleRefDO>();
+		List<UserRoleRefPO> userRoleRefPOs = new ArrayList<UserRoleRefPO>();
 		Date now  = new Date();
 		for(Long roleId : roleIds){
-			UserRoleRefDO userRoleRefDO = new UserRoleRefDO();
-			userRoleRefDO.setUserId(userId);
-			userRoleRefDO.setTenant(tenant);
-			userRoleRefDO.setRoleId(roleId);
-			userRoleRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			userRoleRefDO.setCreateTime(now);
-			userRoleRefDO.setUpdateTime(now);
-			userRoleRefDO.setEffectiveTime(effectiveTime);
-			userRoleRefDO.setExpireTime(expireTime);
-			userRoleRefDOs.add(userRoleRefDO);
+			UserRoleRefPO userRoleRefPO = new UserRoleRefPO();
+			userRoleRefPO.setUserId(userId);
+			userRoleRefPO.setTenant(tenant);
+			userRoleRefPO.setRoleId(roleId);
+			userRoleRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			userRoleRefPO.setCreateTime(now);
+			userRoleRefPO.setUpdateTime(now);
+			userRoleRefPO.setEffectiveTime(effectiveTime);
+			userRoleRefPO.setExpireTime(expireTime);
+			userRoleRefPOs.add(userRoleRefPO);
 		}
-		userRoleRefDAO.batchCreate(userRoleRefDOs);
+		userRoleRefDAO.batchCreate(userRoleRefPOs);
 		return true;
 	}
 

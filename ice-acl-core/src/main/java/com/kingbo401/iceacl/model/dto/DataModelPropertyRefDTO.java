@@ -1,8 +1,8 @@
 package com.kingbo401.iceacl.model.dto;
 
-import com.kingbo401.iceacl.model.db.BaseDO;
+import kingbo401.iceacl.common.model.BasePO;
 
-public class DataModelPropertyRefDTO extends BaseDO{
+public class DataModelPropertyRefDTO extends BasePO{
 	private Long propertyId;
 	private String propertyCode;
 	private String propertyName;

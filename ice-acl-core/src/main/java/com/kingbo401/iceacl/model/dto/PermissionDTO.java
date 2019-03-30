@@ -1,8 +1,8 @@
 package com.kingbo401.iceacl.model.dto;
 
-import com.kingbo401.iceacl.model.db.BaseDO;
+import kingbo401.iceacl.common.model.BasePO;
 
-public class PermissionDTO extends BaseDO{
+public class PermissionDTO extends BasePO{
 	private String appKey;
 	private String permissionKey;
 	private String permissionType;

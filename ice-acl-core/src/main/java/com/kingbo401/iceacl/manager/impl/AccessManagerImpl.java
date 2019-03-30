@@ -12,10 +12,10 @@ import com.kingbo401.iceacl.dao.PermissionDAO;
 import com.kingbo401.iceacl.dao.RoleDAO;
 import com.kingbo401.iceacl.dao.UserRoleRefDAO;
 import com.kingbo401.iceacl.manager.AccessManager;
-import com.kingbo401.iceacl.model.db.PermissionDO;
-import com.kingbo401.iceacl.model.db.RoleDO;
-import com.kingbo401.iceacl.model.db.param.CheckUserMenuParam;
-import com.kingbo401.iceacl.model.db.param.CheckUserPermissionParam;
+import com.kingbo401.iceacl.model.po.PermissionPO;
+import com.kingbo401.iceacl.model.po.RolePO;
+import com.kingbo401.iceacl.model.po.param.CheckUserMenuParam;
+import com.kingbo401.iceacl.model.po.param.CheckUserPermissionParam;
 
 @Service
 public class AccessManagerImpl implements AccessManager{
@@ -42,11 +42,11 @@ public class AccessManagerImpl implements AccessManager{
         Assert.hasText(permissionKey,"permissionKey 不能为空");
         Assert.hasText(tenant, "tenant 不能为空");
 
-        PermissionDO permissionDO = permissionDAO.getByKey(appKey, permissionKey);
-        if(permissionDO == null){
+        PermissionPO permissionPO = permissionDAO.getByKey(appKey, permissionKey);
+        if(permissionPO == null){
         	return false;
         }
-        Long permissionId = permissionDO.getId();
+        Long permissionId = permissionPO.getId();
         //查出权限关联的菜单，用户拥有菜单，就认为拥有此权限
         if(param.isHierarchicalObtainMenuPermission()){
         	List<Long> menuIds = menuPermissionRefDAO.listMenuIds(permissionId);
@@ -97,9 +97,9 @@ public class AccessManagerImpl implements AccessManager{
         Assert.hasText(roleKey, "roleKey 不能为空");
         Assert.hasText(appKey, "appKey 不能为空");
         Assert.hasText(tenant, "tenant 不能为空");
-        RoleDO sysRoleDO = roleDAO.getRoleByKey(appKey, roleKey);
-        Assert.notNull(sysRoleDO, "角色不存在");
-        int count = userRoleRefDAO.checkUserRole(userId, tenant, sysRoleDO.getId());
+        RolePO rolePO = roleDAO.getRoleByKey(appKey, roleKey);
+        Assert.notNull(rolePO, "角色不存在");
+        int count = userRoleRefDAO.checkUserRole(userId, tenant, rolePO.getId());
         return count > 0;
 	}
 }

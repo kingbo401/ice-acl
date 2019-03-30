@@ -28,7 +28,7 @@ CREATE TABLE `ice_menu` (
   `menu_pid` bigint(20) NOT NULL DEFAULT '0' COMMENT '菜单父id，一级菜单父id为0',
   `menu_url` varchar(256) NOT NULL COMMENT '菜单url',
   `menu_icon` varchar(256) DEFAULT NULL COMMENT '菜单图标url',
-  `menu_type` tinyint(50) NOT NULL DEFAULT '0' COMMENT '菜单类型 1 普通页面 2 tab页 3 hidden',
+  `menu_show_type` tinyint(50) NOT NULL DEFAULT '0' COMMENT '菜单显示类型 1 普通页面 2 tab页 3 hidden',
   `menu_order` int(11) NOT NULL COMMENT '排序，从小到大',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 删除 1正常 2封禁',
   `create_time` datetime NOT NULL COMMENT '创建时间',
@@ -244,6 +244,7 @@ CREATE TABLE `ice_user_role_ref` (
 -- ----------------------------
 CREATE TABLE `ice_data_grant_record` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `app_key` varchar(100) NOT NULL COMMENT '授权应用key',
   `model_id` bigint(20) NOT NULL COMMENT '数据模型id',
   `operation_id` bigint(20) NOT NULL COMMENT '操作id',
   `grant_target_id` varchar(100) NOT NULL COMMENT '授权目标id',

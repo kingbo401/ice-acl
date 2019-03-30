@@ -19,14 +19,14 @@ import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.RoleManager;
 import com.kingbo401.iceacl.manager.RolePermissionGroupRefManager;
 import com.kingbo401.iceacl.manager.UserRoleRefManager;
-import com.kingbo401.iceacl.model.db.PermissionGroupDO;
-import com.kingbo401.iceacl.model.db.RolePermissionGroupRefDO;
-import com.kingbo401.iceacl.model.db.param.RolePermissionGroupRefQueryParam;
-import com.kingbo401.iceacl.model.db.param.UserRoleRefQueryParam;
-import com.kingbo401.iceacl.model.db.vo.UserRoleRefVO;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
 import com.kingbo401.iceacl.model.dto.RoleDTO;
+import com.kingbo401.iceacl.model.dto.UserRoleRefDTO;
 import com.kingbo401.iceacl.model.dto.param.RolePermissionGroupRefParam;
+import com.kingbo401.iceacl.model.po.PermissionGroupPO;
+import com.kingbo401.iceacl.model.po.RolePermissionGroupRefPO;
+import com.kingbo401.iceacl.model.po.param.RolePermissionGroupRefQueryParam;
+import com.kingbo401.iceacl.model.po.param.UserRoleRefQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
 @Service
@@ -46,16 +46,16 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		List<Long> groupIds = param.getGroupIds();
 		Assert.notEmpty(groupIds, "groupIds不能为空");
 		checkRolePermissionGroupRefParam(param);
-		List<RolePermissionGroupRefDO> list = new ArrayList<RolePermissionGroupRefDO>();
+		List<RolePermissionGroupRefPO> list = new ArrayList<RolePermissionGroupRefPO>();
 		Date now = new Date();
 		for(Long groupId : groupIds){
-			RolePermissionGroupRefDO rolePermissionGroupRefDO = new RolePermissionGroupRefDO();
-			rolePermissionGroupRefDO.setGroupId(groupId);
-			rolePermissionGroupRefDO.setRoleId(param.getRoleId());
-			rolePermissionGroupRefDO.setCreateTime(now);
-			rolePermissionGroupRefDO.setUpdateTime(now);
-			rolePermissionGroupRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(rolePermissionGroupRefDO);
+			RolePermissionGroupRefPO rolePermissionGroupRefPO = new RolePermissionGroupRefPO();
+			rolePermissionGroupRefPO.setGroupId(groupId);
+			rolePermissionGroupRefPO.setRoleId(param.getRoleId());
+			rolePermissionGroupRefPO.setCreateTime(now);
+			rolePermissionGroupRefPO.setUpdateTime(now);
+			rolePermissionGroupRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(rolePermissionGroupRefPO);
 		}
 		rolePermissionGroupRefDAO.batchCreate(list);
 		return true;
@@ -73,24 +73,24 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		if(!param.isMultiApp()){
 			rolePermissionGroupRefQueryParam.setGroupAppKey(param.getAppKey());
 		}
-		List<PermissionGroupDO> permissionGroupDOs = rolePermissionGroupRefDAO.listPermissionGroup(rolePermissionGroupRefQueryParam);
-		if(CollectionUtil.isNotEmpty(permissionGroupDOs)){
+		List<PermissionGroupPO> permissionGroupPOs = rolePermissionGroupRefDAO.listPermissionGroup(rolePermissionGroupRefQueryParam);
+		if(CollectionUtil.isNotEmpty(permissionGroupPOs)){
 			List<Long> groupIdsRemove = new ArrayList<Long>();
-			for(PermissionGroupDO permissionGroupDO : permissionGroupDOs){
-				groupIdsRemove.add(permissionGroupDO.getId());
+			for(PermissionGroupPO permissionGroupPO : permissionGroupPOs){
+				groupIdsRemove.add(permissionGroupPO.getId());
 				rolePermissionGroupRefDAO.updateRefsStatus(param.getRoleId(), groupIdsRemove, IceAclConstant.STATUS_REMOVE);
 			}
 		}
-		List<RolePermissionGroupRefDO> list = new ArrayList<RolePermissionGroupRefDO>();
+		List<RolePermissionGroupRefPO> list = new ArrayList<RolePermissionGroupRefPO>();
 		Date now = new Date();
 		for(Long groupId : groupIds){
-			RolePermissionGroupRefDO rolePermissionGroupRefDO = new RolePermissionGroupRefDO();
-			rolePermissionGroupRefDO.setGroupId(groupId);
-			rolePermissionGroupRefDO.setRoleId(param.getRoleId());
-			rolePermissionGroupRefDO.setCreateTime(now);
-			rolePermissionGroupRefDO.setUpdateTime(now);
-			rolePermissionGroupRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			list.add(rolePermissionGroupRefDO);
+			RolePermissionGroupRefPO rolePermissionGroupRefPO = new RolePermissionGroupRefPO();
+			rolePermissionGroupRefPO.setGroupId(groupId);
+			rolePermissionGroupRefPO.setRoleId(param.getRoleId());
+			rolePermissionGroupRefPO.setCreateTime(now);
+			rolePermissionGroupRefPO.setUpdateTime(now);
+			rolePermissionGroupRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			list.add(rolePermissionGroupRefPO);
 		}
 		rolePermissionGroupRefDAO.batchCreate(list);
 		return true;
@@ -124,8 +124,8 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		Assert.notNull(roleId, "roleId不能为空");
 		RoleDTO roleDTO = roleManager.getRoleById(param.getAppKey(), roleId);
 		Assert.notNull(roleDTO, "角色不存在");
-		List<PermissionGroupDO> permissionGroupDOs = rolePermissionGroupRefDAO.listPermissionGroup(param);
-		return BizUtils.buildPermissionGroupDTOs(permissionGroupDOs);
+		List<PermissionGroupPO> permissionGroupPOs = rolePermissionGroupRefDAO.listPermissionGroup(param);
+		return BizUtils.buildPermissionGroupDTOs(permissionGroupPOs);
 	}
 
 	@Override
@@ -143,8 +143,8 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 				return pageVO;
 			}
 		}
-		List<PermissionGroupDO> permissionGroupDOs = rolePermissionGroupRefDAO.pagePermissionGroup(param);
-		pageVO.setItems(BizUtils.buildPermissionGroupDTOs(permissionGroupDOs));
+		List<PermissionGroupPO> permissionGroupPOs = rolePermissionGroupRefDAO.pagePermissionGroup(param);
+		pageVO.setItems(BizUtils.buildPermissionGroupDTOs(permissionGroupPOs));
 		return pageVO;
 	}
 
@@ -158,24 +158,24 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		param.setTenant(tenant);
 		param.setAppKey(appKey);
 		param.setReturnNotEffective(false);
-		List<UserRoleRefVO> roles = userRoleRefManager.listUserRoleRef(param);
+		List<UserRoleRefDTO> roles = userRoleRefManager.listUserRoleRef(param);
 		if(CollectionUtil.isEmpty(roles)){
 			return null;
 		}
 		List<Long> roleIds = Lists.newArrayList();
-		for(UserRoleRefVO role : roles){
+		for(UserRoleRefDTO role : roles){
 			roleIds.add(role.getRoleId());
 		}
 		//查询角色和权限组关联关系不需要关联租户
-		List<PermissionGroupDO> parentPermissionGroupDOs = rolePermissionGroupRefDAO
+		List<PermissionGroupPO> parentpermissionGroupPOs = rolePermissionGroupRefDAO
 				.getPermissionGroupsByRoleIds(appKey, roleIds);
-		if (CollectionUtil.isEmpty(parentPermissionGroupDOs)) {
+		if (CollectionUtil.isEmpty(parentpermissionGroupPOs)) {
 			return null;
 		}
 		
 		List<Long> groupIds = Lists.newArrayList();
-		for(PermissionGroupDO permissionGroupDO : parentPermissionGroupDOs){
-			groupIds.add(permissionGroupDO.getId());
+		for(PermissionGroupPO permissionGroupPO : parentpermissionGroupPOs){
+			groupIds.add(permissionGroupPO.getId());
 		}
 		return groupIds;
 		

@@ -1,14 +1,14 @@
 package com.kingbo401.iceacl.model.dto;
 
-import com.kingbo401.iceacl.model.db.BaseDO;
+import kingbo401.iceacl.common.model.BasePO;
 
-public class MenuDTO extends BaseDO{
+public class MenuDTO extends BasePO{
 	private String appKey;
 	private String menuName;
 	private Long menuPid;
 	private String menuUrl;
 	private String menuIcon;
-	private Integer menuType;
+	private Integer menuShowType;
 	private Integer menuOrder;
 	private Integer status;
 	public String getAppKey() {
@@ -41,11 +41,11 @@ public class MenuDTO extends BaseDO{
 	public void setMenuIcon(String menuIcon) {
 		this.menuIcon = menuIcon;
 	}
-	public Integer getMenuType() {
-		return menuType;
+	public Integer getMenuShowType() {
+		return menuShowType;
 	}
-	public void setMenuType(Integer menuType) {
-		this.menuType = menuType;
+	public void setMenuShowType(Integer menuShowType) {
+		this.menuShowType = menuShowType;
 	}
 	public Integer getMenuOrder() {
 		return menuOrder;

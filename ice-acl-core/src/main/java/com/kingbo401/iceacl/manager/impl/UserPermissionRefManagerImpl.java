@@ -18,11 +18,11 @@ import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.dao.UserPermissionRefDAO;
 import com.kingbo401.iceacl.manager.PermissionManager;
 import com.kingbo401.iceacl.manager.UserPermissionRefManager;
-import com.kingbo401.iceacl.model.db.UserPermissionRefDO;
-import com.kingbo401.iceacl.model.db.param.UserPermissionRefQueryParam;
-import com.kingbo401.iceacl.model.db.vo.UserPermissionRefVO;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
+import com.kingbo401.iceacl.model.dto.UserPermissionRefDTO;
 import com.kingbo401.iceacl.model.dto.param.UserPermissionRefParam;
+import com.kingbo401.iceacl.model.po.UserPermissionRefPO;
+import com.kingbo401.iceacl.model.po.param.UserPermissionRefQueryParam;
 
 @Service
 public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
@@ -46,21 +46,21 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.hasText(userId, "userId不能为空");
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		assertPermissions(appKey, param.getPermissionType(), permissionIds);
-		List<UserPermissionRefDO> userPermissionRefDOs = new ArrayList<UserPermissionRefDO>();
+		List<UserPermissionRefPO> userPermissionRefPOs = new ArrayList<UserPermissionRefPO>();
 		Date now  = new Date();
 		for(Long permissionId : permissionIds){
-			UserPermissionRefDO userPermissionRefDO = new UserPermissionRefDO();
-			userPermissionRefDO.setUserId(userId);
-			userPermissionRefDO.setTenant(tenant);
-			userPermissionRefDO.setPermissionId(permissionId);
-			userPermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			userPermissionRefDO.setCreateTime(now);
-			userPermissionRefDO.setUpdateTime(now);
-			userPermissionRefDO.setEffectiveTime(effectiveTime);
-			userPermissionRefDO.setExpireTime(expireTime);
-			userPermissionRefDOs.add(userPermissionRefDO);
+			UserPermissionRefPO userPermissionRefPO = new UserPermissionRefPO();
+			userPermissionRefPO.setUserId(userId);
+			userPermissionRefPO.setTenant(tenant);
+			userPermissionRefPO.setPermissionId(permissionId);
+			userPermissionRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			userPermissionRefPO.setCreateTime(now);
+			userPermissionRefPO.setUpdateTime(now);
+			userPermissionRefPO.setEffectiveTime(effectiveTime);
+			userPermissionRefPO.setExpireTime(expireTime);
+			userPermissionRefPOs.add(userPermissionRefPO);
 		}
-		userPermissionRefDAO.batchCreate(userPermissionRefDOs);
+		userPermissionRefDAO.batchCreate(userPermissionRefPOs);
 		return true;
 	}
 
@@ -84,30 +84,30 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		userPermissionRefQueryParam.setUserId(userId);
 		userPermissionRefQueryParam.setTenant(tenant);
 		userPermissionRefQueryParam.setReturnNotEffective(true);
-		List<UserPermissionRefVO> userPermissionRefVOs = userPermissionRefDAO.listUserPermissionRef(userPermissionRefQueryParam);
+		List<UserPermissionRefDTO> userPermissionRefVOs = userPermissionRefDAO.listUserPermissionRef(userPermissionRefQueryParam);
 		if(CollectionUtil.isNotEmpty(userPermissionRefVOs)){
 			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(UserPermissionRefVO userPermissionRefVO : userPermissionRefVOs){
+			for(UserPermissionRefDTO userPermissionRefVO : userPermissionRefVOs){
 				permissionIdsRemove.add(userPermissionRefVO.getPermissionId());
 			}
 			userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
 		assertPermissions(appKey, param.getPermissionType(), permissionIds);
-		List<UserPermissionRefDO> userPermissionRefDOs = new ArrayList<UserPermissionRefDO>();
+		List<UserPermissionRefPO> userPermissionRefPOs = new ArrayList<UserPermissionRefPO>();
 		Date now  = new Date();
 		for(Long permissionId : permissionIds){
-			UserPermissionRefDO userPermissionRefDO = new UserPermissionRefDO();
-			userPermissionRefDO.setUserId(userId);
-			userPermissionRefDO.setTenant(tenant);
-			userPermissionRefDO.setPermissionId(permissionId);
-			userPermissionRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			userPermissionRefDO.setCreateTime(now);
-			userPermissionRefDO.setUpdateTime(now);
-			userPermissionRefDO.setEffectiveTime(effectiveTime);
-			userPermissionRefDO.setExpireTime(expireTime);
-			userPermissionRefDOs.add(userPermissionRefDO);
+			UserPermissionRefPO userPermissionRefPO = new UserPermissionRefPO();
+			userPermissionRefPO.setUserId(userId);
+			userPermissionRefPO.setTenant(tenant);
+			userPermissionRefPO.setPermissionId(permissionId);
+			userPermissionRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			userPermissionRefPO.setCreateTime(now);
+			userPermissionRefPO.setUpdateTime(now);
+			userPermissionRefPO.setEffectiveTime(effectiveTime);
+			userPermissionRefPO.setExpireTime(expireTime);
+			userPermissionRefPOs.add(userPermissionRefPO);
 		}
-		userPermissionRefDAO.batchCreate(userPermissionRefDOs);
+		userPermissionRefDAO.batchCreate(userPermissionRefPOs);
 		return true;
 	}
 
@@ -157,7 +157,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	}
 
 	@Override
-	public List<UserPermissionRefVO> listUserPermissionRef(UserPermissionRefQueryParam param) {
+	public List<UserPermissionRefDTO> listUserPermissionRef(UserPermissionRefQueryParam param) {
 		Assert.notNull(param, "参数不能为空");
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
 		Assert.hasText(param.getUserId(), "用户id不能为空");
@@ -166,12 +166,12 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	}
 
 	@Override
-	public PageVO<UserPermissionRefVO> pageUserPermissionRef(UserPermissionRefQueryParam param) {
+	public PageVO<UserPermissionRefDTO> pageUserPermissionRef(UserPermissionRefQueryParam param) {
 		Assert.notNull(param, "参数不能为空");
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
 		Assert.hasText(param.getUserId(), "用户id不能为空");
 		Assert.hasText(param.getTenant(), "tenant不能为空");
-		PageVO<UserPermissionRefVO> pageVO = new PageVO<UserPermissionRefVO>(param);
+		PageVO<UserPermissionRefDTO> pageVO = new PageVO<UserPermissionRefDTO>(param);
 		if(param.isReturnTotalCount()){
 			long total = userPermissionRefDAO.countUserPermissionRef(param);
 			pageVO.setTotal(total);

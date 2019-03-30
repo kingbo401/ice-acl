@@ -61,7 +61,7 @@
 		and t2.status=1 and t1.status!=0
 	</sql>
 
-	<select id = "listUserPermissionGroupRef"  resultType="UserPermissionGroupRefVO">
+	<select id = "listUserPermissionGroupRef"  resultType="com.kingbo401.iceacl.model.dto.UserPermissionGroupRefDTO">
 		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.tag1,t2.group_pid,
 		t2.group_name,t2.description, t2.group_order,t2.group_type
 		from ice_user_permission_group_ref t1, ice_permission_group t2
@@ -76,7 +76,7 @@
 		<include refid="queryUserPermissionGroupRefSubSql" />
 	</select>
 	
-	<select id = "pageUserPermissionGroupRef"  resultType="UserPermissionGroupRefVO">
+	<select id = "pageUserPermissionGroupRef"  resultType="com.kingbo401.iceacl.model.dto.UserPermissionGroupRefDTO">
 		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.tag1,t2.group_pid,
 		t2.group_name,t2.description, t2.group_order,t2.group_type
 		from ice_user_permission_group_ref t1, ice_permission_group t2
@@ -87,7 +87,7 @@
 		limit #{offset},#{pageSize}
 	</select>
 	
-	<select id = "hasUserUse" resultType="UserPermissionGroupRefDO">
+	<select id = "hasUserUse" resultType="UserPermissionGroupRefPO">
 		select count(*) from ice_user_permission_group_ref 
 		where group_id=#{groupId} and status!=0
 		and	(expire_time &gt;= now() or expire_time is null)

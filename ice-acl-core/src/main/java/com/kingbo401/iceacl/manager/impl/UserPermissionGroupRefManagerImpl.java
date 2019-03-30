@@ -19,11 +19,11 @@ import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.dao.UserPermissionGroupRefDAO;
 import com.kingbo401.iceacl.manager.PermissionGroupManager;
 import com.kingbo401.iceacl.manager.UserPermissionGroupRefManager;
-import com.kingbo401.iceacl.model.db.UserPermissionGroupRefDO;
-import com.kingbo401.iceacl.model.db.param.UserPermissionGroupRefQueryParam;
-import com.kingbo401.iceacl.model.db.vo.UserPermissionGroupRefVO;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
+import com.kingbo401.iceacl.model.dto.UserPermissionGroupRefDTO;
 import com.kingbo401.iceacl.model.dto.param.UserPermissionGroupRefParam;
+import com.kingbo401.iceacl.model.po.UserPermissionGroupRefPO;
+import com.kingbo401.iceacl.model.po.param.UserPermissionGroupRefQueryParam;
 
 @Service
 public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRefManager{
@@ -47,21 +47,21 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.hasText(userId, "userId不能为空");
 		Assert.notEmpty(groupIds, "groupIds不能为空");
 		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
-		List<UserPermissionGroupRefDO> userPermissionGroupRefDOs = new ArrayList<UserPermissionGroupRefDO>();
+		List<UserPermissionGroupRefPO> userPermissionGroupRefPOs = new ArrayList<UserPermissionGroupRefPO>();
 		Date now  = new Date();
 		for(Long groupId : groupIds){
-			UserPermissionGroupRefDO userPermissionGroupRefDO = new UserPermissionGroupRefDO();
-			userPermissionGroupRefDO.setUserId(userId);
-			userPermissionGroupRefDO.setTenant(tenant);
-			userPermissionGroupRefDO.setGroupId(groupId);
-			userPermissionGroupRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			userPermissionGroupRefDO.setCreateTime(now);
-			userPermissionGroupRefDO.setUpdateTime(now);
-			userPermissionGroupRefDO.setEffectiveTime(effectiveTime);
-			userPermissionGroupRefDO.setExpireTime(expireTime);
-			userPermissionGroupRefDOs.add(userPermissionGroupRefDO);
+			UserPermissionGroupRefPO userPermissionGroupRefPO = new UserPermissionGroupRefPO();
+			userPermissionGroupRefPO.setUserId(userId);
+			userPermissionGroupRefPO.setTenant(tenant);
+			userPermissionGroupRefPO.setGroupId(groupId);
+			userPermissionGroupRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			userPermissionGroupRefPO.setCreateTime(now);
+			userPermissionGroupRefPO.setUpdateTime(now);
+			userPermissionGroupRefPO.setEffectiveTime(effectiveTime);
+			userPermissionGroupRefPO.setExpireTime(expireTime);
+			userPermissionGroupRefPOs.add(userPermissionGroupRefPO);
 		}
-		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefDOs);
+		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefPOs);
 		return true;
 	}
 
@@ -84,30 +84,30 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		userPermissionGroupRefQueryParam.setAppKey(appKey);
 		userPermissionGroupRefQueryParam.setUserId(userId);
 		userPermissionGroupRefQueryParam.setTenant(tenant);
-		List<UserPermissionGroupRefVO> userPermissionGroupRefVOs = userPermissionGroupRefDAO.listUserPermissionGroupRef(userPermissionGroupRefQueryParam);
+		List<UserPermissionGroupRefDTO> userPermissionGroupRefVOs = userPermissionGroupRefDAO.listUserPermissionGroupRef(userPermissionGroupRefQueryParam);
 		if(CollectionUtil.isNotEmpty(userPermissionGroupRefVOs)){
 			List<Long> groupIdsRemove = new ArrayList<Long>();
-			for(UserPermissionGroupRefVO userPermissionGroupRefVO : userPermissionGroupRefVOs){
+			for(UserPermissionGroupRefDTO userPermissionGroupRefVO : userPermissionGroupRefVOs){
 				groupIdsRemove.add(userPermissionGroupRefVO.getGroupId());
 			}
 			userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIdsRemove, IceAclConstant.STATUS_REMOVE);
 		}
 		
-		List<UserPermissionGroupRefDO> userPermissionGroupRefDOs = new ArrayList<UserPermissionGroupRefDO>();
+		List<UserPermissionGroupRefPO> userPermissionGroupRefPOs = new ArrayList<UserPermissionGroupRefPO>();
 		Date now  = new Date();
 		for(Long groupId : groupIds){
-			UserPermissionGroupRefDO userPermissionGroupRefDO = new UserPermissionGroupRefDO();
-			userPermissionGroupRefDO.setUserId(userId);
-			userPermissionGroupRefDO.setTenant(tenant);
-			userPermissionGroupRefDO.setGroupId(groupId);
-			userPermissionGroupRefDO.setStatus(IceAclConstant.STATUS_NORMAL);
-			userPermissionGroupRefDO.setCreateTime(now);
-			userPermissionGroupRefDO.setUpdateTime(now);
-			userPermissionGroupRefDO.setEffectiveTime(effectiveTime);
-			userPermissionGroupRefDO.setExpireTime(expireTime);
-			userPermissionGroupRefDOs.add(userPermissionGroupRefDO);
+			UserPermissionGroupRefPO userPermissionGroupRefPO = new UserPermissionGroupRefPO();
+			userPermissionGroupRefPO.setUserId(userId);
+			userPermissionGroupRefPO.setTenant(tenant);
+			userPermissionGroupRefPO.setGroupId(groupId);
+			userPermissionGroupRefPO.setStatus(IceAclConstant.STATUS_NORMAL);
+			userPermissionGroupRefPO.setCreateTime(now);
+			userPermissionGroupRefPO.setUpdateTime(now);
+			userPermissionGroupRefPO.setEffectiveTime(effectiveTime);
+			userPermissionGroupRefPO.setExpireTime(expireTime);
+			userPermissionGroupRefPOs.add(userPermissionGroupRefPO);
 		}
-		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefDOs);
+		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefPOs);
 		return true;
 	}
 
@@ -173,23 +173,23 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		String tenant = param.getTenant();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
-		List<UserPermissionGroupRefVO> parentPermissionGroupVOs = userPermissionGroupRefDAO.listUserPermissionGroupRef(param);
+		List<UserPermissionGroupRefDTO> parentPermissionGroupVOs = userPermissionGroupRefDAO.listUserPermissionGroupRef(param);
 		if(CollectionUtil.isEmpty(parentPermissionGroupVOs)){
 			return null;
 		}
 		
 		List<Long> groupIds = Lists.newArrayList();
-		for(UserPermissionGroupRefVO userPermissionGroupRefVO : parentPermissionGroupVOs){
+		for(UserPermissionGroupRefDTO userPermissionGroupRefVO : parentPermissionGroupVOs){
 			groupIds.add(userPermissionGroupRefVO.getGroupId());
 		}
 		return groupIds;
 	}
 	
 	@Override
-	public PageVO<UserPermissionGroupRefVO> pageUserPermissionGroup(UserPermissionGroupRefQueryParam param) {
+	public PageVO<UserPermissionGroupRefDTO> pageUserPermissionGroup(UserPermissionGroupRefQueryParam param) {
 		Assert.notNull(param, "参数不能为空");
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
-		PageVO<UserPermissionGroupRefVO> pageVO = new PageVO<UserPermissionGroupRefVO>(param);
+		PageVO<UserPermissionGroupRefDTO> pageVO = new PageVO<UserPermissionGroupRefDTO>(param);
 		if(param.isReturnTotalCount()){
 			long total = userPermissionGroupRefDAO.countUserPermissionGroupRef(param);
 			pageVO.setTotal(total);
@@ -197,7 +197,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 				return pageVO;
 			}
 		}
-		List<UserPermissionGroupRefVO> userPermissionGroupRefVOs = userPermissionGroupRefDAO.pageUserPermissionGroupRef(param);
+		List<UserPermissionGroupRefDTO> userPermissionGroupRefVOs = userPermissionGroupRefDAO.pageUserPermissionGroupRef(param);
 		pageVO.setItems(userPermissionGroupRefVOs);
 		return pageVO;
 	}
