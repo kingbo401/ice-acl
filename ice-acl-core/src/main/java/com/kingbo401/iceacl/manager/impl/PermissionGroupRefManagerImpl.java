@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ import com.kingbo401.iceacl.manager.PermissionGroupRefManager;
 import com.kingbo401.iceacl.model.dto.PermissionDTO;
 import com.kingbo401.iceacl.model.dto.PermissionGroupDTO;
 import com.kingbo401.iceacl.model.dto.param.PermissionGroupRefParam;
-import com.kingbo401.iceacl.model.po.PermissionPO;
 import com.kingbo401.iceacl.model.po.PermissionGroupRefPO;
+import com.kingbo401.iceacl.model.po.PermissionPO;
 import com.kingbo401.iceacl.model.po.param.PermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
 
@@ -161,7 +162,7 @@ public class PermissionGroupRefManagerImpl implements PermissionGroupRefManager{
 		if(CollectionUtil.isNotEmpty(permissionIds)){
 			List<PermissionPO> permissionPOs = permissionDAO.getPermissionByIds(permissionIds);
 			Assert.notEmpty(permissionPOs, "权限不存在");
-			Map<Object, PermissionPO> permissionMap = CollectionUtil.toIdMap(permissionPOs);
+			Map<Long, PermissionPO> permissionMap = permissionPOs.stream().collect(Collectors.toMap(PermissionPO::getId, a -> a, (k1, k2) -> k1));
 			for(Long permissionId : permissionIds){
 				Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
 			}

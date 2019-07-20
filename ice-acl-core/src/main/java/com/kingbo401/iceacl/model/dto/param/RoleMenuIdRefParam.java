@@ -8,7 +8,6 @@ public class RoleMenuIdRefParam extends BaseParam{
 	private String appKey;
 	private Long roleId;
 	private List<Long> menuIds;
-	private boolean multiApp = false;
 	
 	public String getAppKey() {
 		return appKey;
@@ -27,11 +26,5 @@ public class RoleMenuIdRefParam extends BaseParam{
 	}
 	public void setMenuIds(List<Long> menuIds) {
 		this.menuIds = menuIds;
-	}
-	public boolean isMultiApp() {
-		return multiApp;
-	}
-	public void setMultiApp(boolean multiApp) {
-		this.multiApp = multiApp;
 	}
 }

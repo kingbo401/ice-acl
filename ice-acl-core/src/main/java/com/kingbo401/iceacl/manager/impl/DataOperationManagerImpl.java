@@ -58,7 +58,6 @@ public class DataOperationManagerImpl implements DataOperationManager {
 	@Override
 	public DataOperationDTO updateDataOperation(DataOperationParam dataOperationParam) {
 		Assert.notNull(dataOperationParam, "参数不能为空");
-		Assert.notNull(dataOperationParam);
 		String appKey = dataOperationParam.getAppKey();
 		String operationCode = dataOperationParam.getCode();
 		Assert.hasText(operationCode, "operationCode不能为空");

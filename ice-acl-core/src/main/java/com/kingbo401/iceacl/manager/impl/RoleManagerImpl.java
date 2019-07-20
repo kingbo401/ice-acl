@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import com.kingbo401.commons.encrypt.SecurityUtil;
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.dao.MenuDAO;
 import com.kingbo401.iceacl.dao.RoleDAO;
 import com.kingbo401.iceacl.dao.RoleMenuRefDAO;
@@ -24,8 +24,8 @@ import com.kingbo401.iceacl.manager.UserRoleRefManager;
 import com.kingbo401.iceacl.model.dto.RoleDTO;
 import com.kingbo401.iceacl.model.dto.param.RoleMenuIdRefParam;
 import com.kingbo401.iceacl.model.po.MenuPO;
-import com.kingbo401.iceacl.model.po.RolePO;
 import com.kingbo401.iceacl.model.po.RoleMenuRefPO;
+import com.kingbo401.iceacl.model.po.RolePO;
 import com.kingbo401.iceacl.model.po.param.RoleMenuQueryParam;
 import com.kingbo401.iceacl.model.po.param.RoleQueryParam;
 
@@ -215,7 +215,6 @@ public class RoleManagerImpl implements RoleManager{
 
 	@Override
 	public List<RoleDTO> listRole(RoleQueryParam param) {
-		Assert.notNull(param);
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
 		List<RolePO> rolePOs = roleDAO.listRole(param);
 		return buildRoleDTOs(rolePOs);
@@ -248,11 +247,8 @@ public class RoleManagerImpl implements RoleManager{
 		Assert.notNull(roleId, "roleId不能为null");
 		RoleDTO roleDTO = getRoleById(appKey, roleId);
 		Assert.notNull(roleDTO, "角色不存在");
-		boolean multiApp = param.isMultiApp();
 		RoleMenuQueryParam roleMenuQueryParam = new RoleMenuQueryParam();
-		if(!multiApp){
-			roleMenuQueryParam.setAppKey(param.getAppKey());
-		}
+		roleMenuQueryParam.setAppKey(param.getAppKey());
 		roleMenuQueryParam.setRoleId(roleId);
 		List<MenuPO> menuPOs = roleMenuRefDAO.listMenu(roleMenuQueryParam);
 		if(!CollectionUtils.isEmpty(menuPOs)){
@@ -268,7 +264,7 @@ public class RoleManagerImpl implements RoleManager{
 			return true;
 		}
 		
-	    Map<Object, MenuPO> menuMap = CollectionUtil.toIdMap(menuDAO.getMenuByIds(menuIds));
+	    Map<Object, MenuPO> menuMap = menuDAO.getMenuByIds(menuIds).stream().collect(Collectors.toMap(MenuPO::getId, a -> a, (k1, k2) -> k1));;
 		List<RoleMenuRefPO> refPOs = new ArrayList<RoleMenuRefPO>();
 		Date now = new Date();
 		for(Long menuId : menuIds){

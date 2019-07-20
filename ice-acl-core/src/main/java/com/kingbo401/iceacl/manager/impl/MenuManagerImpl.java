@@ -91,7 +91,6 @@ public class MenuManagerImpl implements MenuManager{
 
 	@Override
 	public MenuDTO createMenu(MenuDTO menuDTO) {
-		Assert.notNull(menuDTO);
 		Assert.hasText(menuDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(menuDTO.getMenuName(), "menuName不能为空");
 		Assert.hasText(menuDTO.getMenuUrl(), "menuUrl不能为空");

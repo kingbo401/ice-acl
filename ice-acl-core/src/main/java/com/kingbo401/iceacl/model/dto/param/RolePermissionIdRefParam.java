@@ -8,7 +8,6 @@ public class RolePermissionIdRefParam extends BasePojo{
 	private String appKey;
 	private Long roleId;
 	private List<Long> permissionIds;
-	private boolean multiApp = false;
 	
 	public String getAppKey() {
 		return appKey;
@@ -27,11 +26,5 @@ public class RolePermissionIdRefParam extends BasePojo{
 	}
 	public void setPermissionIds(List<Long> permissionIds) {
 		this.permissionIds = permissionIds;
-	}
-	public boolean isMultiApp() {
-		return multiApp;
-	}
-	public void setMultiApp(boolean multiApp) {
-		this.multiApp = multiApp;
 	}
 }

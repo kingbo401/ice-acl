@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import kingbo401.iceacl.common.constant.IceAclConstant;
 import kingbo401.iceacl.common.utils.MixAll;
@@ -208,7 +209,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		}
 		List<PermissionGroupDTO> permissionGroupDTOs = permissionGroupManager.getPermissionGroupByIds(appKey, groupIds);
 		Assert.notEmpty(permissionGroupDTOs, "权限组不存在");
-		Map<Object, PermissionGroupDTO> permissionGroupMap = CollectionUtil.toIdMap(permissionGroupDTOs);
+		Map<Long, PermissionGroupDTO> permissionGroupMap = permissionGroupDTOs.stream().collect(Collectors.toMap(PermissionGroupDTO::getId, a -> a, (k1, k2) -> k1));
 		for(Long groupId : groupIds){
 			PermissionGroupDTO permissionGroup = permissionGroupMap.get(groupId);
 			Assert.notNull(permissionGroup, "权限组不存在:" + groupId);

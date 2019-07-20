@@ -63,9 +63,7 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		String appKey = param.getAppKey();
 		RolePermissionRefQueryParam permissionGroupRefQueryParam = new RolePermissionRefQueryParam();
 		permissionGroupRefQueryParam.setRoleId(roleId);
-		if(!param.isMultiApp()){
-			permissionGroupRefQueryParam.setPermissionAppKey(appKey);
-		}
+		permissionGroupRefQueryParam.setPermissionAppKey(appKey);
 		List<PermissionPO> permissionPOs =  rolePermissionRefDAO.listPermission(permissionGroupRefQueryParam);
 		if(CollectionUtil.isNotEmpty(permissionPOs)){
 			List<Long> permissionIdsRemove = new ArrayList<Long>();
@@ -158,10 +156,8 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		if(CollectionUtil.isNotEmpty(permissionIds)){
 			List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(permissionIds);
 			Assert.notEmpty(permissionDTOs, "权限不存在");
-			if(!param.isMultiApp()){
-				for(PermissionDTO permissionDTO : permissionDTOs){
-					Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appkey不匹配:" + permissionDTO.getId());
-				}
+			for(PermissionDTO permissionDTO : permissionDTOs){
+				Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appkey不匹配:" + permissionDTO.getId());
 			}
 		}
 	}

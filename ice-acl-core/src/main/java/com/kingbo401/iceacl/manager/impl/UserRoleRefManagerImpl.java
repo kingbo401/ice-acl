@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 			return;
 		}
 		List<RoleDTO> roleDTOs = roleManager.getRoleByIds(appKey, roleIds);
-		Map<Object, RoleDTO> roleIdMap =  CollectionUtil.toIdMap(roleDTOs);
+		Map<Long, RoleDTO> roleIdMap = roleDTOs.stream().collect(Collectors.toMap(RoleDTO::getId, a -> a, (k1, k2) -> k1));
 		for(Long roleId : roleIds){
 			RoleDTO roleDTO = roleIdMap.get(roleId);
 			Assert.notNull(roleDTO, "角色:" + roleId + " 不存在");

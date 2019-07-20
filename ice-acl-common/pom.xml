@@ -18,14 +18,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>commons-collections</groupId>
-		    <artifactId>commons-collections</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>kingbo401</groupId>
 			<artifactId>mix-bag</artifactId>
 			<version>1.0.0</version>

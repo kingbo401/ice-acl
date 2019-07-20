@@ -76,8 +76,7 @@
 		<include refid="queryPermissionGroupSubSql" />
 	</select>
 
-	<select id="getPermissionGroupsByRoleIds" resultType="PermissionGroupPO"
-		parameterType="RolePermissionGroupRefParam">
+	<select id="getPermissionGroupsByRoleIds" resultType="PermissionGroupPO">
 		select t2.* from ice_role_permission_group_ref t1,ice_permission_group t2
 		where t1.group_id = t2.id and t1.`status` != 0 and t2.`status` = 1
 		<if test="appKey != null and appKey != ''">

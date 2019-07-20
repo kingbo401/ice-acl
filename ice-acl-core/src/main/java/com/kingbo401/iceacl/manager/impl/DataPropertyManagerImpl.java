@@ -3,6 +3,7 @@ package com.kingbo401.iceacl.manager.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +110,7 @@ public class DataPropertyManagerImpl implements DataPropertyManager {
 		Assert.notEmpty(ids, "ids不能为空");
 		List<DataPropertyPO> dataPropertyPOs = propertyDAO.getByIds(ids);
 		Assert.notEmpty(dataPropertyPOs, "属性不存在");
-		Map<Object, DataPropertyPO> propertyMap = CollectionUtil.toIdMap(dataPropertyPOs);
+		Map<Long, DataPropertyPO> propertyMap = dataPropertyPOs.stream().collect(Collectors.toMap(DataPropertyPO::getId, a -> a, (k1, k2) -> k1));
 		for (Long id : ids) {
 			Assert.notNull(propertyMap.get(id), "属性:" + id + " 不存在");
 		}
@@ -122,7 +123,7 @@ public class DataPropertyManagerImpl implements DataPropertyManager {
 		Assert.notEmpty(propertyCodes, "propertyCodes 不能为空");
 		List<DataPropertyPO> dataPropertyPOs = propertyDAO.getByCodes(appKey, propertyCodes);
 		Assert.notEmpty(dataPropertyPOs, "属性不存在");
-		Map<Object, DataPropertyPO> propertyMap = CollectionUtil.toMap(dataPropertyPOs, "code");
+		Map<String, DataPropertyPO> propertyMap = dataPropertyPOs.stream().collect(Collectors.toMap(DataPropertyPO::getCode, a -> a, (k1, k2) -> k1));
 		for (String propertyCode : propertyCodes) {
 			Assert.notNull(propertyMap.get(propertyCode), "属性:" + propertyCode + " 不存在");
 		}
@@ -137,7 +138,6 @@ public class DataPropertyManagerImpl implements DataPropertyManager {
 
 	@Override
 	public List<DataPropertyDTO> listDataProperty(DataPropertyQueryParam param) {
-		Assert.notNull(param);
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
 		List<DataPropertyPO> dataPropertyPOs = propertyDAO.listDataProperty(param);
 		return BizUtils.buildDataPropertyDTOs(dataPropertyPOs);
@@ -145,7 +145,6 @@ public class DataPropertyManagerImpl implements DataPropertyManager {
 
 	@Override
 	public PageVO<DataPropertyDTO> pageDataProperty(DataPropertyQueryParam param) {
-		Assert.notNull(param);
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
 		PageVO<DataPropertyDTO> pageVO = new PageVO<DataPropertyDTO>(param);
 		if(param.isReturnTotalCount()){

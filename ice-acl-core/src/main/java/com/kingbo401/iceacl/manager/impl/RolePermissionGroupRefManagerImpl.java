@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import kingbo401.iceacl.common.constant.IceAclConstant;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,8 @@ import com.kingbo401.iceacl.model.po.RolePermissionGroupRefPO;
 import com.kingbo401.iceacl.model.po.param.RolePermissionGroupRefQueryParam;
 import com.kingbo401.iceacl.model.po.param.UserRoleRefQueryParam;
 import com.kingbo401.iceacl.utils.BizUtils;
+
+import kingbo401.iceacl.common.constant.IceAclConstant;
 
 @Service
 public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRefManager{
@@ -70,9 +71,7 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		
 		RolePermissionGroupRefQueryParam rolePermissionGroupRefQueryParam = new RolePermissionGroupRefQueryParam();
 		rolePermissionGroupRefQueryParam.setRoleId(param.getRoleId());
-		if(!param.isMultiApp()){
-			rolePermissionGroupRefQueryParam.setGroupAppKey(param.getAppKey());
-		}
+		rolePermissionGroupRefQueryParam.setGroupAppKey(param.getAppKey());
 		List<PermissionGroupPO> permissionGroupPOs = rolePermissionGroupRefDAO.listPermissionGroup(rolePermissionGroupRefQueryParam);
 		if(CollectionUtil.isNotEmpty(permissionGroupPOs)){
 			List<Long> groupIdsRemove = new ArrayList<Long>();
@@ -193,12 +192,7 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		if(CollectionUtil.isNotEmpty(groupIds)){
 			List<PermissionGroupDTO> permissionGroupDTOs = permissionGroupManager.getPermissionGroupByIds(groupIds);
 			Assert.notEmpty(permissionGroupDTOs, "权限组不存在");
-			if(param.isMultiApp()){
-				for(PermissionGroupDTO permissionGroupDTO : permissionGroupDTOs){
-					Assert.isTrue(appKey.equals(permissionGroupDTO.getAppKey()), "appKey权限组不匹配:" + permissionGroupDTO.getId());
-				}
-			}
-			Map<Object, PermissionGroupDTO> permissionGroupMap = CollectionUtil.toIdMap(permissionGroupDTOs);
+			Map<Long, PermissionGroupDTO> permissionGroupMap = permissionGroupDTOs.stream().collect(Collectors.toMap(PermissionGroupDTO::getId, a -> a, (k1, k2) -> k1));
 			for(Long groupId : groupIds){
 				Assert.notNull(permissionGroupMap.get(groupId), "权限组不存在:" + groupId);
 			}

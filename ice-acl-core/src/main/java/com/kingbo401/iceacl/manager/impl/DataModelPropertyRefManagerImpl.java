@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 		DataModelDTO model = dataModelManager.getDataModel(appKey, modelCode);
 		Assert.notNull(model, "模型不存在");
 		List<DataPropertyDTO> propertyDTOs = dataPropertyManager.getDataProperties(appKey, propertyCodes);
-		Map<Object, DataPropertyDTO> propertyMap = CollectionUtil.toMap(propertyDTOs, "code");
+		Map<String, DataPropertyDTO> propertyMap = propertyDTOs.stream().collect(Collectors.toMap(DataPropertyDTO::getCode, a -> a, (k1, k2) -> k1));
 		Date now = new Date();
 		List<DataModelPropertyRefPO> refPOs = new ArrayList<DataModelPropertyRefPO>();
 		for (String propertyCode : propertyCodes) {
@@ -97,7 +98,7 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 			propertyCodes.add(code);
 		}
 		List<DataPropertyDTO> propertyDTOs = dataPropertyManager.getDataProperties(appKey, propertyCodes);
-		Map<Object, DataPropertyDTO> propertyMap = CollectionUtil.toMap(propertyDTOs, "code");
+		Map<Object, DataPropertyDTO> propertyMap = propertyDTOs.stream().collect(Collectors.toMap(DataPropertyDTO::getCode, a -> a, (k1, k2) -> k1));
 		Date now = new Date();
 		List<DataModelPropertyRefPO> refPOs = new ArrayList<DataModelPropertyRefPO>();
 		for (PropertyInfo propertyInfo : propertyInfos) {
@@ -118,7 +119,6 @@ public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefMana
 	}
 
 	private boolean updateDataModelPropertyRefStatus(DataModelPropertyRefParam dataModelPropertyRefParam, int status){
-		Assert.notNull(dataModelPropertyRefParam);
 		String appKey = dataModelPropertyRefParam.getAppKey();
 		String modelCode = dataModelPropertyRefParam.getModelCode();
 		Assert.hasText(appKey, "appKey 不能为null");

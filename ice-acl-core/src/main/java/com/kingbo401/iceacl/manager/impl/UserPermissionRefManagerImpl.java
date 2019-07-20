@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import kingbo401.iceacl.common.constant.IceAclConstant;
-import kingbo401.iceacl.common.utils.MixAll;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +21,9 @@ import com.kingbo401.iceacl.model.dto.UserPermissionRefDTO;
 import com.kingbo401.iceacl.model.dto.param.UserPermissionRefParam;
 import com.kingbo401.iceacl.model.po.UserPermissionRefPO;
 import com.kingbo401.iceacl.model.po.param.UserPermissionRefQueryParam;
+
+import kingbo401.iceacl.common.constant.IceAclConstant;
+import kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
@@ -189,7 +190,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		}
 		List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(appKey, permissionIds);
 		Assert.notEmpty(permissionDTOs, "权限不存在");
-		Map<Object, PermissionDTO> idMap = CollectionUtil.toIdMap(permissionDTOs);
+		Map<Long, PermissionDTO> idMap = permissionDTOs.stream().collect(Collectors.toMap(PermissionDTO::getId, a -> a, (k1, k2) -> k1));
 		for(Long permissionId : permissionIds){
 			PermissionDTO permissionDTO = idMap.get(permissionId);
 			Assert.notNull(permissionDTO, "权限不存在");

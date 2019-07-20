@@ -8,7 +8,6 @@ public class RolePermissionGroupRefParam extends BaseParam{
 	private String appKey;
 	private Long roleId;
 	private List<Long> groupIds;
-	private boolean multiApp = false;
 
 	public String getAppKey() {
 		return appKey;
@@ -27,11 +26,5 @@ public class RolePermissionGroupRefParam extends BaseParam{
 	}
 	public void setGroupIds(List<Long> groupIds) {
 		this.groupIds = groupIds;
-	}
-	public boolean isMultiApp() {
-		return multiApp;
-	}
-	public void setMultiApp(boolean multiApp) {
-		this.multiApp = multiApp;
 	}
 }

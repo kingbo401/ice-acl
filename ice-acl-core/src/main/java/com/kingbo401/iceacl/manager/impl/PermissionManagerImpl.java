@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.dao.PermissionDAO;
 import com.kingbo401.iceacl.manager.PermissionManager;
 import com.kingbo401.iceacl.manager.UserPermissionRefManager;
@@ -93,7 +93,7 @@ public class PermissionManagerImpl implements PermissionManager{
 		for(PermissionPO permissionPO : permissionPOs){
 			Assert.isTrue(appKey.equals(permissionPO.getAppKey()), "appKey, permissionId不匹配");
 		}
-		Map<Object, PermissionPO> permissionMap = CollectionUtil.toIdMap(permissionPOs);
+		Map<Object, PermissionPO> permissionMap = permissionPOs.stream().collect(Collectors.toMap(PermissionPO::getId, a -> a, (k1, k2) -> k1));
 		for(Long permissionId : permissionIds){
 			Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
 		}
@@ -105,7 +105,7 @@ public class PermissionManagerImpl implements PermissionManager{
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		List<PermissionPO> permissionPOs = permissionDAO.getPermissionByIds(permissionIds);
 		Assert.notEmpty(permissionPOs, "权限不存在");
-		Map<Object, PermissionPO> permissionMap = CollectionUtil.toIdMap(permissionPOs);
+		Map<Long, PermissionPO> permissionMap = permissionPOs.stream().collect(Collectors.toMap(PermissionPO::getId, a -> a, (k1, k2) -> k1));
 		for(Long permissionId : permissionIds){
 			Assert.notNull(permissionMap.get(permissionId), "权限:" + permissionId + " 不存在");
 		}
