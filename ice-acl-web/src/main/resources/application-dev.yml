@@ -51,10 +51,13 @@ spring:
         # 登录密码
         login-password: admin
 mybatis:
-  mapper-locations: classpath:mappers/*DAO.xml
+  mapper-locations: classpath:mybatis/mapper/*DAO.xml
   type-aliases-package: com.kingbo401.iceacl.model.po
   config-location: classpath:/mybatis-config.xml
- 
+
+pagehelper:
+  helper-dialect: mysql
+   
 logging:
   config: classpath:logback-spring.xml
   level:
