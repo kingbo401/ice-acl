@@ -13,7 +13,7 @@ public class AclConstant {
 	/**
 	 * 如果授权对象不区分租户，使用此常量给授权参数里的租户字段赋值
 	 */
-	public static final String TENANT_COMMON_SYMBOL = "_t_all";
+	public static final String TENANT_COMMON_SYMBOL = "_t_common";
 	
 	/**
 	 * 删除的状态

@@ -36,11 +36,11 @@
 		<if test = "appKey != null and appKey != ''">
 		    and t2.app_key=#{appKey}
 		</if>
-		<if test='tenant == "_t_all"'>
-		    and t2.tenant='_t_all'
+		<if test='tenant == "_t_common"'>
+		    and t2.tenant='_t_common'
 		</if>
-		<if test='tenant != "_t_all"'>
-		    and t2.tenant in ('_t_all',#{tenant})
+		<if test='tenant != "_t_common"'>
+		    and t2.tenant in ('_t_common',#{tenant})
 		</if>
 		<if test = "roleName != null and roleName != ''">
 		    and t2.name like  concat('%', #{roleName}, '%')
@@ -115,11 +115,11 @@
 		<if test = "appKey != null and appKey != ''">
 		    and t2.app_key=#{appKey}
 		</if>
-		<if test='tenant == "_t_all"'>
-		    and t2.tenant='_t_all'
+		<if test='tenant == "_t_common"'>
+		    and t2.tenant='_t_common'
 		</if>
-		<if test='tenant != "_t_all"'>
-		    and t2.tenant in ('_t_all',#{tenant})
+		<if test='tenant != "_t_common"'>
+		    and t2.tenant in ('_t_common',#{tenant})
 		</if>
 		<if test="filterUserRole == true">
 			<if test = "roleName != null and roleName != ''">
@@ -154,11 +154,11 @@
 		<if test = "appKey != null and appKey != ''">
 		    and t2.app_key=#{appKey}
 		</if>
-		<if test='tenant == "_t_all"'>
-		    and t2.tenant='_t_all'
+		<if test='tenant == "_t_common"'>
+		    and t2.tenant='_t_common'
 		</if>
-		<if test='tenant != "_t_all"'>
-		    and t2.tenant in ('_t_all',#{tenant})
+		<if test='tenant != "_t_common"'>
+		    and t2.tenant in ('_t_common',#{tenant})
 		</if>
 		<if test = "roleName != null and roleName != ''">
 		    and t2.name like  concat('%', #{roleName}, '%')

@@ -45,11 +45,11 @@
 	
 	<sql id="queryRoleSubSql">
 		 where app_key = #{appKey} and status != 0
-		<if test='tenant == "_t_all"'>
-		    and tenant='_t_all'
+		<if test='tenant == "_t_common"'>
+		    and tenant='_t_common'
 		</if>
-		<if test='tenant != "_t_all"'>
-		    and tenant in ('_t_all',#{tenant})
+		<if test='tenant != "_t_common"'>
+		    and tenant in ('_t_common',#{tenant})
 		</if>
 		 <if test="type != null and type !=''">
 			and type = #{type}
