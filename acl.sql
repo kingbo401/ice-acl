@@ -16,7 +16,7 @@ CREATE TABLE `app` (
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ukey` (`app_key`),
-  KEY `idx_name` (`app_name`)
+  KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用表';
 
 -- ----------------------------
@@ -257,7 +257,7 @@ CREATE TABLE `data_grant_record` (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  KEY `idx_grant` (`grant_target_id`,`grant_target_type`),
+  KEY `idx_grant` (`grant_target_id`,`grant_target_type`,`model_id`,`tenant`),
   KEY `idx_model_operation_property` (`model_id`,`operation_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据权限授权表';
 
