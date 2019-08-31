@@ -10,13 +10,13 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>kingbo401</groupId>
-	<artifactId>ice-acl</artifactId>
+	<artifactId>acl</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>${project.artifactId}</name>
-	<description>The parent project of ice-acl</description>
-	<url>https://github.com/kingbo401/ice-acl</url>
+	<description>The parent project of acl</description>
+	<url>https://github.com/kingbo401/acl</url>
 	<inceptionYear>2018</inceptionYear>
 	<licenses>
 		<license>
@@ -31,10 +31,10 @@
 	</properties>
 
 	<modules>
-		<module>ice-acl-common</module>
-		<module>ice-acl-api</module>
-		<module>ice-acl-core</module>
-		<module>ice-acl-web</module>
+		<module>acl-common</module>
+		<module>acl-api</module>
+		<module>acl-core</module>
+		<module>acl-web</module>
 	</modules>
 
 	<dependencyManagement>

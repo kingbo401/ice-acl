@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingbo401.acl.dao.PermissionDAO">
+	<select id="getPermissionByIds" resultType="PermissionDO">
+		select * from permission where status != 0 and id in
+		<foreach collection="ids" open="(" close=")" item="id"
+			separator=",">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="getPermissionByKeys" resultType="PermissionDO">
+		select * from permission where status != 0 and app_key=#{appKey}
+		and permission_key in
+		<foreach collection="permissionKeys" open="(" close=")"
+			item="permissionKey" separator=",">
+			#{permissionKey}
+		</foreach>
+	</select>
+	
+	<sql id="queryPermissionSubSql">
+		where status != 0 and app_key=#{appKey}
+		<if test="type != null and type != ''">
+			and type=#{type}
+		</if>
+		<if test="permissionKey != null and permissionKey != ''">
+			and permission_key=#{permissionKey}
+		</if>
+		<if test="name != null and name != ''">
+			and name=#{name}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+	</sql>
+
+	<select id="listPermission" resultType="PermissionDO">
+		select * from permission
+		<include refid="queryPermissionSubSql" />
+		<if test = "orderField != null and orderField != ''">
+		    order by ${orderField} ${orderType}
+		</if>
+	</select>
+
+	<select id="countPermission" resultType="long">
+		select count(*) from permission
+		<include refid="queryPermissionSubSql" />
+	</select>
+
+	<select id="pagePermission" resultType="PermissionDO">
+		select * from permission 
+		<include refid="queryPermissionSubSql" />
+		<if test = "orderField != null and orderField != ''">
+		    order by ${orderField} ${orderType}
+		</if>
+		limit #{offset}, #{pageSize}
+	</select>
+
+	<insert id="create" parameterType="PermissionDO"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into permission(permission_key,name,en_name,type,app_key,description,update_time,create_time,status)
+		values
+		(#{permissionKey},#{name},#{type},#{appKey},#{description},#{updateTime},#{createTime},#{status})
+		ON DUPLICATE KEY update status=#{status},name=#{name},type=#{type},
+		description=#{description},update_time = now()
+	</insert>
+
+	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into permission(permission_key,name,en_name,type,app_key,description,update_time,create_time,status)
+		values
+		<foreach collection="list" separator="," item="item">
+			(#{item.permissionKey},#{item.name},#{item.type},#{item.appKey},#{item.description},#{item.updateTime},#{item.createTime},#{status})
+		</foreach>
+		ON DUPLICATE KEY update status=values{status},name=values{name},type=values{type},
+		description=values{description},update_time = values{updateTime}
+	</insert>
+
+	<update id="update" parameterType="PermissionDO">
+		update permission
+		<set>
+			<if test="permissionKey != null and permissionKey != ''">
+				permission_key = #{permissionKey},
+			</if>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="enName != null and enName != ''" >
+                enName = #{enName},
+            </if>
+			<if test="type != null and type != ''">
+				type = #{type},
+			</if>
+			<if test="description != null and description != ''">
+				description = #{description},
+			</if>
+			<if test="status != null">
+                  status = #{status},
+              </if>
+			update_time = #{updateTime}
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="removeById" parameterType="long">
+		update permission set status = 0,update_time = now() where id = #{id}
+	</update>
+
+	<select id="getById" resultType="PermissionDO">
+		select * from permission where id = #{id} and status != 0 limit 1
+	</select>
+	
+	<select id="getByKey" resultType="PermissionDO">
+		select * from permission where app_key = #{appKey} and permission_key=#{permissionKey} and status != 0 limit 1
+	</select>
+
+	<select id="checkUserRolePermission" resultType="int">
+		select count(1) from
+		(
+			select t1.* from user_role_ref t1, role_permission_ref t2, role t3
+			where t1.user_id=#{userId} and t1.tenant=#{tenant} and
+			t2.permission_id=#{permissionId}
+			and t1.role_id=t2.role_id and t1.role_id = t3.id and 
+			t1.status=1 and t2.status=1 and t3.status=1
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			limit 1
+		) t0
+	</select>
+
+	<select id="checkUserDirectPermission" resultType="int">
+		select count(1) from
+		(
+			select * from user_permission_ref
+			where user_id = #{userId} and tenant = #{tenant} 
+			and permission_id = #{permissionId} and status = 1
+			and (expire_time &gt;= now() or expire_time is null) and (effective_time &lt;= now() or effective_time is null)
+			limit 1
+		) t0
+	</select>
+
+	<select id="checkUserPermissionGroupPermission" resultType="int">
+		select count(1) from
+		(
+			select t1.* from user_permission_group_ref t1,
+			permission_group_ref t2, permission_group t3
+			where t1.group_id = t2.group_id and t1.group_id=t3.id 
+			and t1.status=1 and t2.status=1 and t3.status=1
+			and t1.user_id=#{userId} and t1.tenant = #{tenant} and
+			t2.permission_id = #{permissionId}
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			limit 1
+		) t0
+	</select>
+
+	<select id="checkUserRolePermissionGroupPermission" resultType="int">
+		select count(1) from
+		(
+			select t1.* from user_role_ref t1, role t2,
+			role_permission_group_ref t3, permission_group_ref t4
+			where t1.user_id = #{userId} and t1.tenant = #{tenant}
+			and t1.role_id = t2.id and t2.id = t3.role_id and t3.group_id = t4.group_id
+			and t1.status = 1 and t2.status = 1 and t3.status = 1 and t4.status = 1
+			and t4.permission_id = #{permissionId}
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			limit 1
+		) t0
+	</select>
+</mapper>

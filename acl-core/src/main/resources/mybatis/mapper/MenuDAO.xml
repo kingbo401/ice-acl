@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.kingbo401.acl.dao.MenuDAO">
+    <select id="listMenu" resultType="MenuDO">
+		select * from menu where group_id=#{appKey} and status != 0 
+		<if test="status != null">
+          	status = #{status},
+      	</if>
+		order by idx asc
+	</select>
+	
+    <insert id="createMenu" parameterType="MenuDO" useGeneratedKeys="true" keyProperty="id">
+          insert into menu(app_key,name,en_name,idx,pid,url,icon,show_type,update_time,create_time,status)
+          values(#{appKey},#{name},#{idx},#{pid},#{url},#{icon},#{showType},#{updateTime},#{createTime},#{status});
+    </insert>
+
+    <update id="updateMenu" parameterType="MenuDO">
+		update menu
+		<set>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="enName != null and enName != ''">
+				enName = #{enName},
+			</if>
+			<if test="idx != null">
+				idx = #{idx},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="url != null and url != ''">
+				url = #{url},
+			</if>
+			<if test="pid != null and pid != ''">
+				pid = #{pid},
+			</if>
+			<if test="showType != null and showType != ''">
+				show_type = #{showType},
+			</if>
+			<if test="icon != null and icon != ''">
+				icon = #{icon},
+			</if>
+			update_time = #{updateTime}
+		</set>
+		where id = #{id}
+	</update>
+
+    <!--根据id查询-->
+    <select id="getMenuById" resultType="MenuDO">
+        select * from menu where id = #{id} and status != 0
+    </select>
+    
+    <select id="getMenuByIds" resultType="MenuDO">
+        select * from menu where id in
+        <foreach collection="ids" open="(" close=")" item="id" separator=",">
+            #{id}
+        </foreach>
+        and status != 0
+    </select>
+
+    <!--根据pid查询-->
+    <select id="listMenuByPid" resultType="MenuDO">
+        select * from menu where pid = #{pid} and status != 0 order by idx asc
+    </select>
+
+    <!--查询用户拥有权限的菜单-->
+    <select id="listUserMenu" resultType="MenuDO">
+         select t4.*
+         from user_role_ref t1, role t2, role_menu_ref t3, menu t4
+         where t1.user_id=#{userId} and t1.tenant=#{tenant} and t4.app_key=#{appKey}
+         and t1.role_id=t2.id and t1.role_id=t3.role_id and t3.menu_id=t4.id
+         and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
+         order by idx asc
+    </select>
+    
+    <select id="checkUserMenu" resultType="MenuDO">
+    	select count(1) from t0
+    	(
+    		 select t4.*
+	         from user_role_ref t1, role t2, role_menu_ref t3, menu t4
+	         where t1.user_id=#{userId} and t1.tenant=#{tenant} and t4.app_key=#{appKey}
+	         and t1.role_id=t2.id and t1.role_id=t3.role_id and t3.menu_id=t4.id
+	         and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
+	         and t4.id in
+	        <foreach collection="menuIds" open="(" close=")" item="id" separator=",">
+	            #{id}
+	        </foreach>
+	         limit 1
+    	) t0
+    </select>
+</mapper>
