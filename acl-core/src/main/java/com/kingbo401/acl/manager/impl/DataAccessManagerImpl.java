@@ -903,13 +903,15 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return pageVO;
 	}
 	
-	private List<String> getUserRoleIds(String appKey, String userId, String tenant){
+	private List<String> getUserRoleIds(String appKey, String userIdStr, String tenant){
 		List<String> userRoleIds = Lists.newArrayList();
 		//查出用户所有的角色
 		UserRoleRefQueryParam param = new UserRoleRefQueryParam();
 		param.setAppKey(appKey);
 		param.setTenant(tenant);
-		param.setUserId(NumberUtils.toLong(userId));
+		Long userId = NumberUtils.toLong(userIdStr);
+		Assert.isTrue(userId != 0, "用户ID非法");
+		param.setUserId(userId);
 		param.setReturnNotEffective(false);
 		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(param);
 		if(CollectionUtil.isEmpty(userRoleRefVOs)){
@@ -921,9 +923,11 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return userRoleIds;
 	}
 	
-	private List<String> getUserRolePermissionGroupIds(String appKey, String userId, String tenant){
+	private List<String> getUserRolePermissionGroupIds(String appKey, String userIdStr, String tenant){
 		List<String> groupIds = Lists.newArrayList();
-		List<Long> permissionGroupIds = rolePermissionGroupRefManager.listUserRolePermissionGroupIds(NumberUtils.toLong(userId), appKey, tenant);
+		Long userId = NumberUtils.toLong(userIdStr);
+		Assert.isTrue(userId != 0, "用户ID非法");
+		List<Long> permissionGroupIds = rolePermissionGroupRefManager.listUserRolePermissionGroupIds(userId, appKey, tenant);
 		if(CollectionUtil.isEmpty(permissionGroupIds)){
 			return groupIds;
 		}
@@ -933,10 +937,12 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return groupIds;
 	}
 	
-	private List<String> getUserPermissionGroupIds(String appKey, String userId, String tenant){
+	private List<String> getUserPermissionGroupIds(String appKey, String userIdStr, String tenant){
 		List<String> groupIds = Lists.newArrayList();
 		UserPermissionGroupRefQueryParam param = new UserPermissionGroupRefQueryParam();
-		param.setUserId(NumberUtils.toLong(userId));
+		Long userId = NumberUtils.toLong(userIdStr);
+		Assert.isTrue(userId != 0, "用户ID非法");
+		param.setUserId(userId);
 		param.setAppKey(appKey);
 		param.setTenant(tenant);
 		param.setReturnNotEffective(false);

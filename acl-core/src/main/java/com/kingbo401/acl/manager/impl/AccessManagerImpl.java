@@ -33,11 +33,11 @@ public class AccessManagerImpl implements AccessManager{
 	@Override
 	public boolean checkUserPermission(CheckUserPermissionParam param) {
 		Assert.notNull(param, "参数不能为空");
-        String userId = param.getUserId();
+		Long userId = param.getUserId();
         String appKey = param.getAppKey();
         String permissionKey = param.getPermissionKey();
         String tenant = param.getTenant();
-        Assert.hasText(userId, "userId 不能为空");
+        Assert.notNull(userId, "userId 不能为空");
         Assert.hasText(appKey, "appKey 不能为空");
         Assert.hasText(permissionKey,"permissionKey 不能为空");
         Assert.hasText(tenant, "tenant 不能为空");

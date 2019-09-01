@@ -3,12 +3,19 @@ package com.kingbo401.acl.model.dto;
 import com.kingbo401.iceacl.common.model.BaseDO;
 
 public class DataOperationDTO extends BaseDO{
+	private String appKey;
 	private Long modelId;
 	private String code;
 	private String name;
 	private String enName;
 	private String description;
 	private Integer status;
+	public String getAppKey() {
+		return appKey;
+	}
+	public void setAppKey(String appKey) {
+		this.appKey = appKey;
+	}
 	public Long getModelId() {
 		return modelId;
 	}

@@ -123,7 +123,9 @@ public class MenuManagerImpl implements MenuManager{
 		return menuDTO;
 	}
 	
-	private boolean updateMenuStatus(String appKey, Long id, int status){
+	private boolean updateMenuStatus(MenuDTO menu, int status){
+		String appKey = menu.getAppKey();
+		Long id = menu.getId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "id不能为空");
 		MenuDO menuDO = menuDAO.getMenuById(id);
@@ -150,17 +152,17 @@ public class MenuManagerImpl implements MenuManager{
 	}
 
 	@Override
-	public boolean removeMenu(String appKey, Long id) {
-		return updateMenuStatus(appKey, id, AclConstant.STATUS_REMOVE);
+	public boolean removeMenu(MenuDTO menu) {
+		return updateMenuStatus(menu, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeMenu(String appKey, Long id) {
-		return updateMenuStatus(appKey, id, AclConstant.STATUS_FREEZE);
+	public boolean freezeMenu(MenuDTO menu) {
+		return updateMenuStatus(menu, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeMenu(String appKey, Long id) {
-		return updateMenuStatus(appKey, id, AclConstant.STATUS_NORMAL);
+	public boolean unfreezeMenu(MenuDTO menu) {
+		return updateMenuStatus(menu, AclConstant.STATUS_NORMAL);
 	}
 }

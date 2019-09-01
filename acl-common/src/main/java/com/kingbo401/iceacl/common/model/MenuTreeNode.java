@@ -7,12 +7,13 @@ import com.kingbo401.commons.model.BasePojo;
 
 public class MenuTreeNode extends BasePojo{
 	private Long id;
-	private String menuName;
-	private Long menuPid;
-	private String menuUrl;
-	private String menuIcon;
-	private Integer menuType;
-	private Integer menuOrder;
+	private String name;
+	private String enName;
+	private Long pid;
+	private String url;
+	private String icon;
+	private Integer type;
+	private Integer idx;
 	private Integer level;
 	private List<MenuTreeNode> children = new ArrayList<MenuTreeNode>();
 	public Long getId() {
@@ -21,53 +22,58 @@ public class MenuTreeNode extends BasePojo{
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getMenuName() {
-		return menuName;
+	public String getName() {
+		return name;
 	}
-	public void setMenuName(String menuName) {
-		this.menuName = menuName;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public Long getMenuPid() {
-		return menuPid;
+	public String getEnName() {
+		return enName;
 	}
-	public void setMenuPid(Long menuPid) {
-		this.menuPid = menuPid;
+	public void setEnName(String enName) {
+		this.enName = enName;
 	}
-	public String getMenuUrl() {
-		return menuUrl;
+	public Long getPid() {
+		return pid;
 	}
-	public void setMenuUrl(String menuUrl) {
-		this.menuUrl = menuUrl;
+	public void setPid(Long pid) {
+		this.pid = pid;
 	}
-	public String getMenuIcon() {
-		return menuIcon;
+	public String getUrl() {
+		return url;
 	}
-	public void setMenuIcon(String menuIcon) {
-		this.menuIcon = menuIcon;
+	public void setUrl(String url) {
+		this.url = url;
 	}
-	
-	public Integer getMenuType() {
-		return menuType;
+	public String getIcon() {
+		return icon;
 	}
-	public void setMenuType(Integer menuType) {
-		this.menuType = menuType;
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
-	public Integer getMenuOrder() {
-		return menuOrder;
+	public Integer getType() {
+		return type;
 	}
-	public void setMenuOrder(Integer menuOrder) {
-		this.menuOrder = menuOrder;
+	public void setType(Integer type) {
+		this.type = type;
 	}
-	public Integer getLevel() {
-		return level;
+	public Integer getIdx() {
+		return idx;
 	}
-	public void setLevel(Integer level) {
-		this.level = level;
+	public void setIdx(Integer idx) {
+		this.idx = idx;
 	}
 	public List<MenuTreeNode> getChildren() {
 		return children;
 	}
 	public void setChildren(List<MenuTreeNode> children) {
 		this.children = children;
+	}
+	public Integer getLevel() {
+		return level;
+	}
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 }

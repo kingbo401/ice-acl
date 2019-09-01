@@ -63,13 +63,16 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		Assert.hasText(permissionGroupDTO.getTenant(), "tenant不能为空");
 		PermissionGroupDO permissionGroupDO = permissionGroupDAO.getById(permissionGroupDTO.getId());
 		Assert.notNull(permissionGroupDO, "权限组不存在");
+		Assert.isTrue(permissionGroupDTO.getAppKey().equals(permissionGroupDO.getAppKey()), "不能修改其它应用的数据");
 		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupDO);
 		permissionGroupDO.setUpdateTime(new Date());
 		permissionGroupDAO.update(permissionGroupDO);
 		return true;
 	}
 
-	private boolean updatePermissionGroupStatus(String appKey, Long id, int status){
+	private boolean updatePermissionGroupStatus(PermissionGroupDTO permissionGroupDTO, int status){
+		String appKey = permissionGroupDTO.getAppKey();
+		Long id = permissionGroupDTO.getId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "id不能为空");
 		PermissionGroupDO permissionGroupDO = permissionGroupDAO.getById(id);
@@ -81,19 +84,19 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 	}
 	
 	@Override
-	public boolean removePermissionGroup(String appKey, long id) {
-		Assert.isTrue(!userPermissionGroupRefManager.hasUserUse(id), "权限组有用户使用");
-		return updatePermissionGroupStatus(appKey, id, AclConstant.STATUS_REMOVE);
+	public boolean removePermissionGroup(PermissionGroupDTO permissionGroupDTO) {
+		Assert.isTrue(!userPermissionGroupRefManager.hasUserUse(permissionGroupDTO.getId()), "权限组有用户使用");
+		return updatePermissionGroupStatus(permissionGroupDTO, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezePermissionGroup(String appKey, long id) {
-		return updatePermissionGroupStatus(appKey, id, AclConstant.STATUS_FREEZE);
+	public boolean freezePermissionGroup(PermissionGroupDTO permissionGroupDTO) {
+		return updatePermissionGroupStatus(permissionGroupDTO, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezePermissionGroup(String appKey, long id) {
-		return updatePermissionGroupStatus(appKey, id, AclConstant.STATUS_NORMAL);
+	public boolean unfreezePermissionGroup(PermissionGroupDTO permissionGroupDTO) {
+		return updatePermissionGroupStatus(permissionGroupDTO, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override

@@ -14,11 +14,11 @@ public interface PermissionGroupManager {
 
     boolean updatePermissionGroup(PermissionGroupDTO permissionGroupDTO);
 
-    boolean removePermissionGroup(String appKey, long id);
+    boolean removePermissionGroup(PermissionGroupDTO permissionGroupDTO);
     
-    boolean freezePermissionGroup(String appKey, long id);
+    boolean freezePermissionGroup(PermissionGroupDTO permissionGroupDTO);
     
-    boolean unfreezePermissionGroup(String appKey, long id);
+    boolean unfreezePermissionGroup(PermissionGroupDTO permissionGroupDTO);
 
     List<PermissionGroupTreeNode> getPermissionGroupTree(PermissionGroupQueryParam permissionGroupQueryParam);
 

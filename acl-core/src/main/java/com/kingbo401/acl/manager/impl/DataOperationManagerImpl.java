@@ -15,7 +15,6 @@ import com.kingbo401.acl.manager.DataModelManager;
 import com.kingbo401.acl.manager.DataOperationManager;
 import com.kingbo401.acl.model.dto.DataModelDTO;
 import com.kingbo401.acl.model.dto.DataOperationDTO;
-import com.kingbo401.acl.model.dto.param.DataOperationParam;
 import com.kingbo401.acl.model.entity.DataGrantRecordDO;
 import com.kingbo401.acl.model.entity.DataOperationDO;
 import com.kingbo401.commons.util.CollectionUtil;
@@ -31,21 +30,22 @@ public class DataOperationManagerImpl implements DataOperationManager {
 	private DataModelManager dataModelManager;
 
 	@Override
-	public DataOperationDTO createDataOperation(DataOperationParam dataOperationParam) {
-		Assert.notNull(dataOperationParam, "参数不能为空");
-		String appKey = dataOperationParam.getAppKey();
+	public DataOperationDTO createDataOperation(DataOperationDTO dataOperationDTO) {
+		Assert.notNull(dataOperationDTO, "参数不能为空");
+		String appKey = dataOperationDTO.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
-		String operationCode = dataOperationParam.getCode();
+		String operationCode = dataOperationDTO.getCode();
 		Assert.hasText(operationCode, "operationCode不能为空");
-		Assert.hasText(dataOperationParam.getName(), "name不能为空");
-		String modelCode = dataOperationParam.getModelCode();
-		Assert.hasText(modelCode, "modelCode不能为空");
-		DataModelDTO dataModelDTO = dataModelManager.getDataModel(appKey, modelCode);
+		Assert.hasText(dataOperationDTO.getName(), "name不能为空");
+		Long modelId = dataOperationDTO.getModelId();
+		Assert.notNull(modelId, "modelId不能为空");
+		DataModelDTO dataModelDTO = dataModelManager.getDataModel(modelId);
 		Assert.notNull(dataModelDTO, "数据模型不存在");
+		Assert.isTrue(appKey.equals(dataModelDTO.getAppKey()), "不能操作其它应用的数据");
 		DataOperationDO dataOperationDO = dataOperationDAO.getOperationByCode(dataModelDTO.getId(), operationCode);
 		Assert.isNull(dataOperationDO, "属性code已被使用");
 		dataOperationDO = new DataOperationDO();
-		BeanUtils.copyProperties(dataOperationParam, dataOperationDO);
+		BeanUtils.copyProperties(dataOperationDTO, dataOperationDO);
 		Date now = new Date();
 		dataOperationDO.setCreateTime(now);
 		dataOperationDO.setUpdateTime(now);
@@ -55,36 +55,44 @@ public class DataOperationManagerImpl implements DataOperationManager {
 	}
 
 	@Override
-	public DataOperationDTO updateDataOperation(DataOperationParam dataOperationParam) {
-		Assert.notNull(dataOperationParam, "参数不能为空");
-		String appKey = dataOperationParam.getAppKey();
-		String operationCode = dataOperationParam.getCode();
+	public DataOperationDTO updateDataOperation(DataOperationDTO dataOperationDTO) {
+		Assert.notNull(dataOperationDTO, "参数不能为空");
+		String appKey = dataOperationDTO.getAppKey();
+		Assert.hasText(appKey, "appKey不能为空");
+		String operationCode = dataOperationDTO.getCode();
 		Assert.hasText(operationCode, "operationCode不能为空");
-		Assert.hasText(dataOperationParam.getName(), "name不能为空");
-		String modelCode = dataOperationParam.getModelCode();
-		Assert.hasText(modelCode, "modelCode不能为空");
-		DataModelDTO dataModelDTO = dataModelManager.getDataModel(appKey, modelCode);
+		Assert.hasText(dataOperationDTO.getName(), "name不能为空");
+		Long modelId = dataOperationDTO.getModelId();
+		Assert.notNull(modelId, "modelId不能为空");
+		DataModelDTO dataModelDTO = dataModelManager.getDataModel(modelId);
 		Assert.notNull(dataModelDTO, "数据模型不存在");
-		DataOperationDO dataOperationDO = dataOperationDAO.getOperationByCode(dataModelDTO.getId(), operationCode);
+		Assert.isTrue(appKey.equals(dataModelDTO.getAppKey()), "不能操作其它应用的数据");
+		DataOperationDO dataOperationDO = dataOperationDAO.getOperationByCode(modelId, operationCode);
 		Assert.notNull(dataOperationDO, "属性不存在");
+		dataOperationDTO.setId(dataOperationDO.getId());
+		BeanUtils.copyProperties(dataOperationDTO, dataOperationDO);
 		Date now = new Date();
 		dataOperationDO.setUpdateTime(now);
-		dataOperationDO.setDescription(dataOperationParam.getDescription());
-		dataOperationDO.setName(dataOperationParam.getName());
 		dataOperationDAO.update(dataOperationDO);
 		return buildDataOperationDTO(dataOperationDO);
 	}
 	
-	private boolean updateDataOperationStatus(String appKey, String modelCode, String operationCode, int status){
+	private boolean updateDataOperationStatus(DataOperationDTO dataOperationDTO, int status){
+		String appKey = dataOperationDTO.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
-		Assert.hasText(modelCode, "modelCode不能为空");
-		DataModelDTO dataModelDTO = dataModelManager.getDataModel(appKey, modelCode);
-		Assert.notNull(dataModelDTO, "模型不存在");
+		Assert.hasText(appKey, "appKey不能为空");
+		String operationCode = dataOperationDTO.getCode();
 		Assert.hasText(operationCode, "operationCode不能为空");
-		DataOperationDO dataOperationDO = dataOperationDAO.getOperationByCode(dataModelDTO.getId(), operationCode);
-		Assert.notNull(dataOperationDO, "操作不存在");
+		Assert.hasText(dataOperationDTO.getName(), "name不能为空");
+		Long modelId = dataOperationDTO.getModelId();
+		Assert.notNull(modelId, "modelId不能为空");
+		DataModelDTO dataModelDTO = dataModelManager.getDataModel(modelId);
+		Assert.notNull(dataModelDTO, "数据模型不存在");
+		Assert.isTrue(appKey.equals(dataModelDTO.getAppKey()), "不能操作其它应用的数据");
+		DataOperationDO dataOperationDO = dataOperationDAO.getOperationByCode(modelId, operationCode);
+		Assert.notNull(dataOperationDO, "属性不存在");
 		if(status == AclConstant.STATUS_REMOVE){
-			DataGrantRecordDO dataGrantRecordDO = dataGrantRecordDAO.getOneDataGrantRecord(dataOperationDO.getModelId(), dataOperationDO.getId(), null);
+			DataGrantRecordDO dataGrantRecordDO = dataGrantRecordDAO.getOneDataGrantRecord(modelId, dataOperationDO.getId(), null);
 			Assert.isNull(dataGrantRecordDO, "此模型-操作下有已授权的数据，不能删除；请先回收掉相关数据权限");
 		}
 		dataOperationDO.setStatus(status);
@@ -94,18 +102,18 @@ public class DataOperationManagerImpl implements DataOperationManager {
 	}
 
 	@Override
-	public boolean removeDataOperation(String appKey, String modelCode, String operationCode) {
-		return updateDataOperationStatus(appKey, modelCode, operationCode, AclConstant.STATUS_REMOVE);
+	public boolean removeDataOperation(DataOperationDTO dataOperationDTO) {
+		return updateDataOperationStatus(dataOperationDTO, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeDataOperation(String appKey, String modelCode, String operationCode) {
-		return updateDataOperationStatus(appKey, modelCode, operationCode, AclConstant.STATUS_FREEZE);
+	public boolean freezeDataOperation(DataOperationDTO dataOperationDTO) {
+		return updateDataOperationStatus(dataOperationDTO, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeDataOperation(String appKey, String modelCode, String operationCode) {
-		return updateDataOperationStatus(appKey, modelCode, operationCode, AclConstant.STATUS_NORMAL);
+	public boolean unfreezeDataOperation(DataOperationDTO dataOperationDTO) {
+		return updateDataOperationStatus(dataOperationDTO, AclConstant.STATUS_NORMAL);
 
 	}
 

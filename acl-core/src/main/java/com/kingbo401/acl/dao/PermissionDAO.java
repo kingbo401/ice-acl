@@ -33,25 +33,25 @@ public interface PermissionDAO {
 	 * 校验用户是否有该角色下面的权限
 	 * 
 	 */
-	int checkUserRolePermission(@Param("userId") String userId, @Param("permissionId") Long permissionId,
+	int checkUserRolePermission(@Param("userId") Long userId, @Param("permissionId") Long permissionId,
 			@Param("tenant") String tenant);
 
 	/**
 	 * 校验用户是否直接关联该权限
 	 */
-	int checkUserDirectPermission(@Param("userId") String userId, @Param("permissionId") Long permissionId,
+	int checkUserDirectPermission(@Param("userId") Long userId, @Param("permissionId") Long permissionId,
 			@Param("tenant") String tenant);
 
 	/**
 	 * 校验用户到权限组,在到权限
 	 */
-	int checkUserPermissionGroupPermission(@Param("userId") String userId, @Param("permissionId") Long permissionId,
+	int checkUserPermissionGroupPermission(@Param("userId") Long userId, @Param("permissionId") Long permissionId,
 			@Param("tenant") String tenant);
 
 	/**
 	 * 用户到角色到权限组,到权限
 	 */
-	int checkUserRolePermissionGroupPermission(@Param("userId") String userId, @Param("permissionId") Long permissionId,
+	int checkUserRolePermissionGroupPermission(@Param("userId") Long userId, @Param("permissionId") Long permissionId,
 			@Param("tenant") String tenant);
 
 }

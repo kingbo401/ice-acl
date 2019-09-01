@@ -20,9 +20,9 @@ public interface AppManager {
 
 	boolean updateApp(AppDTO appDTO);
 
-	boolean freezeApp(String appKey);
+	boolean freezeApp(AppDTO appDTO);
 
-	boolean unfreezeApp(String appKey);
+	boolean unfreezeApp(AppDTO appDTO);
 
 	List<AppDTO> listApp(AppQueryParam param);
 

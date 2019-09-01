@@ -11,11 +11,11 @@ public interface DataModelManager {
 	
 	DataModelDTO updateDataModel(DataModelDTO dataModel);
 	
-	boolean removeDataModel(String appKey, String modelCode);
+	boolean removeDataModel(DataModelDTO dataModel);
 	
-	boolean freezeDataModel(String appKey, String modelCode);
+	boolean freezeDataModel(DataModelDTO dataModel);
 	
-	boolean unfreezeDataModel(String appKey, String modelCode);
+	boolean unfreezeDataModel(DataModelDTO dataModel);
 	
 	DataModelDTO getDataModel(Long id);
 	

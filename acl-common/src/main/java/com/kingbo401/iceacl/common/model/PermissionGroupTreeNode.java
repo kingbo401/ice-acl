@@ -9,11 +9,11 @@ public class PermissionGroupTreeNode extends BasePojo{
 	private Long id;
 	private String appKey;
     private String tenant;
-    private String tag1;
-    private Long groupPid;
-    private String groupType;
-    private String groupName;
-    private Integer groupOrder;
+    private Long pid;
+    private String type;
+    private String name;
+    private String enName;
+    private Integer idx;
     private String description;
     private Integer status;
     private Integer level;
@@ -37,35 +37,35 @@ public class PermissionGroupTreeNode extends BasePojo{
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
 	}
-	public String getTag1() {
-		return tag1;
+	public Long getPid() {
+		return pid;
 	}
-	public void setTag1(String tag1) {
-		this.tag1 = tag1;
+	public void setPid(Long pid) {
+		this.pid = pid;
 	}
-	public Long getGroupPid() {
-		return groupPid;
+	public String getType() {
+		return type;
 	}
-	public void setGroupPid(Long groupPid) {
-		this.groupPid = groupPid;
+	public void setType(String type) {
+		this.type = type;
 	}
-	public String getGroupType() {
-		return groupType;
+	public String getName() {
+		return name;
 	}
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public String getGroupName() {
-		return groupName;
+	public String getEnName() {
+		return enName;
 	}
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+	public void setEnName(String enName) {
+		this.enName = enName;
 	}
-	public Integer getGroupOrder() {
-		return groupOrder;
+	public Integer getIdx() {
+		return idx;
 	}
-	public void setGroupOrder(Integer groupOrder) {
-		this.groupOrder = groupOrder;
+	public void setIdx(Integer idx) {
+		this.idx = idx;
 	}
 	public String getDescription() {
 		return description;

@@ -95,15 +95,17 @@ public class AppManagerImpl implements AppManager{
 	@Override
 	public boolean updateApp(AppDTO appDTO) {
 		Assert.notNull(appDTO, "参数不能为空");
+		Long appId = appDTO.getId();
+		String appKey = appDTO.getAppKey();
 		String appName = appDTO.getName();
 		String description = appDTO.getDescription();
-		String appKey = appDTO.getAppKey();
-		Assert.hasText(appName, "appName 不能为空");
-		
-		Assert.hasText(description, "description 不能为空");
+		Assert.notNull(appId, "appId不能为空");
 		Assert.hasText(appKey, "appKey不能为空");
-		AppDO appDO = appDao.getByKey(appKey);
+		Assert.hasText(appName, "appName 不能为空");
+		Assert.hasText(description, "description 不能为空");
+		AppDO appDO = appDao.getById(appId);
 		Assert.notNull(appDO, "应用不存在");
+		Assert.isTrue(appKey.equals(appDO.getAppKey()), "appKey不能修改");
 		if(!appName.equals(appDO.getName())){
 			Assert.isNull(appDao.getByName(appName), "应用名已被使用");
 		}
@@ -115,7 +117,8 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public boolean freezeApp(String appKey) {
+	public boolean freezeApp(AppDTO appDTO) {
+		String appKey = appDTO.getAppKey();
 		AppDO appDO = appDao.getByKey(appKey);
 		Assert.notNull(appDO, "应用不存在");
 		appDO.setStatus(AclConstant.STATUS_FREEZE);
@@ -125,7 +128,8 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public boolean unfreezeApp(String appKey) {
+	public boolean unfreezeApp(AppDTO appDTO) {
+		String appKey = appDTO.getAppKey();
 		AppDO appDO = appDao.getByKey(appKey);
 		Assert.notNull(appDO, "应用不存在");
 		appDO.setStatus(AclConstant.STATUS_NORMAL);

@@ -5,14 +5,14 @@ import java.util.List;
 import com.kingbo401.commons.model.param.BaseParam;
 
 public class CheckUserMenuParam extends BaseParam{
-	private String userId;
+	private Long userId;
 	private String appKey;
 	private String tenant;
 	private List<Long> menuIds;
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	public String getAppKey() {

@@ -15,9 +15,9 @@ public interface RoleManager {
 	List<RoleDTO> getRoleByIds(String appKey, List<Long> roleIds);
 	RoleDTO createRole(RoleDTO roleDTO);
 	RoleDTO updateRole(RoleDTO roleDTO);
-	boolean removeRole(String appKey, long roleId);
-	boolean freezeRole(String appKey, long roleId);
-	boolean unfreezeRole(String appKey, long roleId);
+	boolean removeRole(RoleDTO roleDTO);
+	boolean freezeRole(RoleDTO roleDTO);
+	boolean unfreezeRole(RoleDTO roleDTO);
 	List<RoleDTO> listRole(RoleQueryParam param);
 	PageVO<RoleDTO> pageRole(RoleQueryParam param);
     boolean updateRoleMenuRef(RoleMenuIdRefParam param);

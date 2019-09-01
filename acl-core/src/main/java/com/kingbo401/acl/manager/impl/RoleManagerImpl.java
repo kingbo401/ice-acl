@@ -114,11 +114,6 @@ public class RoleManagerImpl implements RoleManager{
 
 		String roleName = roleDTO.getName();
 		Assert.hasText(roleName, "角色名不能为空");
-		Assert.isTrue(roleName.length() < 100, "角色名不能大于100个字符");
-		String description = roleDTO.getDescription();
-		if(!StringUtils.isEmpty(description)){
-			Assert.isTrue(description.length() < 100, "角色描述不能大于100个字符");
-		}
 		Date now = new Date();
 		roleDTO.setCreateTime(now);
 		roleDTO.setUpdateTime(now);
@@ -139,34 +134,27 @@ public class RoleManagerImpl implements RoleManager{
 
 	@Override
 	public RoleDTO updateRole(RoleDTO roleDTO) {
+		Long roleId = roleDTO.getId();
+		Assert.notNull(roleId, "角色ID不能为空");
 		Assert.notNull(roleDTO, "参数不能为空");
 		String appKey = roleDTO.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
-		Assert.notNull(appManager.getAppByKey(appKey), "app不存在");
 		String tenant = roleDTO.getTenant();
 		if(tenant == null){
 			tenant = AclConstant.TENANT_COMMON_SYMBOL;
 		}
 		String roleKey = roleDTO.getRoleKey();
-		if(StringUtils.isEmpty(roleKey)){
-			roleKey = SecurityUtil.getUUID();
-		}
-		roleDTO.setRoleKey(roleKey);
-
+		Assert.hasText(roleKey, "roleKey不能为空");
 		String roleName = roleDTO.getName();
 		Assert.hasText(roleName, "角色名不能为空");
-		Assert.isTrue(roleName.length() < 100, "角色名不能大于100个字符");
-		String description = roleDTO.getDescription();
-		if(!StringUtils.isEmpty(description)){
-			Assert.isTrue(description.length() < 100, "角色描述不能大于100个字符");
-		}
 		Date now = new Date();
 		roleDTO.setUpdateTime(now);
 		if(roleDTO.getStatus() == null){
 			roleDTO.setStatus(AclConstant.STATUS_NORMAL);
 		}
-		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
+		RoleDO roleDO = roleDAO.getRoleById(roleId);
 		Assert.notNull(roleDO, "角色已存在");
+		Assert.isTrue(roleKey.equals(roleDO.getRoleKey()), "roleKey不能修改");
 		Assert.isTrue(tenant.equals(roleDO.getTenant()), "tenant不能修改");
 		if(!roleName.equals(roleDO.getName())){
 			RoleQueryParam roleQueryParam = new RoleQueryParam();
@@ -182,7 +170,9 @@ public class RoleManagerImpl implements RoleManager{
 		return roleDTO;
 	}
 
-	private boolean updateRoleStatus(String appKey, long roleId, int status){
+	private boolean updateRoleStatus(RoleDTO roleDTO, int status){
+		String appKey = roleDTO.getAppKey();
+		Long roleId = roleDTO.getId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.isTrue(roleId > 0, "roleId必须大于0");
 		if(status == AclConstant.STATUS_REMOVE){
@@ -198,18 +188,18 @@ public class RoleManagerImpl implements RoleManager{
 	}
 	
 	@Override
-	public boolean removeRole(String appKey, long roleId) {
-		return updateRoleStatus(appKey, roleId, AclConstant.STATUS_REMOVE);
+	public boolean removeRole(RoleDTO roleDTO) {
+		return updateRoleStatus(roleDTO, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeRole(String appKey, long roleId) {
-		return updateRoleStatus(appKey, roleId, AclConstant.STATUS_FREEZE);
+	public boolean freezeRole(RoleDTO roleDTO) {
+		return updateRoleStatus(roleDTO, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeRole(String appKey, long roleId) {
-		return updateRoleStatus(appKey, roleId, AclConstant.STATUS_NORMAL);
+	public boolean unfreezeRole(RoleDTO roleDTO) {
+		return updateRoleStatus(roleDTO, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ public class CheckUserPermissionParam extends BaseParam{
 	 /**
      * 用户账号
      */
-    private String userId;
+    private Long userId;
 
     /**
      * 权限key
@@ -40,10 +40,10 @@ public class CheckUserPermissionParam extends BaseParam{
      */
     private boolean hierarchicalObtainMenuPermission = false;
     
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	public String getPermissionKey() {

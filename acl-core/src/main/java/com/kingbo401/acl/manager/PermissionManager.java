@@ -13,11 +13,11 @@ public interface PermissionManager {
 
 	int createPermissions(String appKey, List<PermissionDTO> permissions);
 
-	boolean removePermission(String appKey, Long id);
+	boolean removePermission(PermissionDTO permissionDTO);
 
-	boolean unfreezePermission(String appKey, Long id);
+	boolean unfreezePermission(PermissionDTO permissionDTO);
 
-	boolean freezePermission(String appKey, Long id);
+	boolean freezePermission(PermissionDTO permissionDTO);
 
 	PermissionDTO getPermissionByKey(String appKey, String permissionKey);
 	

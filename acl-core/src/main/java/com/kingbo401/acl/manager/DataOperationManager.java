@@ -3,18 +3,17 @@ package com.kingbo401.acl.manager;
 import java.util.List;
 
 import com.kingbo401.acl.model.dto.DataOperationDTO;
-import com.kingbo401.acl.model.dto.param.DataOperationParam;
 
 public interface DataOperationManager {
-	DataOperationDTO createDataOperation(DataOperationParam dataOperationParam);
+	DataOperationDTO createDataOperation(DataOperationDTO dataOperationDTO);
 	
-	DataOperationDTO updateDataOperation(DataOperationParam dataOperationParam);
+	DataOperationDTO updateDataOperation(DataOperationDTO dataOperationDTO);
 	
-	boolean removeDataOperation(String appKey, String modelCode, String operationCode);
+	boolean removeDataOperation(DataOperationDTO dataOperationDTO);
 	
-	boolean freezeDataOperation(String appKey, String modelCode, String operationCode);
+	boolean freezeDataOperation(DataOperationDTO dataOperationDTO);
 	
-	boolean unfreezeDataOperation(String appKey, String modelCode, String operationCode);
+	boolean unfreezeDataOperation(DataOperationDTO dataOperationDTO);
 	
 	public DataOperationDTO getDataOperation(String appKey, String modelCode, String operationCode);
 	

@@ -54,12 +54,11 @@ public class DataModelManagerImpl implements DataModelManager {
 
 		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
 		Assert.isNull(dataModelDO, "模型code已存在");
-
+		dataModelDTO.setId(dataModelDO.getId());
 		dataModelDTO.setStatus(AclConstant.STATUS_NORMAL);
 		Date now = new Date();
 		dataModelDTO.setUpdateTime(now);
 		dataModelDTO.setCreateTime(now);
-		dataModelDO = new DataModelDO();
 		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
 		dataModelDAO.create(dataModelDO);
 		dataModelDTO.setId(dataModelDO.getId());
@@ -77,15 +76,16 @@ public class DataModelManagerImpl implements DataModelManager {
 		assertModelCode(modelCode);
 		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
 		Assert.notNull(dataModelDO, "模型不存在");
-		dataModelDO.setName(dataModelDTO.getName());
-		dataModelDO.setDescription(dataModelDTO.getDescription());
+		dataModelDTO.setId(dataModelDO.getId());
+		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
 		dataModelDO.setUpdateTime(new Date());
 		dataModelDAO.update(dataModelDO);
-		dataModelDTO.setId(dataModelDO.getId());
 		return dataModelDTO;
 	}
 
-	private boolean updateDataModelStatus(String appKey, String modelCode, int status) {
+	private boolean updateDataModelStatus(DataModelDTO dataModel, int status) {
+		String appKey = dataModel.getAppKey();
+		String modelCode = dataModel.getCode();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(modelCode, "modelCode不能为空");
 		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
@@ -100,18 +100,18 @@ public class DataModelManagerImpl implements DataModelManager {
 	}
 
 	@Override
-	public boolean removeDataModel(String appKey, String modelCode) {
-		return updateDataModelStatus(appKey, modelCode, AclConstant.STATUS_REMOVE);
+	public boolean removeDataModel(DataModelDTO dataModel) {
+		return updateDataModelStatus(dataModel, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeDataModel(String appKey, String modelCode) {
-		return updateDataModelStatus(appKey, modelCode, AclConstant.STATUS_FREEZE);
+	public boolean freezeDataModel(DataModelDTO dataModel) {
+		return updateDataModelStatus(dataModel, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeDataModel(String appKey, String modelCode) {
-		return updateDataModelStatus(appKey, modelCode, AclConstant.STATUS_NORMAL);
+	public boolean unfreezeDataModel(DataModelDTO dataModel) {
+		return updateDataModelStatus(dataModel, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override

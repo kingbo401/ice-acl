@@ -29,30 +29,33 @@ public class PermissionManagerImpl implements PermissionManager{
 	@Autowired
 	private UserPermissionRefManager userPermissionRefManager;
 
-	private boolean updatePermissionStatus(String appKey, Long id, int status){
+	private boolean updatePermissionStatus(PermissionDTO permissionDTO, int status){
+		String appKey = permissionDTO.getAppKey();
+		Long id = permissionDTO.getId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(id, "permissionId不能为空");
 		PermissionDO permissionDO = permissionDAO.getById(id);
 		Assert.notNull(permissionDO, "权限不存在");
 		Assert.isTrue(appKey.equals(permissionDO.getAppKey()), "appKey, permissionId不匹配");
 		permissionDO.setStatus(status);
+		permissionDO.setUpdateTime(new Date());
 		permissionDAO.update(permissionDO);
 		return true;
 	}
 	@Override
-	public boolean removePermission(String appKey, Long id) {
-		Assert.isTrue(!userPermissionRefManager.hasUserUse(id), "权限有用户使用");
-		return updatePermissionStatus(appKey, id, AclConstant.STATUS_REMOVE);
+	public boolean removePermission(PermissionDTO permissionDTO) {
+		Assert.isTrue(!userPermissionRefManager.hasUserUse(permissionDTO.getId()), "权限有用户使用");
+		return updatePermissionStatus(permissionDTO, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean unfreezePermission(String appKey, Long id) {
-		return updatePermissionStatus(appKey, id, AclConstant.STATUS_NORMAL);
+	public boolean unfreezePermission(PermissionDTO permissionDTO) {
+		return updatePermissionStatus(permissionDTO, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override
-	public boolean freezePermission(String appKey, Long id) {
-		return updatePermissionStatus(appKey, id, AclConstant.STATUS_FREEZE);
+	public boolean freezePermission(PermissionDTO permissionDTO) {
+		return updatePermissionStatus(permissionDTO, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
@@ -169,15 +172,10 @@ public class PermissionManagerImpl implements PermissionManager{
 		Assert.hasText(permissionDTO.getName(), "permissionName不能为空");
 		PermissionDO permissoinDO = permissionDAO.getById(id);
 		Assert.notNull(permissoinDO, "权限不存在");
+		BeanUtils.copyProperties(permissionDTO, permissoinDO);
 		Date now = new Date();
 		permissoinDO.setUpdateTime(now);
-		permissoinDO.setPermissionKey(permissionKey);
-		permissoinDO.setDescription(permissionDTO.getDescription());
-		permissoinDO.setName(permissionDTO.getName());
-		permissoinDO.setEnName(permissionDTO.getEnName());
-		permissoinDO.setType(permissionDTO.getType());
 		permissionDAO.update(permissoinDO);
-		BeanUtils.copyProperties(permissoinDO, permissionDTO);
 		return permissionDTO;
 	}
 

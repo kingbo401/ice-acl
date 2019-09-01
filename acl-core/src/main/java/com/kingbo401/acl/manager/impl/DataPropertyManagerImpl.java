@@ -67,14 +67,16 @@ public class DataPropertyManagerImpl implements DataPropertyManager {
 		dataPropertyDTO.setUpdateTime(now);
 		DataPropertyDO dataPropertyDO = propertyDAO.getByCode(appKey, propertyCode);
 		Assert.notNull(dataPropertyDO, "属性不存在");
-		dataPropertyDO = new DataPropertyDO();
-		BeanUtils.copyProperties(dataPropertyDTO, dataPropertyDO);
-		propertyDAO.update(dataPropertyDO);
 		dataPropertyDTO.setId(dataPropertyDO.getId());
+		BeanUtils.copyProperties(dataPropertyDTO, dataPropertyDO);
+		dataPropertyDO.setUpdateTime(new Date());
+		propertyDAO.update(dataPropertyDO);
 		return dataPropertyDTO;
 	}
 
-	private boolean updatePropertyStatus(String appKey, String propertyCode, int status) {
+	private boolean updatePropertyStatus(DataPropertyDTO dataPropertyDTO, int status) {
+		String appKey = dataPropertyDTO.getAppKey();
+		String propertyCode = dataPropertyDTO.getCode();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(propertyCode, "propertyCode不能为空");
 		DataPropertyDO dataPropertyDO = propertyDAO.getByCode(appKey, propertyCode);
@@ -90,18 +92,18 @@ public class DataPropertyManagerImpl implements DataPropertyManager {
 	}
 
 	@Override
-	public boolean removeDataProperty(String appKey, String propertyCode) {
-		return updatePropertyStatus(appKey, propertyCode, AclConstant.STATUS_REMOVE);
+	public boolean removeDataProperty(DataPropertyDTO dataPropertyDTO) {
+		return updatePropertyStatus(dataPropertyDTO, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeDataProperty(String appKey, String propertyCode) {
-		return updatePropertyStatus(appKey, propertyCode, AclConstant.STATUS_FREEZE);
+	public boolean freezeDataProperty(DataPropertyDTO dataPropertyDTO) {
+		return updatePropertyStatus(dataPropertyDTO, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeDataProperty(String appKey, String propertyCode) {
-		return updatePropertyStatus(appKey, propertyCode, AclConstant.STATUS_NORMAL);
+	public boolean unfreezeDataProperty(DataPropertyDTO dataPropertyDTO) {
+		return updatePropertyStatus(dataPropertyDTO, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override

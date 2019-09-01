@@ -8,6 +8,8 @@ public class BaseDO extends BasePojo{
 	private Long id;
 	private Date createTime;
 	private Date updateTime;
+	private Long creator;
+	private Long modifier;
 	public Long getId() {
 		return id;
 	}
@@ -25,5 +27,17 @@ public class BaseDO extends BasePojo{
 	}
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}
+	public Long getCreator() {
+		return creator;
+	}
+	public void setCreator(Long creator) {
+		this.creator = creator;
+	}
+	public Long getModifier() {
+		return modifier;
+	}
+	public void setModifier(Long modifier) {
+		this.modifier = modifier;
 	}
 }

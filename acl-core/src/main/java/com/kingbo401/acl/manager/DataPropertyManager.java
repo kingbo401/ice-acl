@@ -11,11 +11,11 @@ public interface DataPropertyManager {
 	
 	DataPropertyDTO updateDataProperty(DataPropertyDTO dataPropertyDTO);
 	
-	boolean removeDataProperty(String appKey, String propertyCode);
+	boolean removeDataProperty(DataPropertyDTO dataPropertyDTO);
 	
-	boolean freezeDataProperty(String appKey, String propertyCode);
+	boolean freezeDataProperty(DataPropertyDTO dataPropertyDTO);
 	
-	boolean unfreezeDataProperty(String appKey, String propertyCode);
+	boolean unfreezeDataProperty(DataPropertyDTO dataPropertyDTO);
 
 	List<DataPropertyDTO> getDataProperties(List<Long> ids);
 
