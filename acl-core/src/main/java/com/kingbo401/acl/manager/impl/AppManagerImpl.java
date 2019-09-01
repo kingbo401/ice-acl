@@ -13,8 +13,7 @@ import com.kingbo401.acl.model.entity.AppDO;
 import com.kingbo401.acl.model.entity.param.AppQueryParam;
 import com.kingbo401.commons.encrypt.SecurityUtil;
 import com.kingbo401.commons.model.PageVO;
-
-import kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.constant.AclConstant;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;

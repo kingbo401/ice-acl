@@ -1,4 +1,4 @@
-package kingbo401.iceacl.common.constant;
+package com.kingbo401.iceacl.common.constant;
 
 public class AclConstant {
 	/**

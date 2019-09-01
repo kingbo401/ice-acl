@@ -3,8 +3,7 @@ package com.kingbo401.acl.manager;
 import java.util.List;
 
 import com.kingbo401.acl.model.dto.MenuDTO;
-
-import kingbo401.iceacl.common.model.MenuTreeNode;
+import com.kingbo401.iceacl.common.model.MenuTreeNode;
 
 public interface MenuManager {
 	List<MenuTreeNode> getAppMenuTree(String appKey);

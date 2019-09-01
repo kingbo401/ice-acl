@@ -28,9 +28,8 @@ import com.kingbo401.acl.model.entity.DataModelPropertyRefDO;
 import com.kingbo401.acl.model.entity.DataPropertyDO;
 import com.kingbo401.acl.utils.BizUtils;
 import com.kingbo401.commons.util.CollectionUtil;
-
-import kingbo401.iceacl.common.constant.AclConstant;
-import kingbo401.iceacl.common.model.PropertyInfo;
+import com.kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.model.PropertyInfo;
 
 @Service
 public class DataModelPropertyRefManagerImpl implements DataModelPropertyRefManager{

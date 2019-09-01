@@ -22,9 +22,8 @@ import com.kingbo401.acl.model.entity.PermissionGroupLite;
 import com.kingbo401.acl.model.entity.param.PermissionGroupQueryParam;
 import com.kingbo401.acl.utils.BizUtils;
 import com.kingbo401.commons.model.PageVO;
-
-import kingbo401.iceacl.common.constant.AclConstant;
-import kingbo401.iceacl.common.model.PermissionGroupTreeNode;
+import com.kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.model.PermissionGroupTreeNode;
 
 @Service
 public class PermissionGroupManagerImpl implements PermissionGroupManager{

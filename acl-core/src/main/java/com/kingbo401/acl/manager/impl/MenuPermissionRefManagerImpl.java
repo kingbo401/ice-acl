@@ -21,8 +21,7 @@ import com.kingbo401.acl.model.entity.param.MenuPermissionRefQueryParam;
 import com.kingbo401.acl.utils.BizUtils;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-
-import kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{

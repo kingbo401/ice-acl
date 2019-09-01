@@ -1,6 +1,6 @@
 package com.kingbo401.acl.model.dto;
 
-import kingbo401.iceacl.common.model.BaseDO;
+import com.kingbo401.iceacl.common.model.BaseDO;
 
 public class DataModelDTO extends BaseDO{
 	private String appKey;

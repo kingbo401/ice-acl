@@ -1,6 +1,6 @@
 package com.kingbo401.acl.model.entity;
 
-import kingbo401.iceacl.common.model.BaseDO;
+import com.kingbo401.iceacl.common.model.BaseDO;
 
 public class DataGrantRecordDetailDO extends BaseDO{
 	private Long dataGrantRecordId;

@@ -24,9 +24,8 @@ import com.kingbo401.acl.model.dto.param.DataPropertyCodeAccessParam;
 import com.kingbo401.acl.model.entity.DataPropertyAccessDO;
 import com.kingbo401.acl.model.entity.param.DataPropertyAccessParam;
 import com.kingbo401.commons.util.CollectionUtil;
-
-import kingbo401.iceacl.common.constant.AclConstant;
-import kingbo401.iceacl.common.enums.GrantTargetType;
+import com.kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.enums.GrantTargetType;
 
 @Service
 public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{

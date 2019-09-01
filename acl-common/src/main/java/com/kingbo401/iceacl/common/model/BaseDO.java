@@ -1,4 +1,4 @@
-package kingbo401.iceacl.common.model;
+package com.kingbo401.iceacl.common.model;
 
 import java.util.Date;
 

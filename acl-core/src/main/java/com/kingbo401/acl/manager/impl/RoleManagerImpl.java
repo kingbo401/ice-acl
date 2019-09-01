@@ -28,8 +28,7 @@ import com.kingbo401.acl.model.entity.param.RoleMenuQueryParam;
 import com.kingbo401.acl.model.entity.param.RoleQueryParam;
 import com.kingbo401.commons.encrypt.SecurityUtil;
 import com.kingbo401.commons.model.PageVO;
-
-import kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class RoleManagerImpl implements RoleManager{

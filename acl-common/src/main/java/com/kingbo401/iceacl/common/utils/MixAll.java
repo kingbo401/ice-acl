@@ -1,4 +1,4 @@
-package kingbo401.iceacl.common.utils;
+package com.kingbo401.iceacl.common.utils;
 
 import java.util.Date;
 

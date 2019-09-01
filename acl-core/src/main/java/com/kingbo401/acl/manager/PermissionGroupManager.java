@@ -6,8 +6,7 @@ import com.kingbo401.acl.model.dto.PermissionGroupDTO;
 import com.kingbo401.acl.model.entity.PermissionGroupLite;
 import com.kingbo401.acl.model.entity.param.PermissionGroupQueryParam;
 import com.kingbo401.commons.model.PageVO;
-
-import kingbo401.iceacl.common.model.PermissionGroupTreeNode;
+import com.kingbo401.iceacl.common.model.PermissionGroupTreeNode;
 
 public interface PermissionGroupManager {
 

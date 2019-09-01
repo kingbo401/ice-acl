@@ -1,4 +1,4 @@
-package kingbo401.iceacl.common.enums;
+package com.kingbo401.iceacl.common.enums;
 
 import java.util.Collections;
 import java.util.HashMap;

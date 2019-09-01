@@ -3,8 +3,7 @@ package com.kingbo401.acl.model.dto.param;
 import java.util.List;
 
 import com.kingbo401.commons.model.param.BaseParam;
-
-import kingbo401.iceacl.common.model.PropertyInfo;
+import com.kingbo401.iceacl.common.model.PropertyInfo;
 
 public class DataModelPropertyInfoRefParam extends BaseParam{
 	private String modelCode;

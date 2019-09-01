@@ -20,8 +20,7 @@ import com.kingbo401.acl.model.entity.DataModelDO;
 import com.kingbo401.acl.model.entity.param.DataModelQueryParam;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-
-import kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class DataModelManagerImpl implements DataModelManager {

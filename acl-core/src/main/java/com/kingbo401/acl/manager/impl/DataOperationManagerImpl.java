@@ -19,8 +19,7 @@ import com.kingbo401.acl.model.dto.param.DataOperationParam;
 import com.kingbo401.acl.model.entity.DataGrantRecordDO;
 import com.kingbo401.acl.model.entity.DataOperationDO;
 import com.kingbo401.commons.util.CollectionUtil;
-
-import kingbo401.iceacl.common.constant.AclConstant;
+import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class DataOperationManagerImpl implements DataOperationManager {
