@@ -30,9 +30,6 @@
 		select t2.* from role_menu_ref t1,menu t2
 		where t1.status != 0 and t2.status = 1 and t1.role_id = #{roleId} and
 		t1.menu_id=t2.id
-		<if test="appKey != null and appKey != ''">
-			and t1.app_key = #{appKey},
-		</if>
 		<if test="status != null">
 			and t1.status = #{status},
 		</if>

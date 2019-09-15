@@ -237,7 +237,6 @@ public class RoleManagerImpl implements RoleManager{
 		RoleDTO roleDTO = getRoleById(appKey, roleId);
 		Assert.notNull(roleDTO, "角色不存在");
 		RoleMenuQueryParam roleMenuQueryParam = new RoleMenuQueryParam();
-		roleMenuQueryParam.setAppKey(param.getAppKey());
 		roleMenuQueryParam.setRoleId(roleId);
 		List<MenuDO> menuPOs = roleMenuRefDAO.listMenu(roleMenuQueryParam);
 		if(!CollectionUtils.isEmpty(menuPOs)){
