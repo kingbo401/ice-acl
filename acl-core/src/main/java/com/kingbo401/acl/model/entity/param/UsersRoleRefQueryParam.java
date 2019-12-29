@@ -5,22 +5,22 @@ import java.util.List;
 import com.kingbo401.commons.model.param.PageParam;
 
 public class UsersRoleRefQueryParam extends PageParam{
-    private List<Long> userIds;
+    private List<String> userIds;
     private Integer status;
     private String appKey;
     private String tenant;
     private Long roleId;
-    private String roleName;//角色名
-    private String roleType;//角色类型
-    private String roleKey;// 角色key，支持模糊查询
+    private String roleName;
+    private String subgroup;
+    private String roleKey;
     
     /**
-     * false,返回用户拥有的所有角色；true 只返回roleId, roleName,roleType,roleKey过滤出来的角色
+     * false,返回用户拥有的所有角色；true 只返回roleId, roleName,subgroup,roleKey过滤出来的角色
      */
     private boolean filterUserRole = false;
     
     /**
-     * 是否返回没有生效的授权
+             * 是否返回没有生效的授权
      */
     private boolean returnNotEffective = true;
 
@@ -40,13 +40,13 @@ public class UsersRoleRefQueryParam extends PageParam{
 		this.roleId = roleId;
 	}
 
-	public List<Long> getUserIds() {
-        return userIds;
-    }
+	public List<String> getUserIds() {
+		return userIds;
+	}
 
-    public void setUserIds(List<Long> userIds) {
-        this.userIds = userIds;
-    }
+	public void setUserIds(List<String> userIds) {
+		this.userIds = userIds;
+	}
 
 	public Integer getStatus() {
 		return status;
@@ -72,12 +72,12 @@ public class UsersRoleRefQueryParam extends PageParam{
 		this.roleName = roleName;
 	}
 
-	public String getRoleType() {
-		return roleType;
+	public String getSubgroup() {
+		return subgroup;
 	}
 
-	public void setRoleType(String roleType) {
-		this.roleType = roleType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 
 	public String getRoleKey() {

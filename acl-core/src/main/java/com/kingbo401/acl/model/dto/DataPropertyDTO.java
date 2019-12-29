@@ -4,17 +4,25 @@ import com.kingbo401.iceacl.common.model.BaseDO;
 
 public class DataPropertyDTO extends BaseDO{
 	private String appKey;
+	private Long modelId;
 	private String code;
 	private String name;
 	private String enName;
 	private String description;
 	private Integer status;
+	private Integer defaultAccessType;
 
 	public String getAppKey() {
 		return appKey;
 	}
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
+	}
+	public Long getModelId() {
+		return modelId;
+	}
+	public void setModelId(Long modelId) {
+		this.modelId = modelId;
 	}
 	public String getCode() {
 		return code;
@@ -45,5 +53,11 @@ public class DataPropertyDTO extends BaseDO{
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+	public Integer getDefaultAccessType() {
+		return defaultAccessType;
+	}
+	public void setDefaultAccessType(Integer defaultAccessType) {
+		this.defaultAccessType = defaultAccessType;
 	}
 }

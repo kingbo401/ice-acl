@@ -1,7 +1,6 @@
 package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -46,9 +45,6 @@ public class DataOperationManagerImpl implements DataOperationManager {
 		Assert.isNull(dataOperationDO, "属性code已被使用");
 		dataOperationDO = new DataOperationDO();
 		BeanUtils.copyProperties(dataOperationDTO, dataOperationDO);
-		Date now = new Date();
-		dataOperationDO.setCreateTime(now);
-		dataOperationDO.setUpdateTime(now);
 		dataOperationDO.setStatus(AclConstant.STATUS_NORMAL);
 		dataOperationDAO.create(dataOperationDO);
 		return buildDataOperationDTO(dataOperationDO);
@@ -71,8 +67,6 @@ public class DataOperationManagerImpl implements DataOperationManager {
 		Assert.notNull(dataOperationDO, "属性不存在");
 		dataOperationDTO.setId(dataOperationDO.getId());
 		BeanUtils.copyProperties(dataOperationDTO, dataOperationDO);
-		Date now = new Date();
-		dataOperationDO.setUpdateTime(now);
 		dataOperationDAO.update(dataOperationDO);
 		return buildDataOperationDTO(dataOperationDO);
 	}
@@ -96,7 +90,6 @@ public class DataOperationManagerImpl implements DataOperationManager {
 			Assert.isNull(dataGrantRecordDO, "此模型-操作下有已授权的数据，不能删除；请先回收掉相关数据权限");
 		}
 		dataOperationDO.setStatus(status);
-		dataOperationDO.setUpdateTime(new Date());
 		dataOperationDAO.update(dataOperationDO);
 		return true;
 	}
@@ -160,12 +153,12 @@ public class DataOperationManagerImpl implements DataOperationManager {
 		return dataOperationDTO;
 	}
 	
-	private List<DataOperationDTO> buildDataOperationDTOs(List<DataOperationDO> dataOperationPOs){
-		if(CollectionUtil.isEmpty(dataOperationPOs)){
+	private List<DataOperationDTO> buildDataOperationDTOs(List<DataOperationDO> dataOperationDOs){
+		if(CollectionUtil.isEmpty(dataOperationDOs)){
 			return null;
 		}
 		List<DataOperationDTO> dataOperationDTOs = new ArrayList<DataOperationDTO>();
-		for(DataOperationDO dataOperationDO : dataOperationPOs){
+		for(DataOperationDO dataOperationDO : dataOperationDOs){
 			dataOperationDTOs.add(buildDataOperationDTO(dataOperationDO));
 		}
 		return dataOperationDTOs;

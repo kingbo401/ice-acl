@@ -4,14 +4,14 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.DataGrantRecordDetailDAO"> 
 	<insert id="create" parameterType="DataGrantRecordDetailDO" useGeneratedKeys="true" keyProperty="id">
-		insert into data_grant_record_detail(data_grant_record_id,property_id,property_value,property_value_desc,create_time,update_time)
-		values(#{dataGrantRecordId},#{propertyId},#{propertyValue},#{propertyValueDesc},#{createTime},#{updateTime})
+		insert into data_grant_record_detail(data_grant_record_id,property_id,property_value,property_value_desc,gmt_create,gmt_modified)
+		values(#{dataGrantRecordId},#{propertyId},#{propertyValue},#{propertyValueDesc},now(),now())
 	</insert>
 	
 	<insert id="batchCreate" parameterType="list">
-		insert into data_grant_record_detail(data_grant_record_id,property_id,property_value,property_value_desc,create_time,update_time) values
+		insert into data_grant_record_detail(data_grant_record_id,property_id,property_value,property_value_desc,gmt_create,gmt_modified) values
 		<foreach collection="datas" item="item" index="index" separator="," >  
-		(#{item.dataGrantRecordId},#{item.propertyId},#{item.propertyValue},#{item.propertyValueDesc},#{item.createTime},#{item.updateTime})
+		(#{item.dataGrantRecordId},#{item.propertyId},#{item.propertyValue},#{item.propertyValueDesc},now(),now())
 		</foreach>
 	</insert>
 	

@@ -5,7 +5,7 @@ import com.kingbo401.commons.model.param.PageParam;
 public class PermissionGroupQueryParam extends PageParam{
 	private String appKey;
     private String tenant;
-    private String type;
+    private String subgroup;
     private String name;
     private Long pid;
 	public String getAppKey() {
@@ -20,11 +20,11 @@ public class PermissionGroupQueryParam extends PageParam{
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
 	}
-	public String getType() {
-		return type;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getName() {
 		return name;

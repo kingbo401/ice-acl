@@ -6,7 +6,7 @@ public class PermissionGroupDO extends BaseDO {
 	private String appKey;
     private String tenant;
     private Long pid;
-    private String pype;
+    private String subgroup;
     private String name;
 	private String enName;
     private Integer idx;
@@ -30,11 +30,11 @@ public class PermissionGroupDO extends BaseDO {
 	public void setPid(Long pid) {
 		this.pid = pid;
 	}
-	public String getPype() {
-		return pype;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setPype(String pype) {
-		this.pype = pype;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getName() {
 		return name;

@@ -7,6 +7,7 @@ import com.kingbo401.commons.model.param.BaseParam;
 public class RoleMenuIdRefParam extends BaseParam{
 	private String appKey;
 	private Long roleId;
+	private String subgroup;
 	private List<Long> menuIds;
 	
 	public String getAppKey() {
@@ -20,6 +21,12 @@ public class RoleMenuIdRefParam extends BaseParam{
 	}
 	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
+	}
+	public String getSubgroup() {
+		return subgroup;
+	}
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public List<Long> getMenuIds() {
 		return menuIds;

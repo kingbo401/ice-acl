@@ -37,13 +37,8 @@ public class AclConstant {
 	 * 属性允许访问标识
 	 */
 	public static final int DATA_PROPERTY_ACCESS_ALLOW = 1;
-	
 	/**
-	 * 参数错误码
+	 * 默认分组
 	 */
-	public static final String ERROR_PARAM = "400";
-	/**
-	 * 系统错误码
-	 */
-	public static final String ERROR_SYSTEM = "500";
+	public static final String DEF_SUBGROUP = "g1";
 }

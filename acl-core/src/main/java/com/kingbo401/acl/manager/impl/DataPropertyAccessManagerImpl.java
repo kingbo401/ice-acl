@@ -1,7 +1,6 @@
 package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +12,9 @@ import org.springframework.util.Assert;
 
 import com.kingbo401.acl.dao.DataPropertyAccessDAO;
 import com.kingbo401.acl.manager.DataModelManager;
-import com.kingbo401.acl.manager.DataModelPropertyRefManager;
 import com.kingbo401.acl.manager.DataPropertyAccessManager;
 import com.kingbo401.acl.manager.DataPropertyManager;
 import com.kingbo401.acl.model.dto.DataModelDTO;
-import com.kingbo401.acl.model.dto.DataModelPropertyRefDTO;
 import com.kingbo401.acl.model.dto.DataPropertyAccessDTO;
 import com.kingbo401.acl.model.dto.DataPropertyDTO;
 import com.kingbo401.acl.model.dto.param.DataPropertyCodeAccessParam;
@@ -35,8 +32,6 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 	private DataModelManager modelManager;
 	@Autowired
 	private DataPropertyManager propertyManager;
-	@Autowired
-	private DataModelPropertyRefManager dataModelPropertyRefManager;
 	
 	private boolean isAccessTypeValid(Integer controlType){
 		if(controlType == null){
@@ -49,8 +44,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 	}
 	
 	@Override
-	public boolean createDataPropertyControl(DataPropertyCodeAccessParam param) {
-		Assert.notNull(param, "参数不能为空");
+	public boolean createDataPropertyAccess(DataPropertyCodeAccessParam param) {
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "访问类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -68,15 +62,12 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getAppKey(), propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getId(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
-		Date now = new Date();
-		List<DataPropertyAccessDO> dataPropertyAccessPOs = new ArrayList<DataPropertyAccessDO>();
+		List<DataPropertyAccessDO> dataPropertyAccessDOs = new ArrayList<DataPropertyAccessDO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
 			DataPropertyAccessDO dataPropertyAccessDO = new DataPropertyAccessDO();
 			dataPropertyAccessDO.setAppKey(appKey);
-			dataPropertyAccessDO.setCreateTime(now);
-			dataPropertyAccessDO.setUpdateTime(now);
 			dataPropertyAccessDO.setAccessType(param.getAccessType());
 			dataPropertyAccessDO.setGrantTargetId(grantTargetId);
 			dataPropertyAccessDO.setGrantTargetType(grantTargetType);
@@ -84,15 +75,14 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 			dataPropertyAccessDO.setPropertyId(propertyDTO.getId());
 			dataPropertyAccessDO.setTenant(tenant);
 			dataPropertyAccessDO.setStatus(AclConstant.STATUS_NORMAL);
-			dataPropertyAccessPOs.add(dataPropertyAccessDO);
+			dataPropertyAccessDOs.add(dataPropertyAccessDO);
 		}
-		dataPropertyAccessDAO.batchCreate(dataPropertyAccessPOs);
+		dataPropertyAccessDAO.batchCreate(dataPropertyAccessDOs);
 		return true;
 	}
 
 	@Override
-	public boolean updateDataPropertyControl(DataPropertyCodeAccessParam param) {
-		Assert.notNull(param, "参数不能为空");
+	public boolean updateDataPropertyAccess(DataPropertyCodeAccessParam param) {
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "访问类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -110,7 +100,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getAppKey(), propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getId(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		
 		//删除老数据
@@ -120,13 +110,10 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		dataPropertyAccessParam.setStatus(AclConstant.STATUS_REMOVE);
 		dataPropertyAccessDAO.updateRefsStatus(dataPropertyAccessParam);
 		
-		Date now = new Date();
-		List<DataPropertyAccessDO> dataPropertyAccessPOs = new ArrayList<DataPropertyAccessDO>();
+		List<DataPropertyAccessDO> dataPropertyAccessDOs = new ArrayList<DataPropertyAccessDO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
 			DataPropertyAccessDO dataPropertyAccessDO = new DataPropertyAccessDO();
 			dataPropertyAccessDO.setAppKey(appKey);
-			dataPropertyAccessDO.setCreateTime(now);
-			dataPropertyAccessDO.setUpdateTime(now);
 			dataPropertyAccessDO.setAccessType(param.getAccessType());
 			dataPropertyAccessDO.setGrantTargetId(grantTargetId);
 			dataPropertyAccessDO.setGrantTargetType(grantTargetType);
@@ -134,14 +121,13 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 			dataPropertyAccessDO.setPropertyId(propertyDTO.getId());
 			dataPropertyAccessDO.setTenant(tenant);
 			dataPropertyAccessDO.setStatus(AclConstant.STATUS_NORMAL);
-			dataPropertyAccessPOs.add(dataPropertyAccessDO);
+			dataPropertyAccessDOs.add(dataPropertyAccessDO);
 		}
-		dataPropertyAccessDAO.batchCreate(dataPropertyAccessPOs);
+		dataPropertyAccessDAO.batchCreate(dataPropertyAccessDOs);
 		return true;
 	}
 	
-	private boolean updateDataPropertyControlStatus(DataPropertyCodeAccessParam param, int status){
-		Assert.notNull(param, "参数不能为空");
+	private boolean updateDataPropertyAccessStatus(DataPropertyCodeAccessParam param, int status){
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "控制类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -159,7 +145,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getAppKey(), propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getId(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		List<Long> propertyIds = new ArrayList<Long>();
 		for(DataPropertyDTO dataPropertyDTO : dataProperties){
@@ -175,23 +161,22 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 	}
 
 	@Override
-	public boolean removeDataPropertyControl(DataPropertyCodeAccessParam param) {
-		return updateDataPropertyControlStatus(param, AclConstant.STATUS_REMOVE);
+	public boolean removeDataPropertyAccess(DataPropertyCodeAccessParam param) {
+		return updateDataPropertyAccessStatus(param, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeDataPropertyControl(DataPropertyCodeAccessParam param) {
-		return updateDataPropertyControlStatus(param, AclConstant.STATUS_FREEZE);
+	public boolean freezeDataPropertyAccess(DataPropertyCodeAccessParam param) {
+		return updateDataPropertyAccessStatus(param, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeDataPropertyControl(DataPropertyCodeAccessParam param) {
-		return updateDataPropertyControlStatus(param, AclConstant.STATUS_NORMAL);
+	public boolean unfreezeDataPropertyAccess(DataPropertyCodeAccessParam param) {
+		return updateDataPropertyAccessStatus(param, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override
-	public List<DataPropertyAccessDTO> listDataPropertyControl(DataPropertyCodeAccessParam param) {
-		Assert.notNull(param, "param 不能为空");
+	public List<DataPropertyAccessDTO> listDataPropertyAccess(DataPropertyCodeAccessParam param) {
 		Assert.hasText(param.getGrantTargetId(), "targetId 不能为空");
 		Assert.hasText(param.getTenant(), "tenant 不能为空");
 		String appKey = param.getAppKey();
@@ -204,33 +189,33 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
-		List<DataModelPropertyRefDTO> dataModelPropertyRefDTOs = dataModelPropertyRefManager.listDataPropertyRef(modelDTO.getId());
-		Assert.notEmpty(dataModelPropertyRefDTOs, "没有配置模型对应的属性");
+		List<DataPropertyDTO> dataPropertyDTOs = propertyManager.listDataProperty(modelDTO.getId());
+		Assert.notEmpty(dataPropertyDTOs, "没有配置模型对应的属性");
 		
 		List<DataPropertyAccessDTO> dataPropertyAccessDTOs = new ArrayList<DataPropertyAccessDTO>();
 		Map<Long, DataPropertyAccessDTO> propertyAccessMap = new HashMap<Long, DataPropertyAccessDTO>();
-		for(DataModelPropertyRefDTO dataModelPropertyRefDTO : dataModelPropertyRefDTOs){
+		for(DataPropertyDTO dataPropertyDTO : dataPropertyDTOs){
 			DataPropertyAccessDTO dataPropertyAccessDTO = new DataPropertyAccessDTO();
-			dataPropertyAccessDTO.setAccessType(dataModelPropertyRefDTO.getDefaultAccessType());
-			dataPropertyAccessDTO.setPropertyCode(dataModelPropertyRefDTO.getPropertyCode());
-			dataPropertyAccessDTO.setPropertyName(dataModelPropertyRefDTO.getPropertyName());
-			dataPropertyAccessDTO.setPropertyDescription(dataModelPropertyRefDTO.getPropertyDescription());
+			dataPropertyAccessDTO.setAccessType(dataPropertyDTO.getDefaultAccessType());
+			dataPropertyAccessDTO.setPropertyCode(dataPropertyDTO.getCode());
+			dataPropertyAccessDTO.setPropertyName(dataPropertyDTO.getName());
+			dataPropertyAccessDTO.setPropertyDescription(dataPropertyDTO.getDescription());
 			dataPropertyAccessDTOs.add(dataPropertyAccessDTO);
-			propertyAccessMap.put(dataModelPropertyRefDTO.getPropertyId(), dataPropertyAccessDTO);
+			propertyAccessMap.put(dataPropertyDTO.getId(), dataPropertyAccessDTO);
 		}
 		
 		DataPropertyAccessParam dataPropertyAccessParam = new DataPropertyAccessParam();
 		BeanUtils.copyProperties(param, dataPropertyAccessParam);
 		dataPropertyAccessParam.setModelId(modelDTO.getId());
-		List<DataPropertyAccessDO> dataPropertyAccessPOs = dataPropertyAccessDAO
+		List<DataPropertyAccessDO> dataPropertyAccessDOs = dataPropertyAccessDAO
 				.listDataPropertyAccess(dataPropertyAccessParam);
 		//如果访问控制为空，直接返回模型属性关系里的默认访问控制
-		if(CollectionUtil.isEmpty(dataPropertyAccessPOs)){
+		if(CollectionUtil.isEmpty(dataPropertyAccessDOs)){
 			return dataPropertyAccessDTOs;
 		}
 		
 		//覆盖默认访问控制
-		for (DataPropertyAccessDO dataPropertyAccessDO : dataPropertyAccessPOs) {
+		for (DataPropertyAccessDO dataPropertyAccessDO : dataPropertyAccessDOs) {
 			DataPropertyAccessDTO dataPropertyControlDTO = propertyAccessMap.get(dataPropertyAccessDO.getPropertyId());
 			if(dataPropertyControlDTO == null){
 				continue;

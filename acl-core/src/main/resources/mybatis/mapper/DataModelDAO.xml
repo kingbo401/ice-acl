@@ -64,11 +64,11 @@
 	<insert id="create" parameterType="DataModelDO"
 		useGeneratedKeys="true" keyProperty="id">
 		insert into data_model
-		(app_key, code, name, en_name, description, status, create_time, update_time)
-		values (#{appKey}, #{code}, #{name}, #{description}, 
-		#{status}, #{createTime}, #{updateTime})
-		ON DUPLICATE KEY update status=#{status},name=#{name},
-		description=#{description},update_time = now()
+		(app_key, code, name, name_en, description, status, gmt_create, gmt_modified)
+		values (#{appKey}, #{code}, #{name}, #{nameEn}, #{description}, 
+		#{status}, now(), now())
+		ON DUPLICATE KEY update status=#{status},name=#{name},name_en=#{nameEn},
+		description=#{description},gmt_modified = now()
 	</insert>
 
 	<update id="update" parameterType="DataModelDO">
@@ -77,8 +77,8 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="enName != null and enName != ''" >
-                enName = #{enName},
+			<if test="nameEn != null and nameEn != ''" >
+                nameEn = #{nameEn},
             </if>
 			<if test="description != null and description != ''">
 				description = #{description}
@@ -86,7 +86,7 @@
 			<if test="status != null">
 				status = #{status},
 			</if>
-			update_time = #{updateTime}
+			gmt_modified = now()
 		</set>
 		where id = #{id}
 	</update>

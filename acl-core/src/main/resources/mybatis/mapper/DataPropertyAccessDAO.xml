@@ -24,31 +24,30 @@
 	<insert id="create" parameterType="DataPropertyAccessDO">
 		insert into data_property_access (app_key,model_id, property_id,
 		grant_target_id, grant_target_type, tenant,
-		access_type, status, create_time, update_time)
+		access_type, status, gmt_create, gmt_modified)
 		values (#{appKey},#{modelId}, #{propertyId}, #{grantTargetId}, #{grantTargetType},
 		#{tenant},
-		#{accessType}, #{status}, #{createTime}, #{updateTime})
+		#{accessType}, #{status}, now(), now())
 		ON DUPLICATE KEY update
-		status=#{status},access_type=#{accessType},update_time = #{updateTime}
+		status=#{status},access_type=#{accessType},gmt_modified = now()
 	</insert>
 
 	<insert id="batchCreate" parameterType="DataPropertyAccessDO">
 		insert into data_property_access (app_key, model_id, property_id,
 		grant_target_id, grant_target_type, tenant
-		,access_type, status, create_time, update_time ) values
+		,access_type, status, gmt_create, gmt_modified ) values
 		<foreach collection="datas" item="item" separator=",">
 			(#{item.appKey},#{item.modelId}, #{item.propertyId}, #{item.grantTargetId},
 			#{item.grantTargetType}, #{item.tenant},
-			#{item.accessType},#{item.status}, #{item.createTime},
-			#{item.updateTime})
+			#{item.accessType},#{item.status}, now(),
+			now())
 		</foreach>
 		ON DUPLICATE KEY update
-		status=values(status),access_type=values(accessType),update_time =
-		values{updateTime}
+		status=values(status),access_type=values(accessType),gmt_modified = now()
 	</insert>
 
 	<update id="updateRefsStatus" parameterType="DataPropertyAccessParam">
-		update data_property_access set status = #{status}, update_time = now()
+		update data_property_access set status = #{status}, gmt_modified = now()
 		where app_key=#{appKey} and grant_target_id = #{grantTargetId} and grant_target_type = #{grantTargetType} and tenant = #{tenant}
 		and model_id = #{modelId} 
 		<if test="propertyIds != null and propertyIds.size() > 0">

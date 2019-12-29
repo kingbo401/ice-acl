@@ -1,11 +1,11 @@
 package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -24,7 +24,7 @@ import com.kingbo401.acl.model.entity.PermissionGroupDO;
 import com.kingbo401.acl.model.entity.RolePermissionGroupRefDO;
 import com.kingbo401.acl.model.entity.param.RolePermissionGroupRefQueryParam;
 import com.kingbo401.acl.model.entity.param.UserRoleRefQueryParam;
-import com.kingbo401.acl.utils.BizUtils;
+import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.common.constant.AclConstant;
@@ -42,18 +42,14 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 	
 	@Override
 	public boolean addRolePermissionGroupRef(RolePermissionGroupRefParam param) {
-		Assert.notNull(param, "参数不能为空");
 		List<Long> groupIds = param.getGroupIds();
 		Assert.notEmpty(groupIds, "groupIds不能为空");
-		checkRolePermissionGroupRefParam(param);
+		assertRolePermissionGroupRefParam(param);
 		List<RolePermissionGroupRefDO> list = new ArrayList<RolePermissionGroupRefDO>();
-		Date now = new Date();
 		for(Long groupId : groupIds){
 			RolePermissionGroupRefDO rolePermissionGroupRefDO = new RolePermissionGroupRefDO();
 			rolePermissionGroupRefDO.setGroupId(groupId);
 			rolePermissionGroupRefDO.setRoleId(param.getRoleId());
-			rolePermissionGroupRefDO.setCreateTime(now);
-			rolePermissionGroupRefDO.setUpdateTime(now);
 			rolePermissionGroupRefDO.setStatus(AclConstant.STATUS_NORMAL);
 			list.add(rolePermissionGroupRefDO);
 		}
@@ -66,26 +62,24 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		Assert.notNull(param, "参数不能为空");
 		List<Long> groupIds = param.getGroupIds();
 		Assert.notEmpty(groupIds, "groupIds不能为空");
-		checkRolePermissionGroupRefParam(param);
+		assertRolePermissionGroupRefParam(param);
 		
 		RolePermissionGroupRefQueryParam rolePermissionGroupRefQueryParam = new RolePermissionGroupRefQueryParam();
 		rolePermissionGroupRefQueryParam.setRoleId(param.getRoleId());
-		List<PermissionGroupDO> permissionGroupPOs = rolePermissionGroupRefDAO.listPermissionGroup(rolePermissionGroupRefQueryParam);
-		if(CollectionUtil.isNotEmpty(permissionGroupPOs)){
+		rolePermissionGroupRefQueryParam.setSubgroup(param.getSubgroup());
+		List<PermissionGroupDO> permissionGroupDOs = rolePermissionGroupRefDAO.listPermissionGroup(rolePermissionGroupRefQueryParam);
+		if(CollectionUtil.isNotEmpty(permissionGroupDOs)){
 			List<Long> groupIdsRemove = new ArrayList<Long>();
-			for(PermissionGroupDO permissionGroupDO : permissionGroupPOs){
+			for(PermissionGroupDO permissionGroupDO : permissionGroupDOs){
 				groupIdsRemove.add(permissionGroupDO.getId());
 				rolePermissionGroupRefDAO.updateRefsStatus(param.getRoleId(), groupIdsRemove, AclConstant.STATUS_REMOVE);
 			}
 		}
 		List<RolePermissionGroupRefDO> list = new ArrayList<RolePermissionGroupRefDO>();
-		Date now = new Date();
 		for(Long groupId : groupIds){
 			RolePermissionGroupRefDO rolePermissionGroupRefDO = new RolePermissionGroupRefDO();
 			rolePermissionGroupRefDO.setGroupId(groupId);
 			rolePermissionGroupRefDO.setRoleId(param.getRoleId());
-			rolePermissionGroupRefDO.setCreateTime(now);
-			rolePermissionGroupRefDO.setUpdateTime(now);
 			rolePermissionGroupRefDO.setStatus(AclConstant.STATUS_NORMAL);
 			list.add(rolePermissionGroupRefDO);
 		}
@@ -95,21 +89,21 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 
 	@Override
 	public boolean removeRolePermissionGroupRef(RolePermissionGroupRefParam param) {
-		checkRolePermissionGroupRefParam(param);
+		assertRolePermissionGroupRefParam(param);
 		rolePermissionGroupRefDAO.updateRefsStatus(param.getRoleId(), param.getGroupIds(), AclConstant.STATUS_REMOVE);
 		return true;
 	}
 
 	@Override
 	public boolean freezeRolePermissionGroupRef(RolePermissionGroupRefParam param) {
-		checkRolePermissionGroupRefParam(param);
+		assertRolePermissionGroupRefParam(param);
 		rolePermissionGroupRefDAO.updateRefsStatus(param.getRoleId(), param.getGroupIds(), AclConstant.STATUS_FREEZE);
 		return true;
 	}
 
 	@Override
 	public boolean unfreezeRolePermissionGroupRef(RolePermissionGroupRefParam param) {
-		checkRolePermissionGroupRefParam(param);
+		assertRolePermissionGroupRefParam(param);
 		rolePermissionGroupRefDAO.updateRefsStatus(param.getRoleId(), param.getGroupIds(), AclConstant.STATUS_NORMAL);
 		return true;
 	}
@@ -121,8 +115,8 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		Assert.notNull(roleId, "roleId不能为空");
 		RoleDTO roleDTO = roleManager.getRoleById(param.getAppKey(), roleId);
 		Assert.notNull(roleDTO, "角色不存在");
-		List<PermissionGroupDO> permissionGroupPOs = rolePermissionGroupRefDAO.listPermissionGroup(param);
-		return BizUtils.buildPermissionGroupDTOs(permissionGroupPOs);
+		List<PermissionGroupDO> permissionGroupDOs = rolePermissionGroupRefDAO.listPermissionGroup(param);
+		return BizUtil.buildPermissionGroupDTOs(permissionGroupDOs);
 	}
 
 	@Override
@@ -140,13 +134,13 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 				return pageVO;
 			}
 		}
-		List<PermissionGroupDO> permissionGroupPOs = rolePermissionGroupRefDAO.pagePermissionGroup(param);
-		pageVO.setItems(BizUtils.buildPermissionGroupDTOs(permissionGroupPOs));
+		List<PermissionGroupDO> permissionGroupDOs = rolePermissionGroupRefDAO.pagePermissionGroup(param);
+		pageVO.setItems(BizUtil.buildPermissionGroupDTOs(permissionGroupDOs));
 		return pageVO;
 	}
 
 	@Override
-	public List<Long> listUserRolePermissionGroupIds(Long userId, String appKey, String tenant) {
+	public List<Long> listUserRolePermissionGroupIds(String userId, String appKey, String tenant) {
 		Assert.notNull(userId, "userId不能为空");
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
@@ -164,22 +158,21 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 			roleIds.add(role.getRoleId());
 		}
 		//查询角色和权限组关联关系不需要关联租户
-		List<PermissionGroupDO> parentpermissionGroupPOs = rolePermissionGroupRefDAO
+		List<PermissionGroupDO> parentpermissionGroupDOs = rolePermissionGroupRefDAO
 				.getPermissionGroupsByRoleIds(roleIds);
-		if (CollectionUtil.isEmpty(parentpermissionGroupPOs)) {
+		if (CollectionUtil.isEmpty(parentpermissionGroupDOs)) {
 			return null;
 		}
 		
 		List<Long> groupIds = Lists.newArrayList();
-		for(PermissionGroupDO permissionGroupDO : parentpermissionGroupPOs){
+		for(PermissionGroupDO permissionGroupDO : parentpermissionGroupDOs){
 			groupIds.add(permissionGroupDO.getId());
 		}
 		return groupIds;
 		
 	}
 	
-	private void checkRolePermissionGroupRefParam(RolePermissionGroupRefParam param){
-		Assert.notNull(param, "参数不能为空");
+	private void assertRolePermissionGroupRefParam(RolePermissionGroupRefParam param){
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
 		Long roleId = param.getRoleId();
@@ -187,12 +180,17 @@ public class RolePermissionGroupRefManagerImpl implements RolePermissionGroupRef
 		RoleDTO roleDTO = roleManager.getRoleById(appKey, roleId);
 		Assert.notNull(roleDTO, "角色不存在");
 		List<Long> groupIds = param.getGroupIds();
+		String subgroup = param.getSubgroup();
 		if(CollectionUtil.isNotEmpty(groupIds)){
 			List<PermissionGroupDTO> permissionGroupDTOs = permissionGroupManager.getPermissionGroupByIds(groupIds);
 			Assert.notEmpty(permissionGroupDTOs, "权限组不存在");
 			Map<Long, PermissionGroupDTO> permissionGroupMap = permissionGroupDTOs.stream().collect(Collectors.toMap(PermissionGroupDTO::getId, a -> a, (k1, k2) -> k1));
 			for(Long groupId : groupIds){
-				Assert.notNull(permissionGroupMap.get(groupId), "权限组不存在:" + groupId);
+				PermissionGroupDTO permissionGroupDTO = permissionGroupMap.get(groupId);
+				Assert.notNull(permissionGroupDTO, "权限组不存在:" + groupId);
+				if (StringUtils.isNotBlank(subgroup)) {
+					Assert.isTrue(subgroup.equals(permissionGroupDTO.getSubgroup()), "subgrou非法");
+				}
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package com.kingbo401.acl.manager.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +12,13 @@ import org.springframework.util.CollectionUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kingbo401.acl.dao.MenuDAO;
+import com.kingbo401.acl.dao.RoleMenuRefDAO;
 import com.kingbo401.acl.manager.MenuManager;
+import com.kingbo401.acl.manager.RoleManager;
 import com.kingbo401.acl.model.dto.MenuDTO;
 import com.kingbo401.acl.model.entity.MenuDO;
+import com.kingbo401.acl.model.entity.param.GetUserMenuParam;
+import com.kingbo401.acl.model.entity.param.RoleMenuQueryParam;
 import com.kingbo401.iceacl.common.constant.AclConstant;
 import com.kingbo401.iceacl.common.enums.MenuShowType;
 import com.kingbo401.iceacl.common.model.MenuTreeNode;
@@ -24,21 +27,28 @@ import com.kingbo401.iceacl.common.model.MenuTreeNode;
 public class MenuManagerImpl implements MenuManager{
 	@Autowired
 	private MenuDAO menuDAO;
+	@Autowired
+	private RoleMenuRefDAO roleMenuRefDAO;
+	@Autowired
+	private RoleManager roleManager;
 	
 	@Override
-	public List<MenuTreeNode> getAppMenuTree(String appKey) {
+	public List<MenuTreeNode> getAppMenuTree(String appKey, String subgroup) {
 		Assert.hasText(appKey, "appKey不能为空");
-		List<MenuDO> menuPOs = menuDAO.listMenu(appKey, null);
-		return buildMenuTree(menuPOs);
+		if (subgroup == null) {
+			subgroup = AclConstant.DEF_SUBGROUP;
+		}
+		List<MenuDO> menuDOs = menuDAO.listMenu(appKey, subgroup);
+		return buildMenuTree(menuDOs);
 	}
 	
-	private List<MenuTreeNode> buildMenuTree(List<MenuDO> menuPOs){
-		if(CollectionUtils.isEmpty(menuPOs)){
+	private List<MenuTreeNode> buildMenuTree(List<MenuDO> menuDOs){
+		if(CollectionUtils.isEmpty(menuDOs)){
 			return null;
 		}
 		List<MenuDO> rootMenus = Lists.newArrayList();
 		Map<Long, List<MenuDO>> menusMap = Maps.newHashMap();
-		for (MenuDO menuDO : menuPOs) {
+		for (MenuDO menuDO : menuDOs) {
 			Long menuPid = menuDO.getPid();
 			if (menuPid == 0) {
 				rootMenus.add(menuDO);
@@ -80,12 +90,29 @@ public class MenuManagerImpl implements MenuManager{
 	}
 
 	@Override
-	public List<MenuTreeNode> listUserMenuTree(String userId, String appKey, String tenant) {
-		Assert.hasText(userId, "userId不能为空");
-		Assert.hasText(appKey, "appKey不能为空");
-		Assert.hasText(tenant, "tenant不能为空");
-		List<MenuDO> menuPOs = menuDAO.listUserMenu(userId, appKey, tenant);
-		return buildMenuTree(menuPOs);
+	public List<MenuTreeNode> getUserMenuTree(GetUserMenuParam param) {
+		Assert.hasText(param.getUserId(), "userId不能为空");
+		Assert.hasText(param.getAppKey(), "appKey不能为空");
+		Assert.hasText(param.getTenant(), "tenant不能为空");
+		if (param.getSubgroup() == null) {
+			param.setSubgroup(AclConstant.DEF_SUBGROUP);
+		}
+		List<MenuDO> menuDOs = menuDAO.listUserMenu(param);
+		return buildMenuTree(menuDOs);
+	}
+	
+	@Override
+	public List<MenuTreeNode> getRoleMenuTree(RoleMenuQueryParam param) {
+		String appKey = param.getAppKey();
+		Long roleId = param.getRoleId();
+		Assert.notNull(roleManager.getRoleById(appKey, roleId), "角色不存在");
+		String subgroup = param.getSubgroup();
+		if (subgroup == null) {
+			subgroup = AclConstant.DEF_SUBGROUP;
+			param.setSubgroup(subgroup);
+		}
+		List<MenuDO> menuDOs = roleMenuRefDAO.listMenu(param);
+		return buildMenuTree(menuDOs);
 	}
 
 	@Override
@@ -93,11 +120,12 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.hasText(menuDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(menuDTO.getName(), "menuName不能为空");
 		Assert.hasText(menuDTO.getUrl(), "menuUrl不能为空");
+		if (menuDTO.getSubgroup() == null) {
+			menuDTO.setSubgroup(AclConstant.DEF_SUBGROUP);
+		}
 		Assert.isTrue(MenuShowType.isValid(menuDTO.getShowType()), "菜单显示类型非法");
-		Date now = new Date();
-		menuDTO.setCreateTime(now);
-		menuDTO.setUpdateTime(now);
 		menuDTO.setStatus(AclConstant.STATUS_NORMAL);
+		
 		MenuDO menuDO = new MenuDO();
 		BeanUtils.copyProperties(menuDTO, menuDO);
 		menuDAO.createMenu(menuDO);
@@ -116,8 +144,6 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.notNull(id, "id不能null");
 		MenuDO menuDO = menuDAO.getMenuById(id);
 		Assert.notNull(menuDO, "菜单不存在");
-		Date now = new Date();
-		menuDTO.setUpdateTime(now);
 		BeanUtils.copyProperties(menuDTO, menuDO);
 		menuDAO.updateMenu(menuDO);
 		return menuDTO;
@@ -132,7 +158,6 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.notNull(menuDO, "菜单不存在");
 		Assert.isTrue(appKey.equals(menuDO.getAppKey()), "appkey菜单不匹配");
 		menuDO.setStatus(status);
-		menuDO.setUpdateTime(new Date());
 		menuDAO.updateMenu(menuDO);
 		return true;
 	}

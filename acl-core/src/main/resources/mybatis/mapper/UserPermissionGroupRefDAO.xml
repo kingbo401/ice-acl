@@ -4,15 +4,15 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.UserPermissionGroupRefDAO"> 
 	<insert id="batchCreate" parameterType="list">
-		insert into user_permission_group_ref(user_id,group_id,tenant,status,effective_time,expire_time,create_time,update_time) values
+		insert into user_permission_group_ref(user_id,group_id,tenant,status,effective_time,expire_time,gmt_create,gmt_modified) values
 		<foreach collection="list" item="item" index="index" separator="," >  
-		(#{item.userId},#{item.groupId},#{item.tenant},#{item.status},#{item.effectiveTime},#{item.expireTime},#{item.createTime},#{item.updateTime})
+		(#{item.userId},#{item.groupId},#{item.tenant},#{item.status},#{item.effectiveTime},#{item.expireTime},now(),now())
 		</foreach>
-		ON DUPLICATE KEY UPDATE update_time = now(),status = values(status),effective_time=values(effective_time),expire_time=values(expire_time)
+		ON DUPLICATE KEY UPDATE gmt_modified = now(),status = values(status),effective_time=values(effective_time),expire_time=values(expire_time)
 	</insert>
 
 	<update id="updateRefsStatus">
-		update user_permission_group_ref set status = #{status},update_time = now() where user_id=#{userId}
+		update user_permission_group_ref set status = #{status},gmt_modified = now() where user_id=#{userId}
 		<if test = "tenant != null and tenant != ''">
 			and tenant=#{tenant}
 		</if>
@@ -25,25 +25,23 @@
 	</update>
 	
 	<update id="removeRefsByGroupId">
-		update user_permission_group_ref set status = 0,update_time = now() where group_id = #{groupId}
+		update user_permission_group_ref set status = 0,gmt_modified = now() where group_id = #{groupId}
 	</update>
 	
 	<sql id="queryUserPermissionGroupRefSubSql">
 		where t1.user_id=#{userId} and t1.tenant=#{tenant} and t1.group_id=t2.id 
+		and and t2.app_key=#{appKey}
 		<if test="status != null">
             and t1.status = #{status},
         </if>
-		<if test = "appKey != null and appKey != ''">
-		    and t2.app_key=#{appKey}
-		</if>
 		<if test='tenant == "_t_common"'>
 		    and t2.tenant='_t_common'
 		</if>
 		<if test='tenant != "_t_common"'>
 		    and t2.tenant in ('_t_common',#{tenant})
 		</if>
-		<if test = "groupType != null and groupType != ''">
-		    and t2.type = #{groupType}
+		<if test = "subgroup != null and subgroup != ''">
+		    and t2.subgroup = #{subgroup}
 		</if>
 		<if test = "groupName != null and groupName != ''">
 		    and t2.name like  concat('%', #{groupName}, '%')
@@ -60,7 +58,7 @@
 
 	<select id = "listUserPermissionGroupRef"  resultType="com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO">
 		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.group_pid,
-		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.type as groupType
+		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.subgroup as subgroup
 		from user_permission_group_ref t1, permission_group t2
 		<include refid="queryUserPermissionGroupRefSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -75,7 +73,7 @@
 	
 	<select id = "pageUserPermissionGroupRef"  resultType="com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO">
 		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.group_pid,
-		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.type as groupType
+		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.subgroup as subgroup
 		from user_permission_group_ref t1, permission_group t2
 		<include refid="queryUserPermissionGroupRefSubSql" />
 		<if test = "orderField != null and orderField != ''">

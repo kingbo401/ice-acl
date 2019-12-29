@@ -7,7 +7,7 @@ public class RolePermissionGroupRefQueryParam extends PageParam{
 	private Long roleId;
 	private Long groupId;
 	private String tenant;
-    private String groupType;
+	private String subgroup;
     private String groupName;
     private Integer status;
 	public String getAppKey() {
@@ -34,11 +34,12 @@ public class RolePermissionGroupRefQueryParam extends PageParam{
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
 	}
-	public String getGroupType() {
-		return groupType;
+	
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getGroupName() {
 		return groupName;

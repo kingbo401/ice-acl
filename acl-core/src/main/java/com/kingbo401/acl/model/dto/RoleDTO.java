@@ -1,5 +1,7 @@
 package com.kingbo401.acl.model.dto;
 
+import java.util.List;
+
 import com.kingbo401.iceacl.common.model.BaseDO;
 
 public class RoleDTO extends BaseDO{
@@ -9,8 +11,10 @@ public class RoleDTO extends BaseDO{
 	private String enName;
 	private String description;
 	private String tenant;
-	private String type;
+	private String subgroup;
 	private Integer status;
+	private String menuSubgroup;
+	private List<Long> menuIds;
 	public String getAppKey() {
 		return appKey;
 	}
@@ -47,16 +51,28 @@ public class RoleDTO extends BaseDO{
 	public void setEnName(String enName) {
 		this.enName = enName;
 	}
-	public String getType() {
-		return type;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public Integer getStatus() {
 		return status;
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+	public List<Long> getMenuIds() {
+		return menuIds;
+	}
+	public void setMenuIds(List<Long> menuIds) {
+		this.menuIds = menuIds;
+	}
+	public String getMenuSubgroup() {
+		return menuSubgroup;
+	}
+	public void setMenuSubgroup(String menuSubgroup) {
+		this.menuSubgroup = menuSubgroup;
 	}
 }

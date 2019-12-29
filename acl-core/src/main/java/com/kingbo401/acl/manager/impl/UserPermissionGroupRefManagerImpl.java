@@ -19,11 +19,11 @@ import com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO;
 import com.kingbo401.acl.model.dto.param.UserPermissionGroupRefParam;
 import com.kingbo401.acl.model.entity.UserPermissionGroupRefDO;
 import com.kingbo401.acl.model.entity.param.UserPermissionGroupRefQueryParam;
+import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.common.constant.AclConstant;
-import com.kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRefManager{
@@ -37,31 +37,28 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> groupIds = param.getGroupIds();
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		Assert.notEmpty(groupIds, "groupIds不能为空");
-		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
-		List<UserPermissionGroupRefDO> userPermissionGroupRefPOs = new ArrayList<UserPermissionGroupRefDO>();
-		Date now  = new Date();
+		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
+		List<UserPermissionGroupRefDO> userPermissionGroupRefDOs = new ArrayList<UserPermissionGroupRefDO>();
 		for(Long groupId : groupIds){
 			UserPermissionGroupRefDO userPermissionGroupRefDO = new UserPermissionGroupRefDO();
 			userPermissionGroupRefDO.setUserId(userId);
 			userPermissionGroupRefDO.setTenant(tenant);
 			userPermissionGroupRefDO.setGroupId(groupId);
 			userPermissionGroupRefDO.setStatus(AclConstant.STATUS_NORMAL);
-			userPermissionGroupRefDO.setCreateTime(now);
-			userPermissionGroupRefDO.setUpdateTime(now);
 			userPermissionGroupRefDO.setEffectiveTime(effectiveTime);
 			userPermissionGroupRefDO.setExpireTime(expireTime);
-			userPermissionGroupRefPOs.add(userPermissionGroupRefDO);
+			userPermissionGroupRefDOs.add(userPermissionGroupRefDO);
 		}
-		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefPOs);
+		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefDOs);
 		return true;
 	}
 
@@ -70,16 +67,16 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> groupIds = param.getGroupIds();
 		Assert.notEmpty(groupIds, "groupIds不能为空");
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
-		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
+		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
 		UserPermissionGroupRefQueryParam userPermissionGroupRefQueryParam = new UserPermissionGroupRefQueryParam();
 		userPermissionGroupRefQueryParam.setAppKey(appKey);
 		userPermissionGroupRefQueryParam.setUserId(userId);
@@ -93,21 +90,18 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 			userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIdsRemove, AclConstant.STATUS_REMOVE);
 		}
 		
-		List<UserPermissionGroupRefDO> userPermissionGroupRefPOs = new ArrayList<UserPermissionGroupRefDO>();
-		Date now  = new Date();
+		List<UserPermissionGroupRefDO> userPermissionGroupRefDOs = new ArrayList<UserPermissionGroupRefDO>();
 		for(Long groupId : groupIds){
 			UserPermissionGroupRefDO userPermissionGroupRefDO = new UserPermissionGroupRefDO();
 			userPermissionGroupRefDO.setUserId(userId);
 			userPermissionGroupRefDO.setTenant(tenant);
 			userPermissionGroupRefDO.setGroupId(groupId);
 			userPermissionGroupRefDO.setStatus(AclConstant.STATUS_NORMAL);
-			userPermissionGroupRefDO.setCreateTime(now);
-			userPermissionGroupRefDO.setUpdateTime(now);
 			userPermissionGroupRefDO.setEffectiveTime(effectiveTime);
 			userPermissionGroupRefDO.setExpireTime(expireTime);
-			userPermissionGroupRefPOs.add(userPermissionGroupRefDO);
+			userPermissionGroupRefDOs.add(userPermissionGroupRefDO);
 		}
-		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefPOs);
+		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefDOs);
 		return true;
 	}
 
@@ -116,12 +110,12 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
+		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
 		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, AclConstant.STATUS_REMOVE);
 		return true;
 	}
@@ -131,12 +125,12 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
+		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
 		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, AclConstant.STATUS_FREEZE);
 		return true;
 	}
@@ -146,12 +140,12 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, param.getGroupType(), groupIds);
+		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
 		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, AclConstant.STATUS_NORMAL);
 		return true;
 	}
@@ -202,7 +196,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		return pageVO;
 	}
 	
-	private void assertPermissionGroup(String appKey, String groupType, List<Long> groupIds){
+	private void assertPermissionGroup(String appKey, String subgroup, List<Long> groupIds){
 		if(CollectionUtil.isEmpty(groupIds)){
 			return;
 		}
@@ -212,8 +206,8 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		for(Long groupId : groupIds){
 			PermissionGroupDTO permissionGroup = permissionGroupMap.get(groupId);
 			Assert.notNull(permissionGroup, "权限组不存在:" + groupId);
-			if(StringUtil.isNotBlank(groupType)){
-				Assert.isTrue(groupType.equals(permissionGroup.getType()), "权限组类型不匹配");
+			if(StringUtil.isNotBlank(subgroup)){
+				Assert.isTrue(subgroup.equals(permissionGroup.getSubgroup()), "权限组类型不匹配");
 			}
 		}
 	}

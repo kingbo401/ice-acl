@@ -16,15 +16,19 @@ public class TimeCostAspect {
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
 		Object[] args = joinPoint.getArgs();
 		Object rst = null;
+		long t1 = System.currentTimeMillis();
+		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        String methodName = signature.getDeclaringTypeName() + "." + signature.getName();  
 		try {
-			MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-	        String methodName = methodSignature.getDeclaringTypeName() + "." + methodSignature.getName();  
-			long t1 = System.currentTimeMillis();
 			rst = joinPoint.proceed(args);
-			long t2 = System.currentTimeMillis();
-			logger.info("method " + methodName + " time cost " + (t2 - t1) + " ms");
 		} catch (Throwable e) {
 			throw e;
+		} finally {
+			long t2 = System.currentTimeMillis();
+			long cost = t2 - t1;
+			if (cost > 20) {
+				logger.info("method " + methodName + " time cost " + cost + " ms");
+			}
 		}
 		return rst;
 	}

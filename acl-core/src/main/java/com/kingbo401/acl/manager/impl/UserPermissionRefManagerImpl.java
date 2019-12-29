@@ -18,11 +18,11 @@ import com.kingbo401.acl.model.dto.UserPermissionRefDTO;
 import com.kingbo401.acl.model.dto.param.UserPermissionRefParam;
 import com.kingbo401.acl.model.entity.UserPermissionRefDO;
 import com.kingbo401.acl.model.entity.param.UserPermissionRefQueryParam;
+import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.common.constant.AclConstant;
-import com.kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
@@ -36,31 +36,28 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> permissionIds = param.getPermissionIds();
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
-		assertPermissions(appKey, param.getPermissionType(), permissionIds);
-		List<UserPermissionRefDO> userPermissionRefPOs = new ArrayList<UserPermissionRefDO>();
-		Date now  = new Date();
+		assertPermissions(appKey, param.getSubgroup(), permissionIds);
+		List<UserPermissionRefDO> userPermissionRefDOs = new ArrayList<UserPermissionRefDO>();
 		for(Long permissionId : permissionIds){
 			UserPermissionRefDO userPermissionRefDO = new UserPermissionRefDO();
 			userPermissionRefDO.setUserId(userId);
 			userPermissionRefDO.setTenant(tenant);
 			userPermissionRefDO.setPermissionId(permissionId);
 			userPermissionRefDO.setStatus(AclConstant.STATUS_NORMAL);
-			userPermissionRefDO.setCreateTime(now);
-			userPermissionRefDO.setUpdateTime(now);
 			userPermissionRefDO.setEffectiveTime(effectiveTime);
 			userPermissionRefDO.setExpireTime(expireTime);
-			userPermissionRefPOs.add(userPermissionRefDO);
+			userPermissionRefDOs.add(userPermissionRefDO);
 		}
-		userPermissionRefDAO.batchCreate(userPermissionRefPOs);
+		userPermissionRefDAO.batchCreate(userPermissionRefDOs);
 		return true;
 	}
 
@@ -69,12 +66,12 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
@@ -92,22 +89,19 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 			}
 			userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIdsRemove, AclConstant.STATUS_REMOVE);
 		}
-		assertPermissions(appKey, param.getPermissionType(), permissionIds);
-		List<UserPermissionRefDO> userPermissionRefPOs = new ArrayList<UserPermissionRefDO>();
-		Date now  = new Date();
+		assertPermissions(appKey, param.getSubgroup(), permissionIds);
+		List<UserPermissionRefDO> userPermissionRefDOs = new ArrayList<UserPermissionRefDO>();
 		for(Long permissionId : permissionIds){
 			UserPermissionRefDO userPermissionRefDO = new UserPermissionRefDO();
 			userPermissionRefDO.setUserId(userId);
 			userPermissionRefDO.setTenant(tenant);
 			userPermissionRefDO.setPermissionId(permissionId);
 			userPermissionRefDO.setStatus(AclConstant.STATUS_NORMAL);
-			userPermissionRefDO.setCreateTime(now);
-			userPermissionRefDO.setUpdateTime(now);
 			userPermissionRefDO.setEffectiveTime(effectiveTime);
 			userPermissionRefDO.setExpireTime(expireTime);
-			userPermissionRefPOs.add(userPermissionRefDO);
+			userPermissionRefDOs.add(userPermissionRefDO);
 		}
-		userPermissionRefDAO.batchCreate(userPermissionRefPOs);
+		userPermissionRefDAO.batchCreate(userPermissionRefDOs);
 		return true;
 	}
 
@@ -116,11 +110,11 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> permissionIds = param.getPermissionIds();
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
@@ -133,7 +127,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
@@ -147,7 +141,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
@@ -183,7 +177,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		return pageVO;
 	}
 
-	private void assertPermissions(String appKey, String permissionType, List<Long> permissionIds){
+	private void assertPermissions(String appKey, String subgroup, List<Long> permissionIds){
 		if(CollectionUtil.isEmpty(permissionIds)){
 			return;
 		}
@@ -193,8 +187,8 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		for(Long permissionId : permissionIds){
 			PermissionDTO permissionDTO = idMap.get(permissionId);
 			Assert.notNull(permissionDTO, "权限不存在");
-			if(StringUtil.isNotBlank(permissionType)){
-				Assert.isTrue(permissionType.equals(permissionDTO.getType()), "权限类型不匹配");
+			if(StringUtil.isNotBlank(subgroup)){
+				Assert.isTrue(subgroup.equals(permissionDTO.getSubgroup()), "权限类型不匹配");
 			}
 		}
 	}

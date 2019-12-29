@@ -7,9 +7,9 @@ import com.kingbo401.commons.model.BasePojo;
 
 public class UserPermissionGroupRefParam extends BasePojo{
 	private String appKey;
-	private Long userId;
+	private String userId;
 	private String tenant;
-	private String groupType;
+	private String subgroup;
 	private List<Long> groupIds;
 	private Date effectiveTime;
 	private Date expireTime;
@@ -19,17 +19,18 @@ public class UserPermissionGroupRefParam extends BasePojo{
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
-	public Long getUserId() {
+	
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public String getGroupType() {
-		return groupType;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getTenant() {
 		return tenant;

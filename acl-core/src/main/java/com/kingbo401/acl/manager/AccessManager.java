@@ -18,5 +18,5 @@ public interface AccessManager {
      * @param tenant
      * @return
      */
-    boolean checkUserRole(Long userId, String appKey, String roleKey, String tenant);
+    boolean checkUserRole(String userId, String appKey, String roleKey, String tenant);
 }

@@ -22,8 +22,8 @@
 	
 	<sql id="queryPermissionSubSql">
 		where status != 0 and app_key=#{appKey}
-		<if test="type != null and type != ''">
-			and type=#{type}
+		<if test="subgroup != null and subgroup != ''">
+			and subgroup=#{subgroup}
 		</if>
 		<if test="permissionKey != null and permissionKey != ''">
 			and permission_key=#{permissionKey}
@@ -60,22 +60,22 @@
 
 	<insert id="create" parameterType="PermissionDO"
 		useGeneratedKeys="true" keyProperty="id">
-		insert into permission(permission_key,name,en_name,type,app_key,description,update_time,create_time,status)
+		insert into permission(permission_key,name,name_en,subgroup,app_key,description,gmt_modified,gmt_create,status)
 		values
-		(#{permissionKey},#{name},#{type},#{appKey},#{description},#{updateTime},#{createTime},#{status})
-		ON DUPLICATE KEY update status=#{status},name=#{name},type=#{type},
-		description=#{description},update_time = now()
+		(#{permissionKey},#{name},#{nameEn},#{subgroup},#{appKey},#{description},now(),now(),#{status})
+		ON DUPLICATE KEY UPDATE status=#{status},name=#{name},name_en=#{nameEn},subgroup=#{subgroup},
+		description=#{description},gmt_modified = now()
 	</insert>
 
 	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
 		keyProperty="id">
-		insert into permission(permission_key,name,en_name,type,app_key,description,update_time,create_time,status)
+		insert into permission(permission_key,name,name_en,subgroup,app_key,description,gmt_modified,gmt_create,status)
 		values
 		<foreach collection="list" separator="," item="item">
-			(#{item.permissionKey},#{item.name},#{item.type},#{item.appKey},#{item.description},#{item.updateTime},#{item.createTime},#{status})
+			(#{item.permissionKey},#{item.name},#{item.subgroup},#{item.appKey},#{item.description},now(),now(),#{status})
 		</foreach>
-		ON DUPLICATE KEY update status=values{status},name=values{name},type=values{type},
-		description=values{description},update_time = values{updateTime}
+		ON DUPLICATE KEY UPDATE status=values(status),name=values(name),name_en=values(name_en),subgroup=values(subgroup),
+		description=values(description),gmt_modified = now()
 	</insert>
 
 	<update id="update" parameterType="PermissionDO">
@@ -87,11 +87,11 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="enName != null and enName != ''" >
-                enName = #{enName},
+			<if test="nameEn != null and nameEn != ''" >
+                nameEn = #{nameEn},
             </if>
-			<if test="type != null and type != ''">
-				type = #{type},
+			<if test="subgroup != null and subgroup != ''">
+				subgroup = #{subgroup},
 			</if>
 			<if test="description != null and description != ''">
 				description = #{description},
@@ -99,13 +99,13 @@
 			<if test="status != null">
                   status = #{status},
               </if>
-			update_time = #{updateTime}
+			gmt_modified = now()
 		</set>
 		where id = #{id}
 	</update>
 
 	<update id="removeById" parameterType="long">
-		update permission set status = 0,update_time = now() where id = #{id}
+		update permission set status = 0,gmt_modified = now() where id = #{id}
 	</update>
 
 	<select id="getById" resultType="PermissionDO">

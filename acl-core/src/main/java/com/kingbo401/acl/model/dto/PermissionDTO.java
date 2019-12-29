@@ -5,7 +5,7 @@ import com.kingbo401.iceacl.common.model.BaseDO;
 public class PermissionDTO extends BaseDO{
 	private String appKey;
 	private String permissionKey;
-	private String type;
+	private String subgroup;
 	private String name;
 	private String enName;
 	private String description;
@@ -22,11 +22,11 @@ public class PermissionDTO extends BaseDO{
 	public void setPermissionKey(String permissionKey) {
 		this.permissionKey = permissionKey;
 	}
-	public String getType() {
-		return type;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getName() {
 		return name;

@@ -6,6 +6,7 @@ public class MenuDTO extends BaseDO{
 	private String appKey;
 	private String name;
 	private String enName;
+	private String subgroup;
 	private Long pid;
 	private String url;
 	private String icon;
@@ -30,6 +31,12 @@ public class MenuDTO extends BaseDO{
 	}
 	public void setEnName(String enName) {
 		this.enName = enName;
+	}
+	public String getSubgroup() {
+		return subgroup;
+	}
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public Long getPid() {
 		return pid;

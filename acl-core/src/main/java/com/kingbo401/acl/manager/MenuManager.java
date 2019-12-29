@@ -3,12 +3,16 @@ package com.kingbo401.acl.manager;
 import java.util.List;
 
 import com.kingbo401.acl.model.dto.MenuDTO;
+import com.kingbo401.acl.model.entity.param.GetUserMenuParam;
+import com.kingbo401.acl.model.entity.param.RoleMenuQueryParam;
 import com.kingbo401.iceacl.common.model.MenuTreeNode;
 
 public interface MenuManager {
-	List<MenuTreeNode> getAppMenuTree(String appKey);
+	List<MenuTreeNode> getAppMenuTree(String appKey, String subgroup);
 
-	List<MenuTreeNode> listUserMenuTree(String userId, String appKey, String tenant);
+	List<MenuTreeNode> getUserMenuTree(GetUserMenuParam param);
+	
+	List<MenuTreeNode> getRoleMenuTree(RoleMenuQueryParam param);
 	
 	MenuDTO createMenu(MenuDTO menu);
 	

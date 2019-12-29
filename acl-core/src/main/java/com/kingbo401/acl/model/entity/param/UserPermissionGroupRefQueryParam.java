@@ -4,14 +4,14 @@ import com.kingbo401.commons.model.param.PageParam;
 
 public class UserPermissionGroupRefQueryParam extends PageParam{
 	private String appKey;
-	private Long userId;
+	private String userId;
 	private Integer status;
     private String tenant;
     private Long groupId;
-    private String groupType;
+    private String subgroup;
     private String groupName;
     /**
-     * 是否返回没有生效的授权
+             * 是否返回没有生效的授权
      */
     private boolean returnNotEffective = true;
 	public String getAppKey() {
@@ -20,10 +20,10 @@ public class UserPermissionGroupRefQueryParam extends PageParam{
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
-	public Long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public Integer getStatus() {
@@ -44,11 +44,12 @@ public class UserPermissionGroupRefQueryParam extends PageParam{
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
 	}
-	public String getGroupType() {
-		return groupType;
+	
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getGroupName() {
 		return groupName;

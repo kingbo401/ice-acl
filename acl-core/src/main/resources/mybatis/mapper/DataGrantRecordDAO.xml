@@ -5,25 +5,25 @@
 <mapper namespace="com.kingbo401.acl.dao.DataGrantRecordDAO">
     <insert id="create" parameterType="DataGrantRecordDO" useGeneratedKeys="true" keyProperty="id">
 		insert into data_grant_record(model_id,operation_id,grant_target_id,grant_target_type,tenant,
-		status,effective_time,expire_time,create_time,update_time)
+		status,effective_time,expire_time,gmt_create,gmt_modified)
 		values(#{modelId},#{operationId},#{grantTargetId},#{grantTargetType},#{tenant},
-		#{status},#{effectiveTime},#{expireTime},#{createTime},#{updateTime})
+		#{status},#{effectiveTime},#{expireTime},now(),now())
 	</insert>
 	
 	<update id="update" parameterType="DataGrantRecordDO">
-		update data_grant_record set effective_time=#{effectiveTime},expire_time=#{expireTime},update_time=now()
+		update data_grant_record set effective_time=#{effectiveTime},expire_time=#{expireTime},gmt_modified=now()
 		where id=#{id}
 	</update>
 	
 	<update id="removeByIds">
-		update data_grant_record set status=0,update_time=now() where id in		
+		delete from data_grant_record where id in		
 		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 	
 	<update id="removeById">
-		update data_grant_record set status=0,update_time=now() where id = #{id}
+		delete from data_grant_record where id = #{id}
 	</update>
 	
 	<select id="getById" resultType="DataGrantRecordDO">
@@ -38,7 +38,7 @@
 	</select>
 	
 	<update id="removeByParam" parameterType="DataGrantRecordParam">
-		update data_grant_record set status=0,update_time=now() 
+		delete from data_grant_record
 		where app_key=#{appKey} and model_id=#{modelId}
 		<if test="operationId != null"> and operation_id=#{operationId}</if>
 		and grant_target_id=#{grantTargetId} and grant_target_type=#{grantTargetType} and tenant=#{tenant}

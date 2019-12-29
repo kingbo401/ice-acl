@@ -6,17 +6,16 @@
 	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into permission_group_ref (group_id,permission_id, status,
-		create_time, update_time)
+		gmt_create, gmt_modified)
 		values
 		<foreach collection="list" separator="," item="item">
-			(#{item.groupId}, #{item.permissionId},
-			#{item.status},#{item.updateTime},#{item.createTime})
+			(#{item.groupId}, #{item.permissionId}, #{item.status},now(),now())
 		</foreach>
-		ON DUPLICATE KEY UPDATE update_time = now(),status = values{status}
+		ON DUPLICATE KEY UPDATE gmt_modified = now(),status = values(status)
 	</insert>
 
 	<update id="updateRefsStatus">
-		update permission_group_ref set status = #{status},update_time =
+		update permission_group_ref set status = #{status},gmt_modified =
 		now()
 		where group_id = #{groupId}
 		<if test="permissionIds != null and permissionIds.size > 0">
@@ -34,8 +33,8 @@
 		<if test="status != null">
 			and t1.status = #{status},
 		</if>
-		<if test="permissionType != null and permissionType != ''">
-			and t2.type=#{permissionType}
+		<if test="subgroup != null and subgroup != ''">
+			and t2.subgroup=#{subgroup}
 		</if>
 		<if test = "permissionKey != null and permissionKey != ''">
 		    and t2.permission_key = #{permissionKey}

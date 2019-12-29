@@ -5,7 +5,7 @@ import com.kingbo401.commons.model.param.PageParam;
 public class RolePermissionRefQueryParam extends PageParam{
 	private Long roleId;
 	private String appKey;
-	private String permissionType;
+	private String subgroup;
 	private String permissionKey;
 	private Integer status;
 
@@ -25,12 +25,12 @@ public class RolePermissionRefQueryParam extends PageParam{
 		this.roleId = roleId;
 	}
 
-	public String getPermissionType() {
-		return permissionType;
+	public String getSubgroup() {
+		return subgroup;
 	}
 
-	public void setPermissionType(String permissionType) {
-		this.permissionType = permissionType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 
 	public String getPermissionKey() {

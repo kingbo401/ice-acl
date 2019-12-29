@@ -92,7 +92,7 @@ public class AccessManagerImpl implements AccessManager{
 	}
 
 	@Override
-	public boolean checkUserRole(Long userId, String appKey, String roleKey, String tenant) {
+	public boolean checkUserRole(String userId, String appKey, String roleKey, String tenant) {
 		Assert.notNull(userId , "userId 不能为空");
         Assert.hasText(roleKey, "roleKey 不能为空");
         Assert.hasText(appKey, "appKey 不能为空");

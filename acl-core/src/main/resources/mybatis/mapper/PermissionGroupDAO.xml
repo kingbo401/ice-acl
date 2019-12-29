@@ -5,10 +5,10 @@
 <mapper namespace="com.kingbo401.acl.dao.PermissionGroupDAO">
 	<insert id="create" parameterType="PermissionGroupDO"
 		useGeneratedKeys="true" keyProperty="id">
-		insert into permission_group (app_key,tenant,type,pid,
-		name,en_name, description, idx, status, create_time, update_time)
-		values (#{appKey}, #{tenant},#{type}, #{pid}, #{name},
-		#{description}, #{idx}, #{status}, #{createTime},#{updateTime}
+		insert into permission_group (app_key,tenant,subgroup,pid,
+		name,name_en, description, idx, status, gmt_create, gmt_modified)
+		values (#{appKey}, #{tenant},#{subgroup}, #{pid}, #{name},#{nameEn},
+		#{description}, #{idx}, #{status}, now(),now()
 		)
 	</insert>
 
@@ -18,11 +18,11 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="enName != null and enName != ''" >
-                enName = #{enName},
+			<if test="nameEn != null and nameEn != ''" >
+                nameEn = #{nameEn},
             </if>
-			<if test="type != null and type != ''">
-				type = #{type},
+			<if test="subgroup != null and subgroup != ''">
+				subgroup = #{subgroup},
 			</if>
 			<if test="description != null and description != ''">
 				description = #{description},
@@ -33,7 +33,7 @@
 			<if test="status != null">
 				status = #{status},
 			</if>
-			update_time = #{updateTime}
+			gmt_modified = now()
 		</set>
 		where id = #{id}
 	</update>
@@ -62,8 +62,8 @@
 		<if test='tenant != "_t_common"'>
 		    and tenant in ('_t_common',#{tenant})
 		</if>
-		<if test="type != null and type != ''">
-			and type = #{type}
+		<if test="subgroup != null and subgroup != ''">
+			and subgroup = #{subgroup}
 		</if>
 		<if test="name != null and name != ''">
 			and name like concat('%', #{name}, '%')

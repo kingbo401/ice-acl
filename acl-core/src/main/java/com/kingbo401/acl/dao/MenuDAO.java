@@ -6,9 +6,10 @@ import org.apache.ibatis.annotations.Param;
 
 import com.kingbo401.acl.model.entity.MenuDO;
 import com.kingbo401.acl.model.entity.param.CheckUserMenuParam;
+import com.kingbo401.acl.model.entity.param.GetUserMenuParam;
 
 public interface MenuDAO {
-	List<MenuDO> listMenu(@Param("appKey")String appKey, @Param("status")Integer status);
+	List<MenuDO> listMenu(@Param("appKey")String appKey, @Param("subgroup")String subgroup);
 
 	int createMenu(MenuDO menu);
 
@@ -20,7 +21,7 @@ public interface MenuDAO {
 
 	List<MenuDO> listMenuByPid(@Param("menuPid") Long menuPid);
 	
-	List<MenuDO> listUserMenu(@Param("userId") String userId, @Param("appKey") String appKey,@Param("tenant") String tenant);
+	List<MenuDO> listUserMenu(GetUserMenuParam param);
 	
 	int checkUserMenu(CheckUserMenuParam param);
 }

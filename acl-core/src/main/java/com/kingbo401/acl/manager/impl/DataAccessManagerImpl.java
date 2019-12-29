@@ -23,8 +23,8 @@ import com.kingbo401.acl.dao.RoleDAO;
 import com.kingbo401.acl.dao.UserRoleRefDAO;
 import com.kingbo401.acl.manager.DataAccessManager;
 import com.kingbo401.acl.manager.DataModelManager;
-import com.kingbo401.acl.manager.DataModelPropertyRefManager;
 import com.kingbo401.acl.manager.DataOperationManager;
+import com.kingbo401.acl.manager.DataPropertyManager;
 import com.kingbo401.acl.manager.PermissionGroupManager;
 import com.kingbo401.acl.manager.RolePermissionGroupRefManager;
 import com.kingbo401.acl.manager.UserPermissionGroupRefManager;
@@ -47,12 +47,12 @@ import com.kingbo401.acl.model.entity.param.DataGrantPropertyValueParam;
 import com.kingbo401.acl.model.entity.param.DataGrantRecordParam;
 import com.kingbo401.acl.model.entity.param.UserPermissionGroupRefQueryParam;
 import com.kingbo401.acl.model.entity.param.UserRoleRefQueryParam;
+import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.common.constant.AclConstant;
 import com.kingbo401.iceacl.common.enums.GrantTargetType;
 import com.kingbo401.iceacl.common.model.PropertyValue;
-import com.kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class DataAccessManagerImpl implements DataAccessManager{
@@ -69,7 +69,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 	@Autowired
 	private DataOperationManager dataOperationManager;
 	@Autowired
-	private DataModelPropertyRefManager dataModelPropertyRefManager;
+	private DataPropertyManager dataPropertyManager;
 	@Autowired
 	private RolePermissionGroupRefManager rolePermissionGroupRefManager;
 	@Autowired
@@ -91,7 +91,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		
 		Date effectiveTime =  dataGrantParam.getEffectiveTime();
 		Date expireTime =  dataGrantParam.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		String grantTargetId = dataGrantParam.getGrantTargetId();
 		Assert.hasText(grantTargetId, "grantTargetId不能为空");
 		
@@ -124,7 +124,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		
 		List<Map<String, PropertyValue>> datas = dataGrantParam.getDatas();
 		Assert.notEmpty(datas, "datas不能为空");
-		List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(dataModelDTO.getAppKey(), modelCode);
+		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		Map<String, DataPropertyDTO> propertyCodeMap = Maps.newHashMap();
 		Map<Long, DataPropertyDTO> propertyIdMap = Maps.newHashMap();
@@ -170,14 +170,13 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			dataGrantPropertyValueParam.setPropertyValuesMap(propertyValuesMap);
 			dataGrantPropertyValueParam.setReturnNotEffective(true);
 			List<Long> recordIds = dataGrantRecordDAO.listIdByPropertyValues(dataGrantPropertyValueParam);
-			Date now = new Date();
 			if(CollectionUtil.isNotEmpty(recordIds)){//说明存在已授权的数据，做更新
-				List<DataGrantRecordDO> dataGrantRecordPOs = dataGrantRecordDAO.getByIds(recordIds);
-				for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordPOs){//recordIds长度一般不会超过2个,所以这里不会特别影响效率
+				List<DataGrantRecordDO> dataGrantRecordDOs = dataGrantRecordDAO.getByIds(recordIds);
+				for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs){//recordIds长度一般不会超过2个,所以这里不会特别影响效率
 					boolean valueMatch = true;
 					boolean descMatch = true;
-					List<DataGrantRecordDetailDO> detailPOs = dataGrantRecordDetailDAO.listDetailByRecordId(dataGrantRecordDO.getId());
-					for(DataGrantRecordDetailDO detailDO : detailPOs){
+					List<DataGrantRecordDetailDO> detailDOs = dataGrantRecordDetailDAO.listDetailByRecordId(dataGrantRecordDO.getId());
+					for(DataGrantRecordDetailDO detailDO : detailDOs){
 						DataPropertyDTO dataPropertyDTO = propertyIdMap.get(detailDO.getPropertyId());
 						PropertyValue propertyValue = data.get(dataPropertyDTO.getCode());
 						if(!StringUtils.equals(propertyValue.getPropertyValue(), detailDO.getPropertyValue())){
@@ -193,13 +192,12 @@ public class DataAccessManagerImpl implements DataAccessManager{
 					if(!descMatch){//说明属性值描述信息有更新
 						//删除老数据，重新插入
 						dataGrantRecordDetailDAO.removeByRecordId(dataGrantRecordDO.getId());
-						List<DataGrantRecordDetailDO> newDetailPOs = buildDataGrantRecordDetailPOs(dataGrantRecordDO.getId(), data, propertyCodeMap);
-						dataGrantRecordDetailDAO.batchInsert(newDetailPOs);
+						List<DataGrantRecordDetailDO> newDetailDOs = buildDataGrantRecordDetailDOs(dataGrantRecordDO.getId(), data, propertyCodeMap);
+						dataGrantRecordDetailDAO.batchInsert(newDetailDOs);
 					}
 					if(isDataGrantChange(dataGrantRecordDO, dataGrantParam)){//失效日期有变化
 						dataGrantRecordDO.setEffectiveTime(dataGrantParam.getEffectiveTime());
 						dataGrantRecordDO.setExpireTime(dataGrantParam.getExpireTime());
-						dataGrantRecordDO.setUpdateTime(now);
 						//更新dataGrantRecordPO
 						dataGrantRecordDAO.update(dataGrantRecordDO);
 					}
@@ -212,14 +210,12 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			dataGrantRecordDO.setStatus(AclConstant.STATUS_NORMAL);
 			dataGrantRecordDO.setEffectiveTime(dataGrantParam.getEffectiveTime());
 			dataGrantRecordDO.setExpireTime(dataGrantParam.getExpireTime());
-			dataGrantRecordDO.setCreateTime(now);
-			dataGrantRecordDO.setUpdateTime(now);
 			dataGrantRecordDO.setGrantTargetId(grantTargetId);
 			dataGrantRecordDO.setGrantTargetType(grantTargetType);
 			dataGrantRecordDO.setTenant(tenant);
 			dataGrantRecordDAO.create(dataGrantRecordDO);
-			List<DataGrantRecordDetailDO> detailPOs = buildDataGrantRecordDetailPOs(dataGrantRecordDO.getId(), data, propertyCodeMap);
-			dataGrantRecordDetailDAO.batchInsert(detailPOs);
+			List<DataGrantRecordDetailDO> detailDOs = buildDataGrantRecordDetailDOs(dataGrantRecordDO.getId(), data, propertyCodeMap);
+			dataGrantRecordDetailDAO.batchInsert(detailDOs);
 		}
 		return true;
 	}
@@ -241,23 +237,20 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return false;
 	}
 	
-	private List<DataGrantRecordDetailDO> buildDataGrantRecordDetailPOs(long dataGrantRecordId, Map<String, PropertyValue> data, Map<String, DataPropertyDTO> propertyCodeMap){
-		List<DataGrantRecordDetailDO> detailPOs = Lists.newArrayList();
+	private List<DataGrantRecordDetailDO> buildDataGrantRecordDetailDOs(long dataGrantRecordId, Map<String, PropertyValue> data, Map<String, DataPropertyDTO> propertyCodeMap){
+		List<DataGrantRecordDetailDO> detailDOs = Lists.newArrayList();
 		for(Map.Entry<String, PropertyValue> codeValueEntry : data.entrySet()){
 			DataGrantRecordDetailDO detailDO = new DataGrantRecordDetailDO();
 			String propertyCode = codeValueEntry.getKey();
 			PropertyValue propertyValue = codeValueEntry.getValue();
 			DataPropertyDTO dataPropertyDTO = propertyCodeMap.get(propertyCode);
 			detailDO.setDataGrantRecordId(dataGrantRecordId);
-			Date now = new Date();
-			detailDO.setCreateTime(now);
-			detailDO.setUpdateTime(now);
 			detailDO.setPropertyId(dataPropertyDTO.getId());
 			detailDO.setPropertyValue(propertyValue.getPropertyValue());
 			detailDO.setPropertyValueDesc(propertyValue.getPropertyValueDesc());
-			detailPOs.add(detailDO);
+			detailDOs.add(detailDO);
 		}
-		return detailPOs;
+		return detailDOs;
 	}
 
 	public boolean revokeDataPermission(DataRevokeParam dataRevokeParam) {
@@ -297,7 +290,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		String tenant = dataRevokeParam.getTenant();
 		Assert.hasText(tenant, "tenant不能为空");
 		
-		List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(dataModelDTO.getAppKey(), modelCode);
+		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		
 		DataGrantRecordParam dataGrantRecordParam = new DataGrantRecordParam();
@@ -318,9 +311,9 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			dataGrantRecordParam.setOperationId(dataOperationDTO.getId());
 			dataGrantRecordDAO.removeByParam(dataGrantRecordParam);
 		}else if(CollectionUtil.isNotEmpty(dataGrantRecordIds)){//回收模型dataGrantRecordIds对应的数据
-			List<DataGrantRecordDO> dataGrantRecordPOs = dataGrantRecordDAO.getByIds(dataGrantRecordIds);
-			Assert.notEmpty(dataGrantRecordPOs, "授权记录不存在");
-			for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordPOs){
+			List<DataGrantRecordDO> dataGrantRecordDOs = dataGrantRecordDAO.getByIds(dataGrantRecordIds);
+			Assert.notEmpty(dataGrantRecordDOs, "授权记录不存在");
+			for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs){
 				Assert.isTrue(dataGrantRecordDO.getModelId() == dataModelDTO.getId(), "参数不合法");
 				Assert.isTrue(dataGrantRecordDO.getGrantTargetId().equals(grantTargetId), "参数不合法");
 				Assert.isTrue(dataGrantRecordDO.getGrantTargetType() == grantTargetType, "参数不合法");
@@ -360,7 +353,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		DataOperationDTO dataOperationDTO = dataOperationManager.getDataOperation(dataModelDTO.getId(), operationCode);
 		Assert.notNull(dataOperationDTO, "没查到operationCode对用的操作");
 		
-		List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(dataModelDTO.getAppKey(), dataModelDTO.getCode());
+		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		Map<String, DataPropertyDTO> propertyCodeMap = new HashMap<String, DataPropertyDTO>();
 		Map<Long, DataPropertyDTO> propertyIdMap = new HashMap<Long, DataPropertyDTO>();
@@ -462,7 +455,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		DataOperationDTO dataOperationDTO = dataOperationManager.getDataOperation(dataModelDTO.getId(), operationCode);
 		Assert.notNull(dataOperationDTO, "没查到operationCode对用的操作");
 		
-		List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(dataModelDTO.getAppKey(), dataModelDTO.getCode());
+		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		Map<String, DataPropertyDTO> propertyCodeMap = Maps.newHashMap();
 		Map<Long, DataPropertyDTO> propertyIdMap = Maps.newHashMap();
@@ -584,7 +577,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		DataOperationDTO dataOperationDTO = dataOperationManager.getDataOperation(dataModelDTO.getId(), operationCode);
 		Assert.notNull(dataOperationDTO, "没查到operationCode对用的操作");
 		
-		List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(dataModelDTO.getAppKey(), dataModelDTO.getCode());
+		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		
 		Map<String, String> dataForCheck = dataCheckParam.getData();
@@ -685,7 +678,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		
 		Map<String, String> data = dataGrantQueryParam.getData();
 		if(MapUtils.isNotEmpty(data)){
-			List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(dataModelDTO.getAppKey(), modelCode);
+			List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
 			Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 			Map<String, DataPropertyDTO> propertyCodeMap = Maps.newHashMap();
 			for(DataPropertyDTO dto : dataProperties){
@@ -740,7 +733,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		if(CollectionUtil.isEmpty(datas)){
 			return items;
 		}
-		List<DataPropertyDTO> dataProperties = dataModelPropertyRefManager.listDataProperty(modelId);
+		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(modelId);
 		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
 		Map<Long, DataPropertyDTO> propertyIdMap = Maps.newHashMap();
 		for(DataPropertyDTO propertyDTO : dataProperties){
@@ -903,14 +896,12 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return pageVO;
 	}
 	
-	private List<String> getUserRoleIds(String appKey, String userIdStr, String tenant){
+	private List<String> getUserRoleIds(String appKey, String userId, String tenant){
 		List<String> userRoleIds = Lists.newArrayList();
 		//查出用户所有的角色
 		UserRoleRefQueryParam param = new UserRoleRefQueryParam();
 		param.setAppKey(appKey);
 		param.setTenant(tenant);
-		Long userId = NumberUtils.toLong(userIdStr);
-		Assert.isTrue(userId != 0, "用户ID非法");
 		param.setUserId(userId);
 		param.setReturnNotEffective(false);
 		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(param);
@@ -923,10 +914,8 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return userRoleIds;
 	}
 	
-	private List<String> getUserRolePermissionGroupIds(String appKey, String userIdStr, String tenant){
+	private List<String> getUserRolePermissionGroupIds(String appKey, String userId, String tenant){
 		List<String> groupIds = Lists.newArrayList();
-		Long userId = NumberUtils.toLong(userIdStr);
-		Assert.isTrue(userId != 0, "用户ID非法");
 		List<Long> permissionGroupIds = rolePermissionGroupRefManager.listUserRolePermissionGroupIds(userId, appKey, tenant);
 		if(CollectionUtil.isEmpty(permissionGroupIds)){
 			return groupIds;
@@ -937,11 +926,9 @@ public class DataAccessManagerImpl implements DataAccessManager{
 		return groupIds;
 	}
 	
-	private List<String> getUserPermissionGroupIds(String appKey, String userIdStr, String tenant){
+	private List<String> getUserPermissionGroupIds(String appKey, String userId, String tenant){
 		List<String> groupIds = Lists.newArrayList();
 		UserPermissionGroupRefQueryParam param = new UserPermissionGroupRefQueryParam();
-		Long userId = NumberUtils.toLong(userIdStr);
-		Assert.isTrue(userId != 0, "用户ID非法");
 		param.setUserId(userId);
 		param.setAppKey(appKey);
 		param.setTenant(tenant);

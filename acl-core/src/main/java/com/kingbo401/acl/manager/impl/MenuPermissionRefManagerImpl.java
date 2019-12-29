@@ -1,7 +1,6 @@
 package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import com.kingbo401.acl.model.dto.param.MenuPermissionRefParam;
 import com.kingbo401.acl.model.entity.MenuPermissionRefDO;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.param.MenuPermissionRefQueryParam;
-import com.kingbo401.acl.utils.BizUtils;
+import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.iceacl.common.constant.AclConstant;
@@ -41,13 +40,10 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		checkMenuPermissionIdRefParam(param);
 		List<MenuPermissionRefDO> list = new ArrayList<MenuPermissionRefDO>();
-		Date now = new Date();
 		for(Long permissionId : permissionIds){
 			MenuPermissionRefDO menuPermissionRefDO = new MenuPermissionRefDO();
 			menuPermissionRefDO.setPermissionId(permissionId);
 			menuPermissionRefDO.setMenuId(menuId);
-			menuPermissionRefDO.setCreateTime(now);
-			menuPermissionRefDO.setUpdateTime(now);
 			menuPermissionRefDO.setStatus(AclConstant.STATUS_NORMAL);
 			list.add(menuPermissionRefDO);
 		}
@@ -63,23 +59,20 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Long menuId = param.getMenuId();
 		MenuPermissionRefQueryParam menuPermissionRefQueryParam = new MenuPermissionRefQueryParam();
 		menuPermissionRefQueryParam.setMenuId(menuId);
-		List<PermissionDO> permissionPOs =  menuPermissionRefDAO.listPermission(menuPermissionRefQueryParam);
-		if(CollectionUtil.isNotEmpty(permissionPOs)){
+		List<PermissionDO> permissionDOs =  menuPermissionRefDAO.listPermission(menuPermissionRefQueryParam);
+		if(CollectionUtil.isNotEmpty(permissionDOs)){
 			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(PermissionDO permissionDO : permissionPOs){
+			for(PermissionDO permissionDO : permissionDOs){
 				permissionIdsRemove.add(permissionDO.getId());
 			}
 			menuPermissionRefDAO.updateRefsStatus(menuId, permissionIdsRemove, AclConstant.STATUS_REMOVE);
 		}
 		
 		List<MenuPermissionRefDO> list = new ArrayList<MenuPermissionRefDO>();
-		Date now = new Date();
 		for(Long permissionId : permissionIds){
 			MenuPermissionRefDO menuPermissionRefDO = new MenuPermissionRefDO();
 			menuPermissionRefDO.setPermissionId(permissionId);
 			menuPermissionRefDO.setMenuId(menuId);
-			menuPermissionRefDO.setCreateTime(now);
-			menuPermissionRefDO.setUpdateTime(now);
 			menuPermissionRefDO.setStatus(AclConstant.STATUS_NORMAL);
 			list.add(menuPermissionRefDO);
 		}
@@ -117,8 +110,8 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		MenuDTO menuDTO = menuManager.getMenu(appKey, menuId);
 		Assert.notNull(menuDTO, "菜单不存在");
-		List<PermissionDO> permissionPOs = menuPermissionRefDAO.listPermission(param);
-		return BizUtils.buildPermissionDTOs(permissionPOs);
+		List<PermissionDO> permissionDOs = menuPermissionRefDAO.listPermission(param);
+		return BizUtil.buildPermissionDTOs(permissionDOs);
 	}
 
 	@Override
@@ -138,8 +131,8 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 				return pageVO;
 			}
 		}
-		List<PermissionDO> permissionPOs = menuPermissionRefDAO.pagePermission(param);
-		pageVO.setItems(BizUtils.buildPermissionDTOs(permissionPOs));
+		List<PermissionDO> permissionDOs = menuPermissionRefDAO.pagePermission(param);
+		pageVO.setItems(BizUtil.buildPermissionDTOs(permissionDOs));
 		return pageVO;
 	}
 

@@ -7,6 +7,7 @@ import com.kingbo401.commons.model.BasePojo;
 public class MenuPermissionRefParam extends BasePojo{
 	private String appKey;
 	private Long menuId;
+	private String subgroup;
 	private List<Long> permissionIds;
 	public String getAppKey() {
 		return appKey;
@@ -19,6 +20,12 @@ public class MenuPermissionRefParam extends BasePojo{
 	}
 	public void setMenuId(Long menuId) {
 		this.menuId = menuId;
+	}
+	public String getSubgroup() {
+		return subgroup;
+	}
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public List<Long> getPermissionIds() {
 		return permissionIds;

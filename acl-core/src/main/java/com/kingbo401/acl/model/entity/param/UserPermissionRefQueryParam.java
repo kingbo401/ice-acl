@@ -5,26 +5,26 @@ import com.kingbo401.commons.model.param.PageParam;
 public class UserPermissionRefQueryParam extends PageParam{
 	private String appKey;
     private String tenant;
-	private Long userId;
+	private String userId;
 	private Integer status;
     private Long permissionId;
     private String permissionKey;
-    private String permissionType;
+    private String subgroup;
     
     /**
-     * 是否返回没有生效的授权
+             * 是否返回没有生效的授权
      */
     private boolean returnNotEffective = true;
 
-    public Long getUserId() {
-        return userId;
-    }
+    public String getUserId() {
+		return userId;
+	}
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public Integer getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
@@ -64,12 +64,12 @@ public class UserPermissionRefQueryParam extends PageParam{
 		this.permissionKey = permissionKey;
 	}
 
-	public String getPermissionType() {
-		return permissionType;
+	public String getSubgroup() {
+		return subgroup;
 	}
 
-	public void setPermissionType(String permissionType) {
-		this.permissionType = permissionType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 
 	public boolean isReturnNotEffective() {

@@ -5,17 +5,16 @@ import java.util.Date;
 import com.kingbo401.iceacl.common.model.BaseDO;
 
 public class UserRoleRefDO extends BaseDO {
-	private Long userId;
+	private String userId;
 	private Long roleId;
 	private String tenant;
 	private Integer status;
 	private Date effectiveTime;
 	private Date expireTime;
-	
-	public Long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public Long getRoleId() {

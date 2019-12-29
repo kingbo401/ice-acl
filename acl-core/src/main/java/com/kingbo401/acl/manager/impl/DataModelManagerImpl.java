@@ -1,7 +1,6 @@
 package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -13,7 +12,7 @@ import org.springframework.util.Assert;
 import com.kingbo401.acl.dao.DataModelDAO;
 import com.kingbo401.acl.manager.AppManager;
 import com.kingbo401.acl.manager.DataModelManager;
-import com.kingbo401.acl.manager.DataModelPropertyRefManager;
+import com.kingbo401.acl.manager.DataPropertyManager;
 import com.kingbo401.acl.model.dto.DataModelDTO;
 import com.kingbo401.acl.model.dto.DataPropertyDTO;
 import com.kingbo401.acl.model.entity.DataModelDO;
@@ -28,9 +27,9 @@ public class DataModelManagerImpl implements DataModelManager {
 	@Autowired
 	private DataModelDAO dataModelDAO;
 	@Autowired
-	private DataModelPropertyRefManager dataModelPropertyRefManager;
-	@Autowired
 	private AppManager appManager;
+	@Autowired
+	private DataPropertyManager dataPropertyManager;
 
 	private void assertModelCode(String modelCode) {
 		Assert.hasText(modelCode, "模型编码不能为空");
@@ -56,9 +55,6 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.isNull(dataModelDO, "模型code已存在");
 		dataModelDTO.setId(dataModelDO.getId());
 		dataModelDTO.setStatus(AclConstant.STATUS_NORMAL);
-		Date now = new Date();
-		dataModelDTO.setUpdateTime(now);
-		dataModelDTO.setCreateTime(now);
 		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
 		dataModelDAO.create(dataModelDO);
 		dataModelDTO.setId(dataModelDO.getId());
@@ -78,7 +74,6 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.notNull(dataModelDO, "模型不存在");
 		dataModelDTO.setId(dataModelDO.getId());
 		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
-		dataModelDO.setUpdateTime(new Date());
 		dataModelDAO.update(dataModelDO);
 		return dataModelDTO;
 	}
@@ -91,10 +86,9 @@ public class DataModelManagerImpl implements DataModelManager {
 		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
 		Assert.notNull(dataModelDO, "模型不存在");
 		Assert.isTrue(appKey.equals(dataModelDO.getAppKey()), "appkey模型不匹配");
-		List<DataPropertyDTO> properties = dataModelPropertyRefManager.listDataProperty(dataModelDO.getId());
+		List<DataPropertyDTO> properties = dataPropertyManager.listDataProperty(dataModelDO.getId());
 		Assert.isTrue(CollectionUtil.isEmpty(properties), "请先解除数据模型与属性的绑定关系");
 		dataModelDO.setStatus(status);
-		dataModelDO.setUpdateTime(new Date());
 		dataModelDAO.update(dataModelDO);
 		return true;
 	}
@@ -144,8 +138,8 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.notNull(dataModelQueryParam, "参数不能为空");
 		Assert.hasText(dataModelQueryParam.getCode(), "code 不能为空");
 		Assert.hasText(dataModelQueryParam.getAppKey(), "appKey 不能为空");
-		List<DataModelDO> dataModelPOs = dataModelDAO.listDataModel(dataModelQueryParam);
-		return buildDataModelDTOs(dataModelPOs);
+		List<DataModelDO> dataModelDOs = dataModelDAO.listDataModel(dataModelQueryParam);
+		return buildDataModelDTOs(dataModelDOs);
 	}
 
 	@Override
@@ -159,8 +153,8 @@ public class DataModelManagerImpl implements DataModelManager {
 				return pageVO;
 			}
 		}
-		List<DataModelDO> dataModelPOs = dataModelDAO.pageDataModel(dataModelQueryParam);
-		pageVO.setItems(buildDataModelDTOs(dataModelPOs));
+		List<DataModelDO> dataModelDOs = dataModelDAO.pageDataModel(dataModelQueryParam);
+		pageVO.setItems(buildDataModelDTOs(dataModelDOs));
 		return pageVO;
 	}
 
@@ -173,12 +167,12 @@ public class DataModelManagerImpl implements DataModelManager {
 		return dataModelDTO;
 	}
 	
-	private List<DataModelDTO> buildDataModelDTOs(List<DataModelDO> dataModelPOs) {
-		if (CollectionUtil.isEmpty(dataModelPOs)) {
+	private List<DataModelDTO> buildDataModelDTOs(List<DataModelDO> dataModelDOs) {
+		if (CollectionUtil.isEmpty(dataModelDOs)) {
 			return null;
 		}
 		List<DataModelDTO> list = new ArrayList<DataModelDTO>();
-		for (DataModelDO dataModelDO : dataModelPOs) {
+		for (DataModelDO dataModelDO : dataModelDOs) {
 			list.add(buildDataModelDTO(dataModelDO));
 		}
 		return list;

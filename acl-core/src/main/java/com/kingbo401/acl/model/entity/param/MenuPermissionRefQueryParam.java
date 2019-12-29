@@ -5,7 +5,7 @@ import com.kingbo401.commons.model.param.PageParam;
 public class MenuPermissionRefQueryParam extends PageParam{
 	private Long menuId;
 	private String appKey;
-	private String permissionType;
+	private String subgroup;
 	private String permissionKey;
 	private Integer status;
 	public Long getMenuId() {
@@ -20,11 +20,11 @@ public class MenuPermissionRefQueryParam extends PageParam{
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
-	public String getPermissionType() {
-		return permissionType;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setPermissionType(String permissionType) {
-		this.permissionType = permissionType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getPermissionKey() {
 		return permissionKey;

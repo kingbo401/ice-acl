@@ -14,7 +14,6 @@ public class UserPermissionGroupRefDTO {
 	private Date expireTime;
 	private String userName;
 	private String appKey;
-	private String groupType;
 	private String groupTenant;
     private Long groupPid;
     private String groupName;
@@ -107,14 +106,6 @@ public class UserPermissionGroupRefDTO {
 
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
-	}
-
-	public String getGroupType() {
-		return groupType;
-	}
-
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
 	}
 
 	public String getGroupTenant() {

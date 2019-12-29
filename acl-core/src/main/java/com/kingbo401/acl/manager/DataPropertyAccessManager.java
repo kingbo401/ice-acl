@@ -7,15 +7,15 @@ import com.kingbo401.acl.model.dto.param.DataPropertyCodeAccessParam;
 
 public interface DataPropertyAccessManager {
 
-    boolean createDataPropertyControl(DataPropertyCodeAccessParam param);
+    boolean createDataPropertyAccess(DataPropertyCodeAccessParam param);
     
-    boolean updateDataPropertyControl(DataPropertyCodeAccessParam param);
+    boolean updateDataPropertyAccess(DataPropertyCodeAccessParam param);
 
-    boolean removeDataPropertyControl(DataPropertyCodeAccessParam param);
+    boolean removeDataPropertyAccess(DataPropertyCodeAccessParam param);
     
-    boolean freezeDataPropertyControl(DataPropertyCodeAccessParam param);
+    boolean freezeDataPropertyAccess(DataPropertyCodeAccessParam param);
     
-    boolean unfreezeDataPropertyControl(DataPropertyCodeAccessParam param);
+    boolean unfreezeDataPropertyAccess(DataPropertyCodeAccessParam param);
 
-    List<DataPropertyAccessDTO> listDataPropertyControl(DataPropertyCodeAccessParam param);
+    List<DataPropertyAccessDTO> listDataPropertyAccess(DataPropertyCodeAccessParam param);
 }

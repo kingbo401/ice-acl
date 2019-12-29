@@ -23,5 +23,5 @@ public interface RolePermissionGroupRefManager {
     
     PageVO<PermissionGroupDTO> pagePermissionGroup(RolePermissionGroupRefQueryParam param);
     
-    List<Long> listUserRolePermissionGroupIds(Long userId, String appKey, String tenant);
+    List<Long> listUserRolePermissionGroupIds(String userId, String appKey, String tenant);
 }

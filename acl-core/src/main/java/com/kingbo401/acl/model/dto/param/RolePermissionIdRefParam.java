@@ -7,6 +7,7 @@ import com.kingbo401.commons.model.BasePojo;
 public class RolePermissionIdRefParam extends BasePojo{
 	private String appKey;
 	private Long roleId;
+	private String subgroup;
 	private List<Long> permissionIds;
 	
 	public String getAppKey() {
@@ -20,6 +21,12 @@ public class RolePermissionIdRefParam extends BasePojo{
 	}
 	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
+	}
+	public String getSubgroup() {
+		return subgroup;
+	}
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public List<Long> getPermissionIds() {
 		return permissionIds;

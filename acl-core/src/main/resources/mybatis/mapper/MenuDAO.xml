@@ -5,15 +5,13 @@
 <mapper namespace="com.kingbo401.acl.dao.MenuDAO">
     <select id="listMenu" resultType="MenuDO">
 		select * from menu where group_id=#{appKey} and status != 0 
-		<if test="status != null">
-          	status = #{status},
-      	</if>
+		and subgroup=#{subgroup}
 		order by idx asc
 	</select>
 	
     <insert id="createMenu" parameterType="MenuDO" useGeneratedKeys="true" keyProperty="id">
-          insert into menu(app_key,name,en_name,idx,pid,url,icon,show_type,update_time,create_time,status)
-          values(#{appKey},#{name},#{idx},#{pid},#{url},#{icon},#{showType},#{updateTime},#{createTime},#{status});
+          insert into menu(app_key,name,name_en,idx,pid,url,icon,show_type,subgroup,gmt_modified,gmt_create,status)
+          values(#{appKey},#{name},#{nameEn},#{idx},#{pid},#{url},#{icon},#{showType},#{subgroup},now(),now(),#{status});
     </insert>
 
     <update id="updateMenu" parameterType="MenuDO">
@@ -22,8 +20,8 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="enName != null and enName != ''">
-				enName = #{enName},
+			<if test="nameEn != null and nameEn != ''">
+				nameEn = #{nameEn},
 			</if>
 			<if test="idx != null">
 				idx = #{idx},
@@ -43,7 +41,7 @@
 			<if test="icon != null and icon != ''">
 				icon = #{icon},
 			</if>
-			update_time = #{updateTime}
+			gmt_modified = now()
 		</set>
 		where id = #{id}
 	</update>
@@ -70,14 +68,15 @@
     <select id="listUserMenu" resultType="MenuDO">
          select t4.*
          from user_role_ref t1, role t2, role_menu_ref t3, menu t4
-         where t1.user_id=#{userId} and t1.tenant=#{tenant} and t4.app_key=#{appKey}
+         where t1.user_id=#{userId} and t1.tenant=#{tenant} 
+         and t4.app_key=#{appKey} and t4.subgroup=#{subgroup}
          and t1.role_id=t2.id and t1.role_id=t3.role_id and t3.menu_id=t4.id
          and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
          order by idx asc
     </select>
     
     <select id="checkUserMenu" resultType="MenuDO">
-    	select count(1) from t0
+    	select count(1) from
     	(
     		 select t4.*
 	         from user_role_ref t1, role t2, role_menu_ref t3, menu t4

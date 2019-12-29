@@ -23,11 +23,11 @@ import com.kingbo401.acl.model.dto.param.UserRoleRefParam;
 import com.kingbo401.acl.model.entity.UserRoleRefDO;
 import com.kingbo401.acl.model.entity.param.UserRoleRefQueryParam;
 import com.kingbo401.acl.model.entity.param.UsersRoleRefQueryParam;
+import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.commons.util.StringUtil;
 import com.kingbo401.iceacl.common.constant.AclConstant;
-import com.kingbo401.iceacl.common.utils.MixAll;
 
 @Service
 public class UserRoleRefManagerImpl implements UserRoleRefManager{
@@ -51,7 +51,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 				return pageVO;
 			}
 		}
-		List<Long> userIds = userRoleRefDAO.pageUser(usersRoleRefQueryParam);
+		List<String> userIds = userRoleRefDAO.pageUser(usersRoleRefQueryParam);
 		usersRoleRefQueryParam.setUserIds(userIds);
 		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUsersRoleRef(usersRoleRefQueryParam);
 		if(CollectionUtils.isEmpty(userRoleRefVOs)){
@@ -114,7 +114,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 			RoleDTO roleDTO = roleIdMap.get(roleId);
 			Assert.notNull(roleDTO, "角色:" + roleId + " 不存在");
 			if(StringUtil.isNotBlank(roleType)){
-				Assert.isTrue(roleType.equals(roleDTO.getType()), "角色类型不匹配");
+				Assert.isTrue(roleType.equals(roleDTO.getSubgroup()), "角色类型不匹配");
 			}
 		}
 	}
@@ -124,31 +124,28 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> roleIds = param.getRoleIds();
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		Assert.notEmpty(roleIds, "roleIds不能为空");
-		assertRoles(appKey, param.getRoleType(), roleIds);
-		List<UserRoleRefDO> userRoleRefPOs = new ArrayList<UserRoleRefDO>();
-		Date now  = new Date();
+		assertRoles(appKey, param.getSubgroup(), roleIds);
+		List<UserRoleRefDO> userRoleRefDOs = new ArrayList<UserRoleRefDO>();
 		for(Long roleId : roleIds){
 			UserRoleRefDO userRoleRefDO = new UserRoleRefDO();
 			userRoleRefDO.setUserId(userId);
 			userRoleRefDO.setTenant(tenant);
 			userRoleRefDO.setRoleId(roleId);
 			userRoleRefDO.setStatus(AclConstant.STATUS_NORMAL);
-			userRoleRefDO.setCreateTime(now);
-			userRoleRefDO.setUpdateTime(now);
 			userRoleRefDO.setEffectiveTime(effectiveTime);
 			userRoleRefDO.setExpireTime(expireTime);
-			userRoleRefPOs.add(userRoleRefDO);
+			userRoleRefDOs.add(userRoleRefDO);
 		}
-		userRoleRefDAO.batchCreate(userRoleRefPOs);
+		userRoleRefDAO.batchCreate(userRoleRefDOs);
 		return true;
 	}
 
@@ -157,16 +154,16 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> roleIds = param.getRoleIds();
 		Date effectiveTime = param.getEffectiveTime();
 		Date expireTime = param.getExpireTime();
-		MixAll.checkEffectiveExpireTime(effectiveTime, expireTime);
+		BizUtil.checkEffectiveExpireTime(effectiveTime, expireTime);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		Assert.notEmpty(roleIds, "roleIds不能为空");
-		assertRoles(appKey, param.getRoleType(), roleIds);
+		assertRoles(appKey, param.getSubgroup(), roleIds);
 		UserRoleRefQueryParam userRoleRefQueryParam = new UserRoleRefQueryParam();
 		userRoleRefQueryParam.setAppKey(appKey);
 		userRoleRefQueryParam.setReturnNotEffective(true);
@@ -180,21 +177,18 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 			}
 			userRoleRefDAO.updateRefsStatus(userId, tenant, removeRoleIds, AclConstant.STATUS_REMOVE);
 		}
-		List<UserRoleRefDO> userRoleRefPOs = new ArrayList<UserRoleRefDO>();
-		Date now  = new Date();
+		List<UserRoleRefDO> userRoleRefDOs = new ArrayList<UserRoleRefDO>();
 		for(Long roleId : roleIds){
 			UserRoleRefDO userRoleRefDO = new UserRoleRefDO();
 			userRoleRefDO.setUserId(userId);
 			userRoleRefDO.setTenant(tenant);
 			userRoleRefDO.setRoleId(roleId);
 			userRoleRefDO.setStatus(AclConstant.STATUS_NORMAL);
-			userRoleRefDO.setCreateTime(now);
-			userRoleRefDO.setUpdateTime(now);
 			userRoleRefDO.setEffectiveTime(effectiveTime);
 			userRoleRefDO.setExpireTime(expireTime);
-			userRoleRefPOs.add(userRoleRefDO);
+			userRoleRefDOs.add(userRoleRefDO);
 		}
-		userRoleRefDAO.batchCreate(userRoleRefPOs);
+		userRoleRefDAO.batchCreate(userRoleRefDOs);
 		return true;
 	}
 
@@ -203,9 +197,9 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> roleIds = param.getRoleIds();
-		assertRoles(appKey, param.getRoleType(), roleIds);
+		assertRoles(appKey, param.getSubgroup(), roleIds);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
@@ -218,9 +212,9 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> roleIds = param.getRoleIds();
-		assertRoles(appKey, param.getRoleType(), roleIds);
+		assertRoles(appKey, param.getSubgroup(), roleIds);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
@@ -233,9 +227,9 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
-		Long userId = param.getUserId();
+		String userId = param.getUserId();
 		List<Long> roleIds = param.getRoleIds();
-		assertRoles(appKey, param.getRoleType(), roleIds);
+		assertRoles(appKey, param.getSubgroup(), roleIds);
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
@@ -244,7 +238,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public List<String> listUserTenant(Long userId, String appKey, List<String> roleKeys) {
+	public List<String> listUserTenant(String userId, String appKey, List<String> roleKeys) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notNull(userId, "userId不能为空");
 		return userRoleRefDAO.listUserTenant(userId, appKey, roleKeys);

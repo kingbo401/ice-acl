@@ -6,7 +6,7 @@ public class PermissionGroupRefQueryParam extends PageParam{
 	private String appKey;
 	private Long groupId;
 	private Integer status;
-	private String permissionType;
+	private String permSubgroup;
 	private String permissionKey;
 	public String getAppKey() {
 		return appKey;
@@ -32,12 +32,12 @@ public class PermissionGroupRefQueryParam extends PageParam{
 		this.status = status;
 	}
 
-	public String getPermissionType() {
-		return permissionType;
+	public String getPermSubgroup() {
+		return permSubgroup;
 	}
 
-	public void setPermissionType(String permissionType) {
-		this.permissionType = permissionType;
+	public void setPermSubgroup(String permSubgroup) {
+		this.permSubgroup = permSubgroup;
 	}
 
 	public String getPermissionKey() {

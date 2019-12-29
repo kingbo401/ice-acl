@@ -5,7 +5,7 @@ import com.kingbo401.commons.model.BasePojo;
 public class PermissionGroupTreeQueryParam extends BasePojo{
 	private String appKey;
     private String tenant;
-    private String groupType;
+    private String subgroup;
 	public String getAppKey() {
 		return appKey;
 	}
@@ -18,10 +18,10 @@ public class PermissionGroupTreeQueryParam extends BasePojo{
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
 	}
-	public String getGroupType() {
-		return groupType;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setGroupType(String groupType) {
-		this.groupType = groupType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 }

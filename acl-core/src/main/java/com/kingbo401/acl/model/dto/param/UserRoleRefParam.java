@@ -7,9 +7,9 @@ import com.kingbo401.commons.model.BasePojo;
 
 public class UserRoleRefParam extends BasePojo{
 	private String appKey;
-	private Long userId;
+	private String userId;
 	private String tenant;
-	private String roleType;
+	private String subgroup;
 	private List<Long> roleIds;
 	private Date effectiveTime;
 	private Date expireTime;
@@ -20,10 +20,11 @@ public class UserRoleRefParam extends BasePojo{
 	public void setAppKey(String appKey) {
 		this.appKey = appKey;
 	}
-	public Long getUserId() {
+	
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public String getTenant() {
@@ -32,11 +33,11 @@ public class UserRoleRefParam extends BasePojo{
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
 	}
-	public String getRoleType() {
-		return roleType;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setRoleType(String roleType) {
-		this.roleType = roleType;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public List<Long> getRoleIds() {
 		return roleIds;

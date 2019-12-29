@@ -4,12 +4,12 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.RoleDAO">
 	<insert id="createRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
-		insert into role (app_key,role_key,name,type,level,description,tenant,
-		status,create_time, update_time)
-		values (#{appKey},#{roleKey},#{name},#{type},#{level},#{description},#{tenant},
-		#{status},#{createTime},#{updateTime})
-		ON DUPLICATE KEY update status=#{status},name=#{name},type=#{type},
-		level=#{level},description=#{description},tenant=#{tenant},update_time = now()
+		insert into role (app_key,role_key,name,name_en,subgroup,level,description,tenant,
+		status,gmt_create, gmt_modified)
+		values (#{appKey},#{roleKey},#{name},#{nameEn},#{subgroup},#{level},#{description},#{tenant},
+		#{status},now(),now())
+		ON DUPLICATE KEY UPDATE status=#{status},name=#{name},name_en=#{nameEn},subgroup=#{subgroup},
+		level=#{level},description=#{description},tenant=#{tenant},gmt_modified = now()
 	</insert>
 	
 	<update id="updateRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
@@ -18,19 +18,19 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="enName != null and enName != ''" >
-                enName = #{enName},
+			<if test="nameEn != null and nameEn != ''" >
+                nameEn = #{nameEn},
             </if>
 			<if test="description != null" >
 				description = #{description},
 			</if>
-			<if test="type != null">
-				type = #{type},
+			<if test="subgroup != null">
+				subgroup = #{subgroup},
 			</if>
 			<if test="status != null" >
 				status = #{status},
 			</if>
-			update_time = #{updateTime}
+			gmt_modified = now()
 		</set>
 		where id=#{id}
 	</update>
@@ -51,8 +51,8 @@
 		<if test='tenant != "_t_common"'>
 		    and tenant in ('_t_common',#{tenant})
 		</if>
-		 <if test="type != null and type !=''">
-			and type = #{type}
+		 <if test="subgroup != null and subgroup !=''">
+			and subgroup = #{subgroup}
 		</if>
 		<if test="roleId != null">
 			and role_id = #{roleId}

@@ -7,6 +7,7 @@ import com.kingbo401.commons.model.param.BaseParam;
 public class PermissionGroupRefParam extends BaseParam{
 	private String appKey;
 	private Long groupId;
+	private String subgroup;
 	private List<Long> permissionIds;
 
 	public String getAppKey() {
@@ -20,6 +21,12 @@ public class PermissionGroupRefParam extends BaseParam{
 	}
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
+	}
+	public String getSubgroup() {
+		return subgroup;
+	}
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public List<Long> getPermissionIds() {
 		return permissionIds;

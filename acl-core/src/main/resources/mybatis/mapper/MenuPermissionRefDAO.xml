@@ -6,17 +6,16 @@
 	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into menu_permission_ref (menu_id,permission_id, status,
-		create_time, update_time)
+		gmt_create, gmt_modified)
 		values
 		<foreach collection="list" separator="," item="item">
-			(#{item.menuId}, #{item.permissionId},
-			#{item.status},#{item.updateTime},#{item.createTime})
+			(#{item.menuId}, #{item.permissionId}, #{item.status},now(),now())
 		</foreach>
-		ON DUPLICATE KEY UPDATE update_time = now(),status = values{status}
+		ON DUPLICATE KEY UPDATE gmt_modified = now(),status = values(status)
 	</insert>
 
 	<update id="updateRefsStatus">
-		update menu_permission_ref set status = #{status},update_time = now()
+		update menu_permission_ref set status = #{status},gmt_modified = now()
 		where menu_id = #{menuId}
 		<if test="permissionIds != null and permissionIds.size > 0">
 			and permission_id in
@@ -64,6 +63,6 @@
 	</select>
 	
 	<select id="listMenuIds" resultType="long">
-		select menu_id from menu_permission_ref where permission_id=#{permissionId}
+		select menu_id from menu_permission_ref where permission_id=#{permissionId} and status != 0
 	</select>
 </mapper>

@@ -6,18 +6,18 @@
 	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
 		keyProperty="id">
 		insert into role_permission_group_ref (role_id,group_id, status,
-		create_time, update_time)
+		gmt_create, gmt_modified)
 		values
 		<foreach collection="list" separator="," item="item">
 			(#{item.roleId}, #{item.groupId},
-			#{item.status},#{item.updateTime},#{item.createTime})
+			#{item.status},now(),now())
 		</foreach>
-		ON DUPLICATE KEY UPDATE update_time = now(),status = values{status}
+		ON DUPLICATE KEY UPDATE gmt_modified = now(),status = values(status)
 	</insert>
 
 	<update id="updateRefsStatus">
 		update role_permission_group_ref set status =
-		#{status},update_time = now()
+		#{status},gmt_modified = now()
 		where role_id = #{roleId}
 		<if test="groupIds != null and groupIds.size > 0">
 			and group_id in
@@ -34,8 +34,8 @@
 		<if test="status != null">
 			and t1.status = #{status},
 		</if>
-		<if test="groupType != null and groupType != ''">
-			and t2.type=#{groupType}
+		<if test="subgroup != null and subgroup != ''">
+			and t2.subgroup=#{subgroup}
 		</if>
 		<if test="groupName != null and groupName != ''">
 			and t2.name like concat('%', #{groupName}, '%')

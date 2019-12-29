@@ -27,7 +27,7 @@ public interface UserRoleRefManager {
 	
 	boolean unfreezeUserRoleRef(UserRoleRefParam param);
 
-	List<String> listUserTenant(Long userId, String appKey, List<String> roleKeys);
+	List<String> listUserTenant(String userId, String appKey, List<String> roleKeys);
 	
 	boolean hasUserUse(long roleId);
 }

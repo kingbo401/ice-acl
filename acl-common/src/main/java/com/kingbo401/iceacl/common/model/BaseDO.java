@@ -6,38 +6,38 @@ import com.kingbo401.commons.model.BasePojo;
 
 public class BaseDO extends BasePojo{
 	private Long id;
-	private Date createTime;
-	private Date updateTime;
-	private Long creator;
-	private Long modifier;
+	private Date gmtCreate;
+	private Date gmtModified;
+	private String creator;
+	private String modifier;
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Date getCreateTime() {
-		return createTime;
+	public Date getGmtCreate() {
+		return gmtCreate;
 	}
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
+	public void setGmtCreate(Date gmtCreate) {
+		this.gmtCreate = gmtCreate;
 	}
-	public Date getUpdateTime() {
-		return updateTime;
+	public Date getGmtModified() {
+		return gmtModified;
 	}
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
 	}
-	public Long getCreator() {
+	public String getCreator() {
 		return creator;
 	}
-	public void setCreator(Long creator) {
+	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-	public Long getModifier() {
+	public String getModifier() {
 		return modifier;
 	}
-	public void setModifier(Long modifier) {
+	public void setModifier(String modifier) {
 		this.modifier = modifier;
 	}
 }

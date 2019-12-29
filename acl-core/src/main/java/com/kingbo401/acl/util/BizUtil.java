@@ -1,19 +1,40 @@
-package com.kingbo401.acl.utils;
+package com.kingbo401.acl.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
-import com.kingbo401.acl.model.dto.DataPropertyDTO;
 import com.kingbo401.acl.model.dto.PermissionDTO;
 import com.kingbo401.acl.model.dto.PermissionGroupDTO;
-import com.kingbo401.acl.model.entity.DataPropertyDO;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.PermissionGroupDO;
 
-public class BizUtils {
+public class BizUtil {
+	public static void checkEffectiveExpireTime(Date effectiveTime, Date expireTime){
+		if(effectiveTime == null && expireTime == null){
+			return;
+		}
+		
+		Date now = new Date();
+		if(effectiveTime == null && expireTime != null){
+			if(expireTime.before(now) || expireTime.equals(now)){
+				throw new IllegalArgumentException("expireTime不能早于当前时间");
+			}
+		}
+		
+		if(effectiveTime != null && expireTime == null){
+			return;
+		}
+		
+		if(effectiveTime != null && expireTime != null){
+			if(expireTime.before(effectiveTime) || expireTime.equals(effectiveTime)){
+				throw new IllegalArgumentException("expireTime不能早于effectiveTime");
+			}
+		}
+	}
 	public static PermissionDTO buildPermissionDTO(PermissionDO userRoleRefDO){
 		if(userRoleRefDO == null){
 			return null;
@@ -23,12 +44,12 @@ public class BizUtils {
 		return permissionDTO;
 	}
 	
-	public static List<PermissionDTO> buildPermissionDTOs(List<PermissionDO> userRoleRefPOs){
-		if(CollectionUtils.isEmpty(userRoleRefPOs)){
+	public static List<PermissionDTO> buildPermissionDTOs(List<PermissionDO> userRoleRefDOs){
+		if(CollectionUtils.isEmpty(userRoleRefDOs)){
 			return null;
 		}
 		List<PermissionDTO> permissionDTOs = new ArrayList<PermissionDTO>();
-		for(PermissionDO userRoleRefDO : userRoleRefPOs){
+		for(PermissionDO userRoleRefDO : userRoleRefDOs){
 			PermissionDTO permissionDTO = new PermissionDTO();
 			BeanUtils.copyProperties(userRoleRefDO, permissionDTO);
 			permissionDTOs.add(permissionDTO);
@@ -45,31 +66,14 @@ public class BizUtils {
 		return permissionGroupDTO;
 	}
 	
-	public static List<PermissionGroupDTO> buildPermissionGroupDTOs(List<PermissionGroupDO> permissionGroupPOs){
-		if(CollectionUtils.isEmpty(permissionGroupPOs)){
+	public static List<PermissionGroupDTO> buildPermissionGroupDTOs(List<PermissionGroupDO> permissionGroupDOs){
+		if(CollectionUtils.isEmpty(permissionGroupDOs)){
 			return null;
 		}
 		List<PermissionGroupDTO> permissionGroupDTOs = new ArrayList<PermissionGroupDTO>();
-		for(PermissionGroupDO permissionGroupDO : permissionGroupPOs){
+		for(PermissionGroupDO permissionGroupDO : permissionGroupDOs){
 			permissionGroupDTOs.add(buildPermissionGroupDTO(permissionGroupDO));
 		}
 		return permissionGroupDTOs;
-	}
-	
-	public static DataPropertyDTO buildDataPropertyDTO(DataPropertyDO dataPropertyDO){
-		if(dataPropertyDO == null){
-			return null;
-		}
-		DataPropertyDTO dataPropertyDTO = new DataPropertyDTO();
-		BeanUtils.copyProperties(dataPropertyDO, dataPropertyDTO);
-		return dataPropertyDTO;
-	}
-
-	public static List<DataPropertyDTO> buildDataPropertyDTOs(List<DataPropertyDO> dataPropertyPOs) {
-		List<DataPropertyDTO> lists = new ArrayList<DataPropertyDTO>();
-		for (DataPropertyDO propertyDO : dataPropertyPOs) {
-			lists.add(buildDataPropertyDTO(propertyDO));
-		}
-		return lists;
 	}
 }

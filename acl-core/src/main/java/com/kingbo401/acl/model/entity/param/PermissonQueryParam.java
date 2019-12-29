@@ -6,7 +6,7 @@ public class PermissonQueryParam extends PageParam{
 	private String appKey;
 	private String permissionKey;
 	private String name;
-	private String type;
+	private String subgroup;
 	private Integer status;
 	public String getAppKey() {
 		return appKey;
@@ -26,11 +26,11 @@ public class PermissonQueryParam extends PageParam{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getType() {
-		return type;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public Integer getStatus() {
 		return status;

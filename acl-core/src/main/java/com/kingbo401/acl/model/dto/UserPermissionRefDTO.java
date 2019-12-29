@@ -15,7 +15,6 @@ public class UserPermissionRefDTO {
 	private String userName;
 	private String appKey;
 	private String permissionTenant;
-	private String permissionType;
     private String permissionKey;
     private String permissionName;
     private String  permissionDescription;
@@ -108,15 +107,7 @@ public class UserPermissionRefDTO {
 		this.permissionTenant = permissionTenant;
 	}
 
-	public String getPermissionType() {
-        return permissionType;
-    }
-
-    public void setPermissionType(String permissionType) {
-        this.permissionType = permissionType;
-    }
-
-    public String getPermissionKey() {
+	public String getPermissionKey() {
         return permissionKey;
     }
 

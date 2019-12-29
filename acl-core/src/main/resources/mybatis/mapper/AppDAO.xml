@@ -51,9 +51,9 @@
 	</select>
 
 	<insert id="createApp" keyProperty="id" useGeneratedKeys="true" parameterType="AppDO">
-		insert into app(name,en_name,app_key,app_secret,status,description,create_time,update_time)
-		values(#{name},#{enName},#{appKey},#{appSecret},#{status},#{description},#{createTime},#{updateTime})
-		ON DUPLICATE KEY update name=#{name},app_secret=#{appSecret},status=#{status},update_time=now(),description=#{description}
+		insert into app(name,name_en,app_key,app_secret,status,description,gmt_create,gmt_modified)
+		values(#{name},#{nameEn},#{appKey},#{appSecret},#{status},#{description},now(),now())
+		ON DUPLICATE KEY update name=#{name},name_en=#{nameEn},app_secret=#{appSecret},status=#{status},gmt_modified=now(),description=#{description}
 	</insert>
 
 	<update id="updateApp" parameterType="AppDO">
@@ -62,8 +62,8 @@
 			<if test="name != null and name != ''">
 				name = #{name},
 			</if>
-			<if test="enName != null and enName != ''" >
-                enName = #{enName},
+			<if test="nameEn != null and nameEn != ''" >
+                nameEn = #{nameEn},
             </if>
 			<if test="description != null and description != ''">
 				description = #{description}
@@ -71,7 +71,7 @@
 			<if test="status != null">
 				status = #{status},
 			</if>
-			update_time = #{updateTime}
+			gmt_modified = now()
 		</set>
 		 where app_key=#{appKey}
 	</update>

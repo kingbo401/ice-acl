@@ -6,7 +6,7 @@ public class PermissionGroupDTO extends BaseDO{
 	private String appKey;
     private String tenant;
     private Long pid;
-    private String type;
+    private String subgroup;
     private String name;
 	private String enName;
     private Integer idx;
@@ -30,11 +30,11 @@ public class PermissionGroupDTO extends BaseDO{
 	public void setPid(Long pid) {
 		this.pid = pid;
 	}
-	public String getType() {
-		return type;
+	public String getSubgroup() {
+		return subgroup;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setSubgroup(String subgroup) {
+		this.subgroup = subgroup;
 	}
 	public String getName() {
 		return name;

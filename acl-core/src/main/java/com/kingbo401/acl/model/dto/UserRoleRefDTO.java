@@ -17,7 +17,7 @@ public class UserRoleRefDTO {
 	private String roleTenant;
 	private String roleKey;
 	private String roleName;
-	private String roleEnName;
+	private String roleNameEn;
 	private String roleDescription;
 	public Long getId() {
 		return id;
@@ -109,10 +109,10 @@ public class UserRoleRefDTO {
 	public void setRoleDescription(String roleDescription) {
 		this.roleDescription = roleDescription;
 	}
-	public String getRoleEnName() {
-		return roleEnName;
+	public String getRoleNameEn() {
+		return roleNameEn;
 	}
-	public void setRoleEnName(String roleEnName) {
-		this.roleEnName = roleEnName;
+	public void setRoleNameEn(String roleNameEn) {
+		this.roleNameEn = roleNameEn;
 	}
 }
