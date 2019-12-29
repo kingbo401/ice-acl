@@ -61,11 +61,11 @@
 			#{grantTargetId}
 		</foreach>
 		and grant_target_type=#{grantTargetType}
-		<if test='tenant == "_t_common"'>
-		    and tenant='_t_common'
+		<if test='tenant == "_t_c"'>
+		    and tenant='_t_c'
 		</if>
-		<if test='tenant != "_t_common"'>
-		    and tenant in ('_t_common',#{tenant})
+		<if test='tenant != "_t_c"'>
+		    and tenant in ('_t_c',#{tenant})
 		</if>
 		<if test="returnNotEffective == false">
 		and (effective_time is null or effective_time &lt;= now())
@@ -103,11 +103,11 @@
 				#{grantTargetId}
 			</foreach>
 			and t1.grant_target_type=#{grantTargetType}  and t1.status=1
-			<if test='tenant == "_t_common"'>
-		    	and t1.tenant='_t_common'
+			<if test='tenant == "_t_c"'>
+		    	and t1.tenant='_t_c'
 			</if>
-			<if test='tenant != "_t_common"'>
-			    and t1.tenant in ('_t_common',#{tenant})
+			<if test='tenant != "_t_c"'>
+			    and t1.tenant in ('_t_c',#{tenant})
 			</if>
 			<if test="returnNotEffective == false">
 			and (t1.effective_time is null or t1.effective_time &lt;= now()) 

@@ -100,7 +100,7 @@ public class RoleManagerImpl implements RoleManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		String tenant = roleDTO.getTenant();
 		if(tenant == null){
-			tenant = AclConstant.TENANT_COMMON_SYMBOL;
+			tenant = AclConstant.TENANT_COMMON;
 		}
 		if (roleDTO.getSubgroup() == null) {
 			roleDTO.setSubgroup(AclConstant.DEF_SUBGROUP);

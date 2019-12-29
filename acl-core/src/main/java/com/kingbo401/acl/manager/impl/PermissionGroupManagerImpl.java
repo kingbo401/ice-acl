@@ -38,10 +38,11 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		Assert.hasText(permissionGroupDTO.getAppKey(), "appKey不能为空");
 		Assert.hasText(permissionGroupDTO.getName(), "groupName不能为空");
 		permissionGroupDTO.setStatus(AclConstant.STATUS_NORMAL);
-		String tenant = permissionGroupDTO.getTenant();
-		if(tenant == null){
-			tenant = AclConstant.TENANT_COMMON_SYMBOL;
-			permissionGroupDTO.setTenant(tenant);
+		if(permissionGroupDTO.getTenant() == null){
+			permissionGroupDTO.setTenant(AclConstant.TENANT_COMMON);
+		}
+		if (permissionGroupDTO.getSubgroup() == null) {
+			permissionGroupDTO.setSubgroup(AclConstant.DEF_SUBGROUP);
 		}
 		PermissionGroupDO permissionGroupDO = new PermissionGroupDO();
 		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupDO);

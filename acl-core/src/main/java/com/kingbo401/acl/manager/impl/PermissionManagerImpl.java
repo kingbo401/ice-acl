@@ -146,6 +146,9 @@ public class PermissionManagerImpl implements PermissionManager{
 		Assert.hasText(permissionKey, "permissionKey不能为空");
 		Assert.hasText(permissionDTO.getName(), "permissionName不能为空");
 		permissionDTO.setStatus(AclConstant.STATUS_NORMAL);
+		if (permissionDTO.getSubgroup() == null) {
+			permissionDTO.setSubgroup(AclConstant.DEF_SUBGROUP);
+		}
 		PermissionDO permissoinDO = permissionDAO.getByKey(appKey, permissionKey);
 		Assert.isNull(permissoinDO, "权限已存在");
 		permissoinDO = new PermissionDO();

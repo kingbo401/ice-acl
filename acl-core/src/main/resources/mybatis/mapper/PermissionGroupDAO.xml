@@ -56,11 +56,11 @@
     
     <sql id="queryPermissionGroupSubSql">
 		where status != 0 and app_key = #{appKey}
-		<if test='tenant == "_t_common"'>
-		    and tenant='_t_common'
+		<if test='tenant == "_t_c"'>
+		    and tenant='_t_c'
 		</if>
-		<if test='tenant != "_t_common"'>
-		    and tenant in ('_t_common',#{tenant})
+		<if test='tenant != "_t_c"'>
+		    and tenant in ('_t_c',#{tenant})
 		</if>
 		<if test="subgroup != null and subgroup != ''">
 			and subgroup = #{subgroup}

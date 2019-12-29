@@ -40,11 +40,11 @@
 		<if test="groupName != null and groupName != ''">
 			and t2.name like concat('%', #{groupName}, '%')
 		</if>
-		<if test='tenant == "_t_common"'>
-			and t2.tenant='_t_common'
+		<if test='tenant == "_t_c"'>
+			and t2.tenant='_t_c'
 		</if>
-		<if test='tenant != "_t_common"'>
-			and t2.tenant in ('_t_common',#{tenant})
+		<if test='tenant != "_t_c"'>
+			and t2.tenant in ('_t_c',#{tenant})
 		</if>
 	</sql>
 

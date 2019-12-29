@@ -155,7 +155,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				DataPropertyDTO dataPropertyDTO = propertyCodeMap.get(propertyCode);
 				List<String> values = Lists.newArrayList();
 				values.add(propertyValue.getPropertyValue());
-				values.add(AclConstant.GRANTED_ALL_DATA_SYMBOL);
+				values.add(AclConstant.ALL_DATA);
 				propertyValuesMap.put(dataPropertyDTO.getId(), values);
 			}
 			DataGrantPropertyValueParam dataGrantPropertyValueParam = new DataGrantPropertyValueParam(); 
@@ -422,7 +422,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				String propertyCode = entry.getKey();
 				PropertyValue propertyValue = grantedData.get(propertyCode);
 				String val = propertyValue.getPropertyValue();
-				if(!val.equals(AclConstant.GRANTED_ALL_DATA_SYMBOL) && !val.equals(data.get(propertyCode))){
+				if(!val.equals(AclConstant.ALL_DATA) && !val.equals(data.get(propertyCode))){
 					valid = false;
 				}
 			}
@@ -622,7 +622,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 			DataPropertyDTO dataPropertyDTO = propertyCodeMap.get(propertyCode);
 			List<String> values = Lists.newArrayList();
 			values.add(propertyValue);
-			values.add(AclConstant.GRANTED_ALL_DATA_SYMBOL);
+			values.add(AclConstant.ALL_DATA);
 			propertyDatasMap.put(dataPropertyDTO.getId(), values);
 		}
 		DataGrantPropertyValueParam dataGrantPropertyValueParam = new DataGrantPropertyValueParam(); 
@@ -694,7 +694,7 @@ public class DataAccessManagerImpl implements DataAccessManager{
 				Assert.notNull(dataPropertyDTO, "属性code对应的属性不存在:" + propertyCode);
 				List<String> values = Lists.newArrayList();
 				values.add(propertyValue);
-				values.add(AclConstant.GRANTED_ALL_DATA_SYMBOL);
+				values.add(AclConstant.ALL_DATA);
 				propertyValuesMap.put(dataPropertyDTO.getId(), values);
 			}
 			dataGrantPropertyValueParam.setPropertyValuesMap(propertyValuesMap);

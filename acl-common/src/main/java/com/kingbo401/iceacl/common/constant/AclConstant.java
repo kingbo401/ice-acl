@@ -9,11 +9,11 @@ public class AclConstant {
 	/**
 	 * 拥有所有值的标识
 	 */
-	public static final String GRANTED_ALL_DATA_SYMBOL = "_d_all";
+	public static final String ALL_DATA = "_a_d";
 	/**
 	 * 如果授权对象不区分租户，使用此常量给授权参数里的租户字段赋值
 	 */
-	public static final String TENANT_COMMON_SYMBOL = "_t_common";
+	public static final String TENANT_COMMON = "_t_c";
 	
 	/**
 	 * 删除的状态
