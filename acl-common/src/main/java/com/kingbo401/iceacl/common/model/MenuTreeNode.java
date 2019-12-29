@@ -8,13 +8,12 @@ import com.kingbo401.commons.model.BasePojo;
 public class MenuTreeNode extends BasePojo{
 	private Long id;
 	private String name;
-	private String enName;
+	private String nameEn;
 	private Long pid;
 	private String url;
 	private String icon;
 	private Integer type;
 	private Integer idx;
-	private Integer level;
 	private List<MenuTreeNode> children = new ArrayList<MenuTreeNode>();
 	public Long getId() {
 		return id;
@@ -28,11 +27,11 @@ public class MenuTreeNode extends BasePojo{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getEnName() {
-		return enName;
+	public String getNameEn() {
+		return nameEn;
 	}
-	public void setEnName(String enName) {
-		this.enName = enName;
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
 	}
 	public Long getPid() {
 		return pid;
@@ -69,11 +68,5 @@ public class MenuTreeNode extends BasePojo{
 	}
 	public void setChildren(List<MenuTreeNode> children) {
 		this.children = children;
-	}
-	public Integer getLevel() {
-		return level;
-	}
-	public void setLevel(Integer level) {
-		this.level = level;
 	}
 }

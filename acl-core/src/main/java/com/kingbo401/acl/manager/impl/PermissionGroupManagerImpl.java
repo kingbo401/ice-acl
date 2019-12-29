@@ -123,7 +123,6 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 			for (PermissionGroupDO rootPermissionGroup : rootPermissionGroups) {
 				PermissionGroupTreeNode permissionGroupTreeNode = new PermissionGroupTreeNode();
 				BeanUtils.copyProperties(rootPermissionGroup, permissionGroupTreeNode);
-				permissionGroupTreeNode.setLevel(1);
 				this.recursivePermissionGroup(permissionGroupTreeNode, permissionGroupMap, 2);
 				treeNodes.add(permissionGroupTreeNode);
 			}
@@ -137,7 +136,6 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		if (!CollectionUtils.isEmpty(permissionGroupChildren)) {
 			for (PermissionGroupDO permissionGroupDO : permissionGroupChildren) {
 				PermissionGroupTreeNode permissionGroupTreeNode = new PermissionGroupTreeNode();
-				permissionGroupTreeNode.setLevel(level);
 				BeanUtils.copyProperties(permissionGroupDO, permissionGroupTreeNode);
 				parentTreePermissionGroup.getChildren().add(permissionGroupTreeNode);
 				this.recursivePermissionGroup(permissionGroupTreeNode, permissionGroupMap, level++);

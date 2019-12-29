@@ -12,11 +12,10 @@ public class PermissionGroupTreeNode extends BasePojo{
     private Long pid;
     private String type;
     private String name;
-    private String enName;
+    private String nameEn;
     private Integer idx;
     private String description;
     private Integer status;
-    private Integer level;
 	private List<PermissionGroupTreeNode> children = new ArrayList<PermissionGroupTreeNode>();
 	
 	public Long getId() {
@@ -55,11 +54,11 @@ public class PermissionGroupTreeNode extends BasePojo{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getEnName() {
-		return enName;
+	public String getNameEn() {
+		return nameEn;
 	}
-	public void setEnName(String enName) {
-		this.enName = enName;
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
 	}
 	public Integer getIdx() {
 		return idx;
@@ -78,12 +77,6 @@ public class PermissionGroupTreeNode extends BasePojo{
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
-	}
-	public Integer getLevel() {
-		return level;
-	}
-	public void setLevel(Integer level) {
-		this.level = level;
 	}
 	public List<PermissionGroupTreeNode> getChildren() {
 		return children;

@@ -83,7 +83,6 @@ public class MenuManagerImpl implements MenuManager{
 		for (MenuDO childMenu : childMenus) {
 			MenuTreeNode childTreeNode = new MenuTreeNode();
 			BeanUtils.copyProperties(childMenu, childTreeNode);
-			childTreeNode.setLevel(level);
 			treeNodeDTO.getChildren().add(childTreeNode);
 			this.recursiveMenu(childTreeNode, menusMap, level);
 		}
