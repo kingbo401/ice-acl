@@ -98,9 +98,8 @@ public class RoleManagerImpl implements RoleManager{
 	public RoleDTO saveRole(RoleDTO roleDTO) {
 		String appKey = roleDTO.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
-		String tenant = roleDTO.getTenant();
-		if(tenant == null){
-			tenant = AclConstant.TENANT_COMMON;
+		if(roleDTO.getTenant() == null){
+			roleDTO.setTenant(AclConstant.TENANT_COMMON);
 		}
 		if (roleDTO.getSubgroup() == null) {
 			roleDTO.setSubgroup(AclConstant.DEF_SUBGROUP);
@@ -118,11 +117,11 @@ public class RoleManagerImpl implements RoleManager{
 		Assert.notNull(appManager.getAppByKey(appKey), "应用不存在");
 		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
 		if (roleDO != null) {
-			Assert.isTrue(tenant.equals(roleDO.getTenant()), "tenant不能修改");
+			Assert.isTrue(roleDTO.getTenant().equals(roleDO.getTenant()), "tenant不能修改");
 			if(!roleName.equals(roleDO.getName())){
 				RoleQueryParam roleQueryParam = new RoleQueryParam();
 				roleQueryParam.setAppKey(appKey);
-				roleQueryParam.setTenant(tenant);
+				roleQueryParam.setTenant(roleDTO.getTenant());
 				roleQueryParam.setName(roleName);
 				List<RoleDO> namesRole = roleDAO.listRole(roleQueryParam);
 				Assert.isTrue(CollectionUtils.isEmpty(namesRole), "角色名被使用");

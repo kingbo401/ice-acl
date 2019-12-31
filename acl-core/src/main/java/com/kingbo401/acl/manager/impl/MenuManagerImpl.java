@@ -122,6 +122,9 @@ public class MenuManagerImpl implements MenuManager{
 		if (menuDTO.getSubgroup() == null) {
 			menuDTO.setSubgroup(AclConstant.DEF_SUBGROUP);
 		}
+		if (menuDTO.getIdx() == null) {
+			menuDTO.setIdx(0);
+		}
 		Assert.isTrue(MenuShowType.isValid(menuDTO.getShowType()), "菜单显示类型非法");
 		menuDTO.setStatus(AclConstant.STATUS_NORMAL);
 		

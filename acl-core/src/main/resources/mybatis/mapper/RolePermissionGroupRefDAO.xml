@@ -40,16 +40,10 @@
 		<if test="groupName != null and groupName != ''">
 			and t2.name like concat('%', #{groupName}, '%')
 		</if>
-		<if test='tenant == "_t_c"'>
-			and t2.tenant='_t_c'
-		</if>
-		<if test='tenant != "_t_c"'>
-			and t2.tenant in ('_t_c',#{tenant})
-		</if>
 	</sql>
 
 	<select id="listPermissionGroup" resultType="PermissionGroupDO">
-		select t2.* from role_permission_group_ref t1,permission_gorup t2
+		select t2.* from role_permission_group_ref t1,permission_group t2
 		<include refid="queryPermissionGroupSubSql" />
 		<if test="orderField != null and orderField != ''">
 			order by ${orderField} ${orderType}
@@ -57,7 +51,7 @@
 	</select>
 
 	<select id="pagePermissionGroup" resultType="PermissionGroupDO">
-		select t2.* from role_permission_group_ref t1,permission_gorup t2
+		select t2.* from role_permission_group_ref t1,permission_group t2
 		<include refid="queryPermissionGroupSubSql" />
 		<if test="orderField != null and orderField != ''">
 			order by ${orderField} ${orderType}
@@ -66,7 +60,7 @@
 	</select>
 
 	<select id="countPermissionGroup" resultType="long">
-		select count(t2.*) from role_permission_group_ref t1,permission_gorup t2
+		select count(t2.*) from role_permission_group_ref t1,permission_group t2
 		<include refid="queryPermissionGroupSubSql" />
 	</select>
 

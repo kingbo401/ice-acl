@@ -4,9 +4,9 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.DataGrantRecordDAO">
     <insert id="create" parameterType="DataGrantRecordDO" useGeneratedKeys="true" keyProperty="id">
-		insert into data_grant_record(model_id,operation_id,grant_target_id,grant_target_type,tenant,
+		insert into data_grant_record(app_key,model_id,operation_id,grant_target_id,grant_target_type,tenant,
 		status,effective_time,expire_time,gmt_create,gmt_modified)
-		values(#{modelId},#{operationId},#{grantTargetId},#{grantTargetType},#{tenant},
+		values(#{appKey},#{modelId},#{operationId},#{grantTargetId},#{grantTargetType},#{tenant},
 		#{status},#{effectiveTime},#{expireTime},now(),now())
 	</insert>
 	

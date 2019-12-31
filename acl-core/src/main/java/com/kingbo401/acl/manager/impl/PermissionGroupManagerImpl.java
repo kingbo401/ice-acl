@@ -44,6 +44,9 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 		if (permissionGroupDTO.getSubgroup() == null) {
 			permissionGroupDTO.setSubgroup(AclConstant.DEF_SUBGROUP);
 		}
+		if (permissionGroupDTO.getIdx() == null) {
+			permissionGroupDTO.setIdx(0);
+		}
 		PermissionGroupDO permissionGroupDO = new PermissionGroupDO();
 		BeanUtils.copyProperties(permissionGroupDTO, permissionGroupDO);
 		permissionGroupDAO.create(permissionGroupDO);
