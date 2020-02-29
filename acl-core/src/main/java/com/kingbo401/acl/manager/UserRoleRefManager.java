@@ -17,15 +17,15 @@ public interface UserRoleRefManager {
 
 	PageVO<UserRoleRefDTO> pageUserRoleRef(UserRoleRefQueryParam userRoleRefQueryParam);
 
-	boolean addUserRoleRef(UserRoleRefParam param);
+	boolean addRef(UserRoleRefParam param);
 
-	boolean updateUserRoleRef(UserRoleRefParam param);
+	boolean updateRef(UserRoleRefParam param);
 
-	boolean removeUserRoleRef(UserRoleRefParam param);
+	boolean removeRef(UserRoleRefParam param);
 	
-	boolean freezeUserRoleRef(UserRoleRefParam param);
+	boolean freezeRef(UserRoleRefParam param);
 	
-	boolean unfreezeUserRoleRef(UserRoleRefParam param);
+	boolean unfreezeRef(UserRoleRefParam param);
 
 	List<String> listUserTenant(String userId, String appKey, List<String> roleKeys);
 	

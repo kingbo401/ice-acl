@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.MenuDAO;
 import com.kingbo401.acl.dao.RoleDAO;
 import com.kingbo401.acl.dao.RoleMenuRefDAO;
@@ -27,7 +28,6 @@ import com.kingbo401.acl.model.entity.param.RoleMenuQueryParam;
 import com.kingbo401.acl.model.entity.param.RoleQueryParam;
 import com.kingbo401.commons.encrypt.SecurityUtil;
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class RoleManagerImpl implements RoleManager{
@@ -43,26 +43,26 @@ public class RoleManagerImpl implements RoleManager{
 	private UserRoleRefManager userRoleRefManager;
 	
 	@Override
-	public RoleDTO getRoleByKey(String appKey, String roleKey) {
+	public RoleDTO getByKey(String appKey, String roleKey) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(roleKey, "roleKey不能为空");
-		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
+		RoleDO roleDO = roleDAO.getByKey(appKey, roleKey);
 		return buildRoleDTO(roleDO);
 	}
 
 	@Override
-	public List<RoleDTO> getRoleByKeys(String appKey, List<String> roleKeys) {
+	public List<RoleDTO> getByKeys(String appKey, List<String> roleKeys) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(roleKeys, "roleKeys不能为空");
-		List<RoleDO> roleDOs = roleDAO.getRoleByKeys(appKey, roleKeys);
+		List<RoleDO> roleDOs = roleDAO.getByKeys(appKey, roleKeys);
 		return buildRoleDTOs(roleDOs);
 	}
 
 	@Override
-	public RoleDTO getRoleById(String appKey, long id) {
+	public RoleDTO getById(String appKey, long id) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.isTrue(id > 0, "id必须大于0");
-		RoleDO roleDO = roleDAO.getRoleById(id);
+		RoleDO roleDO = roleDAO.getById(id);
 		if(roleDO == null){
 			return null;
 		}
@@ -71,9 +71,9 @@ public class RoleManagerImpl implements RoleManager{
 	}
 
 	@Override
-	public RoleDTO getRoleById(long id) {
+	public RoleDTO getById(long id) {
 		Assert.isTrue(id > 0, "id必须大于0");
-		RoleDO roleDO = roleDAO.getRoleById(id);
+		RoleDO roleDO = roleDAO.getById(id);
 		if(roleDO == null){
 			return null;
 		}
@@ -81,10 +81,10 @@ public class RoleManagerImpl implements RoleManager{
 	}
 
 	@Override
-	public List<RoleDTO> getRoleByIds(String appKey, List<Long> roleIds) {
+	public List<RoleDTO> getByIds(String appKey, List<Long> roleIds) {
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.notEmpty(roleIds, "roleIds不能为空");
-		List<RoleDO> roleDOs = roleDAO.getRoleByIds(roleIds);
+		List<RoleDO> roleDOs = roleDAO.getByIds(roleIds);
 		if(CollectionUtils.isEmpty(roleDOs)){
 			return null;
 		}
@@ -95,7 +95,7 @@ public class RoleManagerImpl implements RoleManager{
 	}
 
 	@Override
-	public RoleDTO saveRole(RoleDTO roleDTO) {
+	public RoleDTO save(RoleDTO roleDTO) {
 		String appKey = roleDTO.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
 		if(roleDTO.getTenant() == null){
@@ -114,24 +114,28 @@ public class RoleManagerImpl implements RoleManager{
 		}
 		String roleName = roleDTO.getName();
 		Assert.hasText(roleName, "角色名不能为空");
-		Assert.notNull(appManager.getAppByKey(appKey), "应用不存在");
-		RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
-		if (roleDO != null) {
+		Assert.notNull(appManager.getByKey(appKey), "应用不存在");
+		RoleDO roleDO = roleDAO.getByKey0(appKey, roleKey);
+		if (roleDO != null && !roleDO.getStatus().equals(AclConstant.STATUS_REMOVE)) {
 			Assert.isTrue(roleDTO.getTenant().equals(roleDO.getTenant()), "tenant不能修改");
 			if(!roleName.equals(roleDO.getName())){
 				RoleQueryParam roleQueryParam = new RoleQueryParam();
 				roleQueryParam.setAppKey(appKey);
 				roleQueryParam.setTenant(roleDTO.getTenant());
 				roleQueryParam.setName(roleName);
+				roleQueryParam.setFuzzy(false);
 				List<RoleDO> namesRole = roleDAO.listRole(roleQueryParam);
 				Assert.isTrue(CollectionUtils.isEmpty(namesRole), "角色名被使用");
 			}
 			BeanUtils.copyProperties(roleDTO, roleDO);
-			roleDAO.updateRole(roleDO);
+			roleDAO.update(roleDO);
+		} if (roleDO != null) {
+			BeanUtils.copyProperties(roleDTO, roleDO);
+			roleDAO.update(roleDO);
 		} else {
 			roleDO = new RoleDO();
 			BeanUtils.copyProperties(roleDTO, roleDO);
-			roleDAO.createRole(roleDO);
+			roleDAO.create(roleDO);
 		}
 		roleDTO.setId(roleDO.getId());
 		RoleMenuIdRefParam roleMenuIdRefParam = new RoleMenuIdRefParam();
@@ -152,26 +156,26 @@ public class RoleManagerImpl implements RoleManager{
 		if(status == AclConstant.STATUS_REMOVE){
 			Assert.isTrue(!userRoleRefManager.hasUserUse(roleId), "角色有用户使用");
 		}
-		RoleDO roleDO = roleDAO.getRoleById(roleId);
+		RoleDO roleDO = roleDAO.getById(roleId);
 		Assert.notNull(roleDO, "角色不存在");
 		Assert.isTrue(appKey.equals(roleDO.getAppKey()), "appkey角色不匹配");
 		roleDO.setStatus(status);
-		roleDAO.updateRole(roleDO);
+		roleDAO.update(roleDO);
 		return true;
 	}
 	
 	@Override
-	public boolean removeRole(RoleDTO roleDTO) {
+	public boolean remove(RoleDTO roleDTO) {
 		return updateRoleStatus(roleDTO, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeRole(RoleDTO roleDTO) {
+	public boolean freeze(RoleDTO roleDTO) {
 		return updateRoleStatus(roleDTO, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeRole(RoleDTO roleDTO) {
+	public boolean unfreeze(RoleDTO roleDTO) {
 		return updateRoleStatus(roleDTO, AclConstant.STATUS_NORMAL);
 	}
 
@@ -206,7 +210,7 @@ public class RoleManagerImpl implements RoleManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		Long roleId = param.getRoleId();
 		Assert.notNull(roleId, "roleId不能为null");
-		RoleDTO roleDTO = getRoleById(appKey, roleId);
+		RoleDTO roleDTO = getById(appKey, roleId);
 		Assert.notNull(roleDTO, "角色不存在");
 		if (param.getSubgroup() == null) {
 			param.setSubgroup(AclConstant.DEF_SUBGROUP);
@@ -228,7 +232,7 @@ public class RoleManagerImpl implements RoleManager{
 			return true;
 		}
 		
-	    Map<Object, MenuDO> menuMap = menuDAO.getMenuByIds(menuIds).stream().collect(Collectors.toMap(MenuDO::getId, a -> a, (k1, k2) -> k1));;
+	    Map<Object, MenuDO> menuMap = menuDAO.getByIds(menuIds).stream().collect(Collectors.toMap(MenuDO::getId, a -> a, (k1, k2) -> k1));;
 		List<RoleMenuRefDO> refDOs = new ArrayList<RoleMenuRefDO>();
 		for(Long menuId : menuIds){
 			Assert.notNull(menuMap.get(menuId), "菜单:" + menuId + " 不存在");

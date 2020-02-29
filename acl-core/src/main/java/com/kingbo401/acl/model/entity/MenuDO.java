@@ -1,11 +1,13 @@
 package com.kingbo401.acl.model.entity;
 
-import com.kingbo401.iceacl.common.model.BaseDO;
+import com.kingbo401.acl.common.model.BaseDO;
 
 public class MenuDO extends BaseDO{
 	private String appKey;
+	private String menuKey;
 	private String name;
-	private String enName;
+	private String nameEn;
+	private String target;
 	private String subgroup;
 	private Long pid;
 	private String url;
@@ -20,17 +22,29 @@ public class MenuDO extends BaseDO{
 		this.appKey = appKey;
 	}
 	
+	public String getMenuKey() {
+		return menuKey;
+	}
+	public void setMenuKey(String menuKey) {
+		this.menuKey = menuKey;
+	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getEnName() {
-		return enName;
+	public String getNameEn() {
+		return nameEn;
 	}
-	public void setEnName(String enName) {
-		this.enName = enName;
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setTarget(String target) {
+		this.target = target;
 	}
 	public String getSubgroup() {
 		return subgroup;

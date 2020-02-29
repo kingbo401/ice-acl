@@ -5,19 +5,19 @@ import java.util.List;
 import com.kingbo401.acl.model.dto.DataOperationDTO;
 
 public interface DataOperationManager {
-	DataOperationDTO createDataOperation(DataOperationDTO dataOperationDTO);
+	DataOperationDTO create(DataOperationDTO dataOperationDTO);
 	
-	DataOperationDTO updateDataOperation(DataOperationDTO dataOperationDTO);
+	DataOperationDTO update(DataOperationDTO dataOperationDTO);
 	
-	boolean removeDataOperation(DataOperationDTO dataOperationDTO);
+	boolean remove(DataOperationDTO dataOperationDTO);
 	
-	boolean freezeDataOperation(DataOperationDTO dataOperationDTO);
+	boolean freeze(DataOperationDTO dataOperationDTO);
 	
-	boolean unfreezeDataOperation(DataOperationDTO dataOperationDTO);
+	boolean unfreeze(DataOperationDTO dataOperationDTO);
 	
-	public DataOperationDTO getDataOperation(String appKey, String modelCode, String operationCode);
+	public DataOperationDTO getByCode(String appKey, String modelCode, String operationCode);
 	
-	public DataOperationDTO getDataOperation(Long modelId, String operationCode);
+	public DataOperationDTO getByCode(Long modelId, String operationCode);
 	
 	List<DataOperationDTO> listDataOperation(String appKey, String modelCode);
 	

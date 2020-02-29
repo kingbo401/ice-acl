@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.enums.GrantTargetType;
 import com.kingbo401.acl.dao.DataPropertyAccessDAO;
 import com.kingbo401.acl.manager.DataModelManager;
 import com.kingbo401.acl.manager.DataPropertyAccessManager;
@@ -21,8 +23,6 @@ import com.kingbo401.acl.model.dto.param.DataPropertyCodeAccessParam;
 import com.kingbo401.acl.model.entity.DataPropertyAccessDO;
 import com.kingbo401.acl.model.entity.param.DataPropertyAccessParam;
 import com.kingbo401.commons.util.CollectionUtil;
-import com.kingbo401.iceacl.common.constant.AclConstant;
-import com.kingbo401.iceacl.common.enums.GrantTargetType;
 
 @Service
 public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
@@ -44,7 +44,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 	}
 	
 	@Override
-	public boolean createDataPropertyAccess(DataPropertyCodeAccessParam param) {
+	public boolean create(DataPropertyCodeAccessParam param) {
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "访问类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -58,11 +58,11 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		// 校验模型是否存在
-		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
+		DataModelDTO modelDTO = modelManager.getByCode(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getId(), propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getByCodes(modelDTO.getId(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		List<DataPropertyAccessDO> dataPropertyAccessDOs = new ArrayList<DataPropertyAccessDO>();
 		for (DataPropertyDTO propertyDTO : dataProperties) {
@@ -82,7 +82,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 	}
 
 	@Override
-	public boolean updateDataPropertyAccess(DataPropertyCodeAccessParam param) {
+	public boolean update(DataPropertyCodeAccessParam param) {
 		Assert.isTrue(isAccessTypeValid(param.getAccessType()), "访问类型不合法，请配置合法值；0禁止访问 1允许访问");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -96,11 +96,11 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		// 校验模型是否存在
-		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
+		DataModelDTO modelDTO = modelManager.getByCode(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getId(), propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getByCodes(modelDTO.getId(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		
 		//删除老数据
@@ -141,11 +141,11 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		int grantTargetType = param.getGrantTargetType();
 		Assert.isTrue(GrantTargetType.isValid(grantTargetType), "授权目标类型非法");
 		// 校验模型是否存在
-		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
+		DataModelDTO modelDTO = modelManager.getByCode(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		// 校验属性是否全部存在
-		List<DataPropertyDTO> dataProperties = propertyManager.getDataProperties(modelDTO.getId(), propertyCodes);
+		List<DataPropertyDTO> dataProperties = propertyManager.getByCodes(modelDTO.getId(), propertyCodes);
 		Assert.notEmpty(dataProperties, "属性不存在");
 		List<Long> propertyIds = new ArrayList<Long>();
 		for(DataPropertyDTO dataPropertyDTO : dataProperties){
@@ -161,17 +161,17 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 	}
 
 	@Override
-	public boolean removeDataPropertyAccess(DataPropertyCodeAccessParam param) {
+	public boolean remove(DataPropertyCodeAccessParam param) {
 		return updateDataPropertyAccessStatus(param, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeDataPropertyAccess(DataPropertyCodeAccessParam param) {
+	public boolean freeze(DataPropertyCodeAccessParam param) {
 		return updateDataPropertyAccessStatus(param, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeDataPropertyAccess(DataPropertyCodeAccessParam param) {
+	public boolean unfreeze(DataPropertyCodeAccessParam param) {
 		return updateDataPropertyAccessStatus(param, AclConstant.STATUS_NORMAL);
 	}
 
@@ -186,7 +186,7 @@ public class DataPropertyAccessManagerImpl implements DataPropertyAccessManager{
 		String modelCode = param.getModelCode();
 		Assert.hasText(modelCode, "modelCode 不能为空");
 		
-		DataModelDTO modelDTO = modelManager.getDataModel(modelCode);
+		DataModelDTO modelDTO = modelManager.getByCode(modelCode);
 		Assert.notNull(modelDTO, "modelCode 不存在");
 		
 		List<DataPropertyDTO> dataPropertyDTOs = propertyManager.listDataProperty(modelDTO.getId());

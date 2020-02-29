@@ -5,10 +5,13 @@ import com.kingbo401.commons.model.param.PageParam;
 public class DataGrantRecordParam extends PageParam{
 	private String appKey;
 	private Long modelId;
-	private Long operationId;
 	private String grantTargetId;
 	private Integer grantTargetType;
 	private String tenant;
+	/**
+	     * 是否返回没有生效的授权
+	*/
+	private boolean returnNotEffective = true;
 	public String getAppKey() {
 		return appKey;
 	}
@@ -20,12 +23,6 @@ public class DataGrantRecordParam extends PageParam{
 	}
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
-	}
-	public Long getOperationId() {
-		return operationId;
-	}
-	public void setOperationId(Long operationId) {
-		this.operationId = operationId;
 	}
 	public String getGrantTargetId() {
 		return grantTargetId;
@@ -44,5 +41,11 @@ public class DataGrantRecordParam extends PageParam{
 	}
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
+	}
+	public boolean isReturnNotEffective() {
+		return returnNotEffective;
+	}
+	public void setReturnNotEffective(boolean returnNotEffective) {
+		this.returnNotEffective = returnNotEffective;
 	}
 }

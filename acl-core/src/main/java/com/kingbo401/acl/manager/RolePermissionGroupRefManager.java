@@ -9,15 +9,15 @@ import com.kingbo401.commons.model.PageVO;
 
 public interface RolePermissionGroupRefManager {
 
-    boolean addRolePermissionGroupRef(RolePermissionGroupRefParam param);
+    boolean addRef(RolePermissionGroupRefParam param);
     
-    boolean updateRolePermissionGroupRef(RolePermissionGroupRefParam param);
+    boolean updateRef(RolePermissionGroupRefParam param);
 
-    boolean removeRolePermissionGroupRef(RolePermissionGroupRefParam param);
+    boolean removeRef(RolePermissionGroupRefParam param);
     
-    boolean freezeRolePermissionGroupRef(RolePermissionGroupRefParam param);
+    boolean freezeRef(RolePermissionGroupRefParam param);
     
-    boolean unfreezeRolePermissionGroupRef(RolePermissionGroupRefParam param);
+    boolean unfreezeRef(RolePermissionGroupRefParam param);
 
     List<PermissionGroupDTO> listPermissionGroup(RolePermissionGroupRefQueryParam param);
     

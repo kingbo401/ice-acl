@@ -16,6 +16,8 @@ public interface DataPropertyDAO {
 	List<DataPropertyDO> getByCodes(@Param("modelId") Long modelId, @Param("propertyCodes")List<String> propertyCodes);
 
 	DataPropertyDO getByCode(@Param("modelId") Long modelId, @Param("code")String code);
+	
+	DataPropertyDO getByCode0(@Param("modelId") Long modelId, @Param("code")String code);
 
 	List<DataPropertyDO> listDataProperty(@Param("modelId") Long modelId);
 }

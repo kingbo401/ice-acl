@@ -4,17 +4,17 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.MenuDAO">
     <select id="listMenu" resultType="MenuDO">
-		select * from menu where group_id=#{appKey} and status != 0 
+		select * from menu where app_key=#{appKey} and status != 0 
 		and subgroup=#{subgroup}
 		order by idx asc
 	</select>
 	
-    <insert id="createMenu" parameterType="MenuDO" useGeneratedKeys="true" keyProperty="id">
-          insert into menu(app_key,name,name_en,idx,pid,url,icon,show_type,subgroup,gmt_modified,gmt_create,status)
-          values(#{appKey},#{name},#{nameEn},#{idx},#{pid},#{url},#{icon},#{showType},#{subgroup},now(),now(),#{status});
+    <insert id="create" parameterType="MenuDO" useGeneratedKeys="true" keyProperty="id">
+          insert into menu(app_key,menu_key,name,name_en,target,idx,pid,url,icon,show_type,subgroup,gmt_modified,gmt_create,status)
+          values(#{appKey},#{menuKey},#{name},#{nameEn},#{target},#{idx},#{pid},#{url},#{icon},#{showType},#{subgroup},now(),now(),#{status});
     </insert>
 
-    <update id="updateMenu" parameterType="MenuDO">
+    <update id="update" parameterType="MenuDO">
 		update menu
 		<set>
 			<if test="name != null and name != ''">
@@ -32,8 +32,11 @@
 			<if test="url != null and url != ''">
 				url = #{url},
 			</if>
-			<if test="pid != null and pid != ''">
+			<if test="pid != null">
 				pid = #{pid},
+			</if>
+			<if test="target != null and target != ''">
+				target = #{target},
 			</if>
 			<if test="showType != null and showType != ''">
 				show_type = #{showType},
@@ -46,12 +49,15 @@
 		where id = #{id}
 	</update>
 
-    <!--根据id查询-->
-    <select id="getMenuById" resultType="MenuDO">
+    <select id="getByKey0" resultType="MenuDO">
+        select * from menu where app_key=#{appKey} and menu_key = #{menuKey} and subgroup=#{subgroup}
+    </select>
+    
+    <select id="getById" resultType="MenuDO">
         select * from menu where id = #{id} and status != 0
     </select>
     
-    <select id="getMenuByIds" resultType="MenuDO">
+    <select id="getByIds" resultType="MenuDO">
         select * from menu where id in
         <foreach collection="ids" open="(" close=")" item="id" separator=",">
             #{id}
@@ -60,7 +66,7 @@
     </select>
 
     <!--根据pid查询-->
-    <select id="listMenuByPid" resultType="MenuDO">
+    <select id="listByPid" resultType="MenuDO">
         select * from menu where pid = #{pid} and status != 0 order by idx asc
     </select>
 
@@ -72,6 +78,8 @@
          and t4.app_key=#{appKey} and t4.subgroup=#{subgroup}
          and t1.role_id=t2.id and t1.role_id=t3.role_id and t3.menu_id=t4.id
          and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
+         and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		 and (t1.expire_time &gt;= now() or t1.expire_time is null) 
          order by idx asc
     </select>
     
@@ -83,6 +91,8 @@
 	         where t1.user_id=#{userId} and t1.tenant=#{tenant} and t4.app_key=#{appKey}
 	         and t1.role_id=t2.id and t1.role_id=t3.role_id and t3.menu_id=t4.id
 	         and t1.status=1 and t2.status=1 and t3.status=1 and t4.status=1
+	         and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		 	 and (t1.expire_time &gt;= now() or t1.expire_time is null) 
 	         and t4.id in
 	        <foreach collection="menuIds" open="(" close=")" item="id" separator=",">
 	            #{id}

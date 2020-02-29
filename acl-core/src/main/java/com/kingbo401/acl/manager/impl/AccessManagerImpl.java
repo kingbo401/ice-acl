@@ -97,7 +97,7 @@ public class AccessManagerImpl implements AccessManager{
         Assert.hasText(roleKey, "roleKey 不能为空");
         Assert.hasText(appKey, "appKey 不能为空");
         Assert.hasText(tenant, "tenant 不能为空");
-        RoleDO roleDO = roleDAO.getRoleByKey(appKey, roleKey);
+        RoleDO roleDO = roleDAO.getByKey(appKey, roleKey);
         Assert.notNull(roleDO, "角色不存在");
         int count = userRoleRefDAO.checkUserRole(userId, tenant, roleDO.getId());
         return count > 0;

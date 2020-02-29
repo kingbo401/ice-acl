@@ -10,6 +10,7 @@ public class RoleQueryParam extends PageParam{
 	private String name;
 	private String subgroup;
 	private Integer status;
+	private boolean fuzzy;
 	
 	public String getAppKey() {
 		return appKey;
@@ -53,5 +54,11 @@ public class RoleQueryParam extends PageParam{
 	}
 	public void setRoleKey(String roleKey) {
 		this.roleKey = roleKey;
+	}
+	public boolean isFuzzy() {
+		return fuzzy;
+	}
+	public void setFuzzy(boolean fuzzy) {
+		this.fuzzy = fuzzy;
 	}
 }

@@ -25,6 +25,8 @@ CREATE TABLE `app` (
 CREATE TABLE `menu` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `app_key` varchar(64) NOT NULL COMMENT '应用appkey',
+  `menu_key` varchar(64) NOT NULL COMMENT '菜单key',
+  `target` varchar(64) NULL COMMENT 'url跳转方式',
   `name` varchar(64) NOT NULL COMMENT '名称',
   `name_en` varchar(64) NULL COMMENT '英文名',
   `subgroup` varchar(64) NOT NULL COMMENT '分组',
@@ -37,7 +39,7 @@ CREATE TABLE `menu` (
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  KEY `idx_appkey` (`app_key`)
+  UNIQUE KEY `uk_appkey_menukey_subgroup` (`app_key`,`menu_key`,`subgroup`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单表';
 -- ----------------------------
 --  Table structure for `menu_permission_ref`
@@ -252,35 +254,19 @@ CREATE TABLE `data_grant_record` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `app_key` varchar(128) NOT NULL COMMENT '授权应用key',
   `model_id` bigint(20) NOT NULL COMMENT '数据模型id',
-  `operation_id` bigint(20) NOT NULL COMMENT '操作id',
   `grant_target_id` varchar(128) NOT NULL COMMENT '授权目标id',
   `grant_target_type` tinyint(50) NOT NULL COMMENT '授权目标类型 1 用户 2角色 3权限组',
   `tenant` varchar(64) NOT NULL COMMENT '租户id',
+  `operation_codes` varchar(1024) NOT NULL COMMENT '操作列表,json',
+  `property_rules` varchar(15000) NOT NULL COMMENT '属性规则,json',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 删除 1正常',
   `effective_time` datetime DEFAULT NULL COMMENT '生效时间',
   `expire_time` datetime DEFAULT NULL COMMENT '失效时间',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  KEY `idx_grant` (`grant_target_id`,`grant_target_type`,`model_id`,`tenant`),
-  KEY `idx_model_operation_property` (`model_id`,`operation_id`) USING BTREE
+  KEY `idx_grant` (`model_id`,`tenant`,`grant_target_id`,`grant_target_type`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据权限授权表';
-
--- ----------------------------
---  Table structure for `data_grant_record_detail`
--- ----------------------------
-CREATE TABLE `data_grant_record_detail` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `data_grant_record_id` bigint(20) NOT NULL COMMENT '授权操作id',
-  `property_id` bigint(20) NOT NULL COMMENT '属性id',
-  `property_value` varchar(512) NOT NULL COMMENT '属性值',
-  `property_value_desc` varchar(128) DEFAULT NULL COMMENT '属性值描述',
-  `gmt_create` datetime NOT NULL COMMENT '创建时间',
-  `gmt_modified` datetime NOT NULL COMMENT '修改时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_idx` (`data_grant_record_id`,`property_id`),
-  KEY `idx_property` (`property_value`(20),`property_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='授权记录数据详情表';
 
 -- ----------------------------
 --  Table structure for `data_model`
@@ -323,6 +309,8 @@ CREATE TABLE `data_property` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `model_id` bigint(20) NOT NULL COMMENT '数据模型id',
   `code` varchar(128) NOT NULL DEFAULT '' COMMENT '编码，用于验权',
+  `data_type` varchar(64) NOT NULL DEFAULT '' COMMENT '数据类型',
+  `config` varchar(2048) NOT NULL DEFAULT '' COMMENT '字段配置',
   `name` varchar(64) NOT NULL COMMENT '名称',
   `name_en` varchar(64) NULL COMMENT '英文名',
   `description` varchar(512) DEFAULT NULL COMMENT '描述',

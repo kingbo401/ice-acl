@@ -8,15 +8,15 @@ import com.kingbo401.acl.model.entity.param.MenuPermissionRefQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface MenuPermissionRefManager {
-	boolean addMenuPermissionRef(MenuPermissionRefParam param);
+	boolean addRef(MenuPermissionRefParam param);
 
-    boolean updateMenuPermissionRef(MenuPermissionRefParam param);
+    boolean updateRef(MenuPermissionRefParam param);
     
-    boolean removeMenuPermissionRef(MenuPermissionRefParam param);
+    boolean removeRef(MenuPermissionRefParam param);
     
-    boolean freezeMenuPermissionRef(MenuPermissionRefParam param);
+    boolean freezeRef(MenuPermissionRefParam param);
     
-    boolean unfreezeMenuPermissionRef(MenuPermissionRefParam param);
+    boolean unfreezeRef(MenuPermissionRefParam param);
     
     List<PermissionDTO> listMenuPermission(MenuPermissionRefQueryParam param);
     

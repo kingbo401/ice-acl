@@ -11,7 +11,9 @@ public interface DataOperationDAO {
 
 	int update(DataOperationDO dataOperation);
 
-	DataOperationDO getOperationByCode(@Param("modelId") long modelId, @Param("code") String code);
+	DataOperationDO getByCode(@Param("modelId") long modelId, @Param("code") String code);
+	
+	DataOperationDO getByCode0(@Param("modelId") long modelId, @Param("code") String code);
 
-	List<DataOperationDO> listDataOperationByModelId(@Param("modelId") long modelId);
+	List<DataOperationDO> listByModelId(@Param("modelId") long modelId);
 }

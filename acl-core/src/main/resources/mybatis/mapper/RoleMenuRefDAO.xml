@@ -3,8 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.acl.dao.RoleMenuRefDAO">
-	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
-		keyProperty="id">
+	<insert id="batchCreate" parameterType="list">
 		insert into role_menu_ref (role_id, menu_id, status, gmt_create, gmt_modified)
 		values
 		<foreach collection="list" separator="," item="item">

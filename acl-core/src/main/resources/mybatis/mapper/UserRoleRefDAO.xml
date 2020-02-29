@@ -53,9 +53,9 @@
 		    and t2.id=#{roleId}
 		</if>
 		<if test="returnNotEffective == false">
-			and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
-			and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			and (t1.effective_time &lt;= now() or t1.effective_time is null)		
 		</if>
+		and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
 		and t2.status=1 and t1.status!=0
 	</sql>
 	
@@ -95,6 +95,7 @@
 	<select id = "checkUserRole" resultType="int">
 		select count(*) from user_role_ref 
 		where user_id=#{userId} and tenant=#{tenant} and role_id=#{roleId} and status!=0
+		and (effective_time &lt;= now() or effective_time is null)
 		and	(expire_time &gt;= now() or expire_time is null) 
 	</select>
 	
@@ -131,9 +132,9 @@
 			</if>
 		</if>
 		<if test="returnNotEffective == false">
-			and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
-			and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			and (t1.effective_time &lt;= now() or t1.effective_time is null)		
 		</if>
+		and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
 		and t2.status=1 and t1.status!=0
 		<if test = "orderField != null and orderField != ''">
 		    order by ${orderField} ${orderType}
@@ -166,9 +167,9 @@
 		    and t2.id=#{roleId}
 		</if>
 		<if test="returnNotEffective == false">
-			and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
 			and (t1.effective_time &lt;= now() or t1.effective_time is null)
 		</if>
+		and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
 		and t2.status=1 and t1.status!=0
 	</sql>
 	
@@ -198,6 +199,7 @@
 			 #{roleKey}
 		 </foreach>
 		 </if>
-        and	(t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+        and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
+        and (t1.effective_time &lt;= now() or t1.effective_time is null)
 	</select>
 </mapper> 

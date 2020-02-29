@@ -3,16 +3,14 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.RoleDAO">
-	<insert id="createRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
+	<insert id="create" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
 		insert into role (app_key,role_key,name,name_en,subgroup,level,description,tenant,
 		status,gmt_create, gmt_modified)
 		values (#{appKey},#{roleKey},#{name},#{nameEn},#{subgroup},#{level},#{description},#{tenant},
 		#{status},now(),now())
-		ON DUPLICATE KEY UPDATE status=#{status},name=#{name},name_en=#{nameEn},subgroup=#{subgroup},
-		level=#{level},description=#{description},tenant=#{tenant},gmt_modified = now()
 	</insert>
 	
-	<update id="updateRole" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
+	<update id="update" parameterType="RoleDO" useGeneratedKeys="true" keyProperty="id">
 		update role 
 		<set >
 			<if test="name != null and name != ''">
@@ -35,11 +33,15 @@
 		where id=#{id}
 	</update>
 	
-    <select id="getRoleByKey" resultType="RoleDO">
+    <select id="getByKey" resultType="RoleDO">
 		select * from role where app_key=#{appKey} and role_key=#{roleKey} and status != 0
 	</select>
 	
-	<select id="getRoleById" resultType="RoleDO">
+	<select id="getByKey0" resultType="RoleDO">
+		select * from role where app_key=#{appKey} and role_key=#{roleKey}
+	</select>
+	
+	<select id="getById" resultType="RoleDO">
 		select * from role where id=#{id} and status != 0
 	</select>
 	
@@ -61,7 +63,12 @@
 			and role_key = #{roleKey}
 		</if>
 		<if test="name != null and name != ''">
-			and name like  concat('%', #{name}, '%')
+			<if test="fuzzy == true">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="fuzzy == false">
+				and name = #{name}
+			</if>
 		</if>
 		<if test="status != null">
 			and status = #{status}
@@ -90,14 +97,14 @@
 		<include refid="queryRoleSubSql" />
 	</select>
 
-	<select id="getRoleByIds" resultType="RoleDO">
+	<select id="getByIds" resultType="RoleDO">
 		select * from role where status != 0 and id in
 		 <foreach collection="ids" open="(" close=")" separator="," item="id">
 			 #{id}
 		 </foreach>
 	</select>
 	
-	<select id="getRoleByKeys" resultType="RoleDO">
+	<select id="getByKeys" resultType="RoleDO">
 		select * from role where status != 0 and app_key=#{appKey} and role_key in
 		 <foreach collection="roleKeys" open="(" close=")" separator="," item="roleKey">
 			 #{roleKey}

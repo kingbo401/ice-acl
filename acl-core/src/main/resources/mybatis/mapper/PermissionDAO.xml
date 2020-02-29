@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.acl.dao.PermissionDAO">
-	<select id="getPermissionByIds" resultType="PermissionDO">
+	<select id="getByIds" resultType="PermissionDO">
 		select * from permission where status != 0 and id in
 		<foreach collection="ids" open="(" close=")" item="id"
 			separator=",">
@@ -11,7 +11,7 @@
 		</foreach>
 	</select>
 
-	<select id="getPermissionByKeys" resultType="PermissionDO">
+	<select id="getByKeys" resultType="PermissionDO">
 		select * from permission where status != 0 and app_key=#{appKey}
 		and permission_key in
 		<foreach collection="permissionKeys" open="(" close=")"
@@ -58,17 +58,13 @@
 		limit #{offset}, #{pageSize}
 	</select>
 
-	<insert id="create" parameterType="PermissionDO"
-		useGeneratedKeys="true" keyProperty="id">
+	<insert id="create" parameterType="PermissionDO" useGeneratedKeys="true" keyProperty="id">
 		insert into permission(permission_key,name,name_en,subgroup,app_key,description,gmt_modified,gmt_create,status)
 		values
 		(#{permissionKey},#{name},#{nameEn},#{subgroup},#{appKey},#{description},now(),now(),#{status})
-		ON DUPLICATE KEY UPDATE status=#{status},name=#{name},name_en=#{nameEn},subgroup=#{subgroup},
-		description=#{description},gmt_modified = now()
 	</insert>
 
-	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
-		keyProperty="id">
+	<insert id="batchCreate" parameterType="list">
 		insert into permission(permission_key,name,name_en,subgroup,app_key,description,gmt_modified,gmt_create,status)
 		values
 		<foreach collection="list" separator="," item="item">
@@ -115,7 +111,9 @@
 	<select id="getByKey" resultType="PermissionDO">
 		select * from permission where app_key = #{appKey} and permission_key=#{permissionKey} and status != 0 limit 1
 	</select>
-
+	<select id="getByKey0" resultType="PermissionDO">
+		select * from permission where app_key = #{appKey} and permission_key=#{permissionKey} limit 1
+	</select>
 	<select id="checkUserRolePermission" resultType="int">
 		select count(1) from
 		(
@@ -124,7 +122,8 @@
 			t2.permission_id=#{permissionId}
 			and t1.role_id=t2.role_id and t1.role_id = t3.id and 
 			t1.status=1 and t2.status=1 and t3.status=1
-			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) 
+			and (t1.effective_time &lt;= now() or t1.effective_time is null)
 			limit 1
 		) t0
 	</select>
@@ -135,7 +134,8 @@
 			select * from user_permission_ref
 			where user_id = #{userId} and tenant = #{tenant} 
 			and permission_id = #{permissionId} and status = 1
-			and (expire_time &gt;= now() or expire_time is null) and (effective_time &lt;= now() or effective_time is null)
+			and (expire_time &gt;= now() or expire_time is null) 
+			and (effective_time &lt;= now() or effective_time is null)
 			limit 1
 		) t0
 	</select>
@@ -149,7 +149,8 @@
 			and t1.status=1 and t2.status=1 and t3.status=1
 			and t1.user_id=#{userId} and t1.tenant = #{tenant} and
 			t2.permission_id = #{permissionId}
-			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) 
+			and (t1.effective_time &lt;= now() or t1.effective_time is null)
 			limit 1
 		) t0
 	</select>
@@ -163,7 +164,8 @@
 			and t1.role_id = t2.id and t2.id = t3.role_id and t3.group_id = t4.group_id
 			and t1.status = 1 and t2.status = 1 and t3.status = 1 and t4.status = 1
 			and t4.permission_id = #{permissionId}
-			and (t1.expire_time &gt;= now() or t1.expire_time is null) and (t1.effective_time &lt;= now() or t1.effective_time is null)
+			and (t1.expire_time &gt;= now() or t1.expire_time is null) 
+			and (t1.effective_time &lt;= now() or t1.effective_time is null)
 			limit 1
 		) t0
 	</select>

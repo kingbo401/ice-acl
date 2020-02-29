@@ -8,11 +8,11 @@ import com.kingbo401.acl.model.entity.param.UserPermissionRefQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface UserPermissionRefManager {
-    boolean addUserPermissionRef(UserPermissionRefParam param);
-    boolean updateUserPermissionRef(UserPermissionRefParam param);
-    boolean removeUserPermissionRef(UserPermissionRefParam param);
-    boolean freezeUserPermissionRef(UserPermissionRefParam param);
-    boolean unfreezeUserPermissionRef(UserPermissionRefParam param);
+    boolean addRef(UserPermissionRefParam param);
+    boolean updateRef(UserPermissionRefParam param);
+    boolean removeRef(UserPermissionRefParam param);
+    boolean freezeRef(UserPermissionRefParam param);
+    boolean unfreezeRef(UserPermissionRefParam param);
     List<UserPermissionRefDTO> listUserPermissionRef(UserPermissionRefQueryParam param);
     PageVO<UserPermissionRefDTO> pageUserPermissionRef(UserPermissionRefQueryParam param);
     boolean hasUserUse(long permissionId);

@@ -2,10 +2,10 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
+import com.kingbo401.acl.common.model.MenuTreeNode;
 import com.kingbo401.acl.model.dto.MenuDTO;
 import com.kingbo401.acl.model.entity.param.GetUserMenuParam;
 import com.kingbo401.acl.model.entity.param.RoleMenuQueryParam;
-import com.kingbo401.iceacl.common.model.MenuTreeNode;
 
 public interface MenuManager {
 	List<MenuTreeNode> getAppMenuTree(String appKey, String subgroup);
@@ -14,15 +14,17 @@ public interface MenuManager {
 	
 	List<MenuTreeNode> getRoleMenuTree(RoleMenuQueryParam param);
 	
-	MenuDTO createMenu(MenuDTO menu);
+	MenuDTO create(MenuDTO menu);
 	
-	MenuDTO updateMenu(MenuDTO menu);
+	MenuDTO update(MenuDTO menu);
 
-	MenuDTO getMenu(String appKey, Long id);
+	MenuDTO getById(String appKey, Long id);
 	
-	boolean removeMenu(MenuDTO menu);
+	MenuDTO getByKey(String appKey, String menuKey, String subgroup);
 	
-	boolean freezeMenu(MenuDTO menu);
+	boolean remove(MenuDTO menu);
 	
-	boolean unfreezeMenu(MenuDTO menu);
+	boolean freeze(MenuDTO menu);
+	
+	boolean unfreeze(MenuDTO menu);
 }

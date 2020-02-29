@@ -10,16 +10,18 @@ import com.kingbo401.acl.model.entity.param.GetUserMenuParam;
 
 public interface MenuDAO {
 	List<MenuDO> listMenu(@Param("appKey")String appKey, @Param("subgroup")String subgroup);
-
-	int createMenu(MenuDO menu);
-
-	int updateMenu(MenuDO menu);
-
-	MenuDO getMenuById(@Param("id")Long id);
 	
-	List<MenuDO> getMenuByIds(@Param("ids") List<Long> ids);
+	int create(MenuDO menu);
 
-	List<MenuDO> listMenuByPid(@Param("menuPid") Long menuPid);
+	int update(MenuDO menu);
+	
+	MenuDO getByKey0(@Param("appKey")String appKey, @Param("menuKey")String menuKey, @Param("subgroup")String subgroup);
+	
+	MenuDO getById(@Param("id")Long id);
+	
+	List<MenuDO> getByIds(@Param("ids") List<Long> ids);
+
+	List<MenuDO> listByPid(@Param("menuPid") Long menuPid);
 	
 	List<MenuDO> listUserMenu(GetUserMenuParam param);
 	

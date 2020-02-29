@@ -50,9 +50,9 @@
 		    and t2.id = #{groupId}
 		</if>
 		<if test="returnNotEffective == false">
-			and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
 			and (t1.effective_time &lt;= now() or t1.effective_time is null)
 		</if>
+		and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
 		and t2.status=1 and t1.status!=0
 	</sql>
 

@@ -8,13 +8,14 @@ import com.kingbo401.acl.model.entity.RoleDO;
 import com.kingbo401.acl.model.entity.param.RoleQueryParam;
 
 public interface RoleDAO {
-	RoleDO getRoleByKey(@Param("appKey")String appKey, @Param("roleKey")String roleKey);
-	RoleDO getRoleById(@Param("id")long id);
-	int createRole(RoleDO role);
-	int updateRole(RoleDO role);
+	RoleDO getByKey(@Param("appKey")String appKey, @Param("roleKey")String roleKey);
+	RoleDO getByKey0(@Param("appKey")String appKey, @Param("roleKey")String roleKey);
+	RoleDO getById(@Param("id")long id);
+	int create(RoleDO role);
+	int update(RoleDO role);
 	List<RoleDO> listRole(RoleQueryParam param);
 	List<RoleDO> pageRole(RoleQueryParam param);
 	long countRole(RoleQueryParam param);
-	List<RoleDO> getRoleByIds(@Param("ids") List<Long> ids);
-	List<RoleDO> getRoleByKeys(@Param("appKey")String appKey, @Param("roleKeys")List<String> roleKey);
+	List<RoleDO> getByIds(@Param("ids") List<Long> ids);
+	List<RoleDO> getByKeys(@Param("appKey")String appKey, @Param("roleKeys")List<String> roleKey);
 }

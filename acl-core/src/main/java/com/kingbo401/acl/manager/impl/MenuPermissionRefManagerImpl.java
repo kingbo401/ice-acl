@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.MenuPermissionRefDAO;
 import com.kingbo401.acl.manager.MenuManager;
 import com.kingbo401.acl.manager.MenuPermissionRefManager;
@@ -20,7 +21,6 @@ import com.kingbo401.acl.model.entity.param.MenuPermissionRefQueryParam;
 import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
@@ -32,7 +32,7 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 	private MenuPermissionRefDAO menuPermissionRefDAO;
 	
 	@Override
-	public boolean addMenuPermissionRef(MenuPermissionRefParam param) {
+	public boolean addRef(MenuPermissionRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		Long menuId = param.getMenuId();
 		Assert.notNull(menuId, "menuId不能为空");
@@ -52,7 +52,7 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 	}
 
 	@Override
-	public boolean updateMenuPermissionRef(MenuPermissionRefParam param) {
+	public boolean updateRef(MenuPermissionRefParam param) {
 		checkMenuPermissionIdRefParam(param);
 		List<Long> permissionIds = param.getPermissionIds();
 		Assert.notEmpty(permissionIds, "permissionIds不能为空");
@@ -81,21 +81,21 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 	}
 
 	@Override
-	public boolean removeMenuPermissionRef(MenuPermissionRefParam param) {
+	public boolean removeRef(MenuPermissionRefParam param) {
 		checkMenuPermissionIdRefParam(param);
 		menuPermissionRefDAO.updateRefsStatus(param.getMenuId(), param.getPermissionIds(), AclConstant.STATUS_REMOVE);
 		return true;
 	}
 
 	@Override
-	public boolean freezeMenuPermissionRef(MenuPermissionRefParam param) {
+	public boolean freezeRef(MenuPermissionRefParam param) {
 		checkMenuPermissionIdRefParam(param);
 		menuPermissionRefDAO.updateRefsStatus(param.getMenuId(), param.getPermissionIds(), AclConstant.STATUS_FREEZE);
 		return true;
 	}
 
 	@Override
-	public boolean unfreezeMenuPermissionRef(MenuPermissionRefParam param) {
+	public boolean unfreezeRef(MenuPermissionRefParam param) {
 		checkMenuPermissionIdRefParam(param);
 		menuPermissionRefDAO.updateRefsStatus(param.getMenuId(), param.getPermissionIds(), AclConstant.STATUS_NORMAL);
 		return true;
@@ -108,7 +108,7 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Assert.notNull(menuId, "menuId不能为空");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
-		MenuDTO menuDTO = menuManager.getMenu(appKey, menuId);
+		MenuDTO menuDTO = menuManager.getById(appKey, menuId);
 		Assert.notNull(menuDTO, "菜单不存在");
 		List<PermissionDO> permissionDOs = menuPermissionRefDAO.listPermission(param);
 		return BizUtil.buildPermissionDTOs(permissionDOs);
@@ -121,7 +121,7 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Assert.notNull(menuId, "menuId不能为空");
 		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
-		MenuDTO menuDTO = menuManager.getMenu(appKey, menuId);
+		MenuDTO menuDTO = menuManager.getById(appKey, menuId);
 		Assert.notNull(menuDTO, "菜单不存在");
 		PageVO<PermissionDTO> pageVO = new PageVO<PermissionDTO>(param);
 		if(param.isReturnTotalCount()){
@@ -142,11 +142,11 @@ public class MenuPermissionRefManagerImpl implements MenuPermissionRefManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		Long menuId = param.getMenuId();
 		Assert.notNull(menuId, "menuId不能为空");
-		MenuDTO menuDTO = menuManager.getMenu(appKey, menuId);
+		MenuDTO menuDTO = menuManager.getById(appKey, menuId);
 		Assert.notNull(menuDTO, "菜单不存在");
 		List<Long> permissionIds = param.getPermissionIds();
 		if(CollectionUtil.isNotEmpty(permissionIds)){
-			List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(permissionIds);
+			List<PermissionDTO> permissionDTOs = permissionManager.getByIds(permissionIds);
 			Assert.notEmpty(permissionDTOs, "权限不存在");
 			for(PermissionDTO permissionDTO : permissionDTOs){
 				Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appkey不匹配:" + permissionDTO.getId());

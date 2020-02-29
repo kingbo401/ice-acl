@@ -8,15 +8,15 @@ import com.kingbo401.acl.model.entity.param.PermissionGroupRefQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface PermissionGroupRefManager {
-	boolean addPermissionGroupRef(PermissionGroupRefParam param);
+	boolean addRef(PermissionGroupRefParam param);
 	
-    boolean updatePermissionGroupRef(PermissionGroupRefParam param);
+    boolean updateRef(PermissionGroupRefParam param);
 
-    boolean removePermissionGroupRef(PermissionGroupRefParam param);
+    boolean removeRef(PermissionGroupRefParam param);
     
-    boolean freezePermissionGroupRef(PermissionGroupRefParam param);
+    boolean freezeRef(PermissionGroupRefParam param);
     
-    boolean unfreezePermissionGroupRef(PermissionGroupRefParam param);
+    boolean unfreezeRef(PermissionGroupRefParam param);
 
     PageVO<PermissionDTO> pagePermission(PermissionGroupRefQueryParam param);
     

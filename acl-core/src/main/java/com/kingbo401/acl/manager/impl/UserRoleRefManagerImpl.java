@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.UserRoleRefDAO;
 import com.kingbo401.acl.manager.RoleManager;
 import com.kingbo401.acl.manager.UserRoleRefManager;
@@ -27,7 +28,6 @@ import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.commons.util.StringUtil;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class UserRoleRefManagerImpl implements UserRoleRefManager{
@@ -108,7 +108,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		if(CollectionUtil.isEmpty(roleIds)){
 			return;
 		}
-		List<RoleDTO> roleDTOs = roleManager.getRoleByIds(appKey, roleIds);
+		List<RoleDTO> roleDTOs = roleManager.getByIds(appKey, roleIds);
 		Map<Long, RoleDTO> roleIdMap = roleDTOs.stream().collect(Collectors.toMap(RoleDTO::getId, a -> a, (k1, k2) -> k1));
 		for(Long roleId : roleIds){
 			RoleDTO roleDTO = roleIdMap.get(roleId);
@@ -120,7 +120,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 	
 	@Override
-	public boolean addUserRoleRef(UserRoleRefParam param) {
+	public boolean addRef(UserRoleRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -150,7 +150,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public boolean updateUserRoleRef(UserRoleRefParam param) {
+	public boolean updateRef(UserRoleRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -193,7 +193,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public boolean removeUserRoleRef(UserRoleRefParam param) {
+	public boolean removeRef(UserRoleRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -208,7 +208,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public boolean freezeUserRoleRef(UserRoleRefParam param) {
+	public boolean freezeRef(UserRoleRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -223,7 +223,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 	}
 
 	@Override
-	public boolean unfreezeUserRoleRef(UserRoleRefParam param) {
+	public boolean unfreezeRef(UserRoleRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();

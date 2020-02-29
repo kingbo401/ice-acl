@@ -1,6 +1,6 @@
 package com.kingbo401.acl.model.entity;
 
-import com.kingbo401.iceacl.common.model.BaseDO;
+import com.kingbo401.acl.common.model.BaseDO;
 
 public class PermissionGroupRefDO extends BaseDO{
 	private Long groupId;

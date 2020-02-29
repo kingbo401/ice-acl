@@ -53,7 +53,6 @@
 	<insert id="createApp" keyProperty="id" useGeneratedKeys="true" parameterType="AppDO">
 		insert into app(name,name_en,app_key,app_secret,status,description,gmt_create,gmt_modified)
 		values(#{name},#{nameEn},#{appKey},#{appSecret},#{status},#{description},now(),now())
-		ON DUPLICATE KEY update name=#{name},name_en=#{nameEn},app_secret=#{appSecret},status=#{status},gmt_modified=now(),description=#{description}
 	</insert>
 
 	<update id="updateApp" parameterType="AppDO">

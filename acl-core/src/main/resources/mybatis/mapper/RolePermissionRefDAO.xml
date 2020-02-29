@@ -3,8 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.acl.dao.RolePermissionRefDAO">
-	<insert id="batchCreate" parameterType="list" useGeneratedKeys="true"
-		keyProperty="id">
+	<insert id="batchCreate" parameterType="list">
 		insert into role_permission_ref (role_id,permission_id, status,
 		gmt_create, gmt_modified)
 		values

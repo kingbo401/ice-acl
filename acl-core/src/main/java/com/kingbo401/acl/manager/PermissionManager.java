@@ -7,27 +7,27 @@ import com.kingbo401.acl.model.entity.param.PermissonQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface PermissionManager {
-	PermissionDTO createPermission(PermissionDTO permissionDTO);
+	PermissionDTO create(PermissionDTO permissionDTO);
 	
-	PermissionDTO updatePermission(PermissionDTO permissionDTO);
+	PermissionDTO update(PermissionDTO permissionDTO);
 
-	int createPermissions(String appKey, List<PermissionDTO> permissions);
+	int batchCreate(String appKey, List<PermissionDTO> permissions);
 
-	boolean removePermission(PermissionDTO permissionDTO);
+	boolean remove(PermissionDTO permissionDTO);
 
-	boolean unfreezePermission(PermissionDTO permissionDTO);
+	boolean unfreeze(PermissionDTO permissionDTO);
 
-	boolean freezePermission(PermissionDTO permissionDTO);
+	boolean freeze(PermissionDTO permissionDTO);
 
-	PermissionDTO getPermissionByKey(String appKey, String permissionKey);
+	PermissionDTO getByKey(String appKey, String permissionKey);
 	
-	PermissionDTO getPermissionById(String appKey, Long permissionId);
+	PermissionDTO getById(String appKey, Long permissionId);
 	
-	List<PermissionDTO> getPermissionByKeys(String appKey, List<String> permissionKeys);
+	List<PermissionDTO> getByKeys(String appKey, List<String> permissionKeys);
 	
-	List<PermissionDTO> getPermissionByIds(String appKey, List<Long> permissionIds);
+	List<PermissionDTO> getByIds(String appKey, List<Long> permissionIds);
 	
-	List<PermissionDTO> getPermissionByIds(List<Long> permissionIds);
+	List<PermissionDTO> getByIds(List<Long> permissionIds);
 
 	List<PermissionDTO> listPermission(PermissonQueryParam param);
 	

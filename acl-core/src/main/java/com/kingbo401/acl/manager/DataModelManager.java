@@ -7,21 +7,21 @@ import com.kingbo401.acl.model.entity.param.DataModelQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface DataModelManager {
-	DataModelDTO createDataModel(DataModelDTO dataModel);
+	DataModelDTO create(DataModelDTO dataModel);
 	
-	DataModelDTO updateDataModel(DataModelDTO dataModel);
+	DataModelDTO update(DataModelDTO dataModel);
 	
-	boolean removeDataModel(DataModelDTO dataModel);
+	boolean remove(DataModelDTO dataModel);
 	
-	boolean freezeDataModel(DataModelDTO dataModel);
+	boolean freeze(DataModelDTO dataModel);
 	
-	boolean unfreezeDataModel(DataModelDTO dataModel);
+	boolean unfreeze(DataModelDTO dataModel);
 	
-	DataModelDTO getDataModel(Long id);
+	DataModelDTO getById(Long id);
 	
-	DataModelDTO getDataModel(String modelCode);
+	DataModelDTO getByCode(String modelCode);
 	
-	DataModelDTO getDataModel(String appKey, String modelCode);
+	DataModelDTO getByCode(String appKey, String modelCode);
 	
 	List<DataModelDTO> listDataModel(DataModelQueryParam dataModelQueryParam);
 	

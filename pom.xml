@@ -36,7 +36,7 @@
 		<module>acl-core</module>
 		<module>acl-web</module>
 	</modules>
-
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -68,6 +68,11 @@
 			    <groupId>tk.mybatis</groupId>
 			    <artifactId>mapper-spring-boot-starter</artifactId>
 			    <version>2.1.5</version>
+			</dependency>
+			<dependency>
+			    <groupId>com.alibaba</groupId>
+			    <artifactId>fastjson</artifactId>
+			    <version>1.2.62</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

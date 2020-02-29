@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.UserPermissionGroupRefDAO;
 import com.kingbo401.acl.manager.PermissionGroupManager;
 import com.kingbo401.acl.manager.UserPermissionGroupRefManager;
@@ -23,7 +24,6 @@ import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.commons.util.StringUtil;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRefManager{
@@ -33,7 +33,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	private PermissionGroupManager permissionGroupManager;
 	
 	@Override
-	public boolean addUserPermissionGroupRef(UserPermissionGroupRefParam param) {
+	public boolean addRef(UserPermissionGroupRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -63,7 +63,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	}
 
 	@Override
-	public boolean updateUserPermissionGroupRef(UserPermissionGroupRefParam param) {
+	public boolean updateRef(UserPermissionGroupRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -106,7 +106,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	}
 
 	@Override
-	public boolean removeUserPermissionGroupRef(UserPermissionGroupRefParam param) {
+	public boolean removeRef(UserPermissionGroupRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -121,7 +121,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	}
 
 	@Override
-	public boolean freezeUserPermissionGroupRef(UserPermissionGroupRefParam param) {
+	public boolean freezeRef(UserPermissionGroupRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -136,7 +136,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	}
 
 	@Override
-	public boolean unfreezeUserPermissionGroupRef(UserPermissionGroupRefParam param) {
+	public boolean unfreezeRef(UserPermissionGroupRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -153,7 +153,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 	@Override
 	public boolean removeRefsByGroupId(String appKey, long groupId) {
 		Assert.hasText(appKey, "appKey不能为空");
-		PermissionGroupDTO permissionGroupDTO = permissionGroupManager.getPermissionGroupById(groupId);
+		PermissionGroupDTO permissionGroupDTO = permissionGroupManager.getById(groupId);
 		Assert.notNull(permissionGroupDTO, "权限组不存在");
 		Assert.isTrue(appKey.equals(permissionGroupDTO.getAppKey()), "appKey权限组不匹配");
 		userPermissionGroupRefDAO.removeRefsByGroupId(groupId);
@@ -200,7 +200,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		if(CollectionUtil.isEmpty(groupIds)){
 			return;
 		}
-		List<PermissionGroupDTO> permissionGroupDTOs = permissionGroupManager.getPermissionGroupByIds(appKey, groupIds);
+		List<PermissionGroupDTO> permissionGroupDTOs = permissionGroupManager.getByIds(appKey, groupIds);
 		Assert.notEmpty(permissionGroupDTOs, "权限组不存在");
 		Map<Long, PermissionGroupDTO> permissionGroupMap = permissionGroupDTOs.stream().collect(Collectors.toMap(PermissionGroupDTO::getId, a -> a, (k1, k2) -> k1));
 		for(Long groupId : groupIds){

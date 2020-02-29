@@ -1,13 +1,13 @@
 package com.kingbo401.acl.model.entity;
 
-import com.kingbo401.iceacl.common.model.BaseDO;
+import com.kingbo401.acl.common.model.BaseDO;
 
 public class PermissionDO extends BaseDO{
 	private String appKey;
 	private String permissionKey;
 	private String subgroup;
 	private String name;
-	private String enName;
+	private String nameEn;
 	private String description;
 	private Integer status;
 	public String getAppKey() {
@@ -34,11 +34,11 @@ public class PermissionDO extends BaseDO{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getEnName() {
-		return enName;
+	public String getNameEn() {
+		return nameEn;
 	}
-	public void setEnName(String enName) {
-		this.enName = enName;
+	public void setNameEn(String nameEn) {
+		this.nameEn = nameEn;
 	}
 	public String getDescription() {
 		return description;

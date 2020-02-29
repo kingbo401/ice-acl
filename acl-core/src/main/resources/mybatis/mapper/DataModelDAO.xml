@@ -3,17 +3,22 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kingbo401.acl.dao.DataModelDAO">
-	<select id="getModelByCode" resultType="DataModelDO">
+	<select id="getByCode" resultType="DataModelDO">
 		select * from data_model 
 		where code = #{code} and status != 0 
 	</select>
 	
-	<select id="getModelById" resultType="DataModelDO">
+	<select id="getByCode0" resultType="DataModelDO">
+		select * from data_model 
+		where code = #{code}
+	</select>
+	
+	<select id="getById" resultType="DataModelDO">
 		select * from data_model
 		where id = #{id} and status != 0 
 	</select>
 
-	<select id="getModelsByIds" resultType="DataModelDO">
+	<select id="getByIds" resultType="DataModelDO">
 		select * from data_model
 		where status = 1 and id in
 		<foreach item="modelId" collection="ids" open="(" separator=","
@@ -39,7 +44,7 @@
 		</if>
 	</sql>
 	
-	<select id="listDataModel" resultType="DataModelDO" parameterType="DataModelQueryParam">
+	<select id="listModel" resultType="DataModelDO" parameterType="DataModelQueryParam">
 		select * from data_model
 		<include refid="queryModelSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -47,7 +52,7 @@
 		</if>
 	</select>
 
-	<select id="pageDataModel" resultType="DataModelDO" parameterType="DataModelQueryParam">
+	<select id="pageModel" resultType="DataModelDO" parameterType="DataModelQueryParam">
 		select * from data_model 
 		<include refid="queryModelSubSql" />
 		<if test = "orderField != null and orderField != ''">
@@ -56,7 +61,7 @@
 		limit #{offset},#{pageSize}
 	</select>
 
-	<select id="countDataModel" resultType="long" parameterType="DataModelQueryParam">
+	<select id="countModel" resultType="long" parameterType="DataModelQueryParam">
 		select count(1) from data_model
 		<include refid="queryModelSubSql" />
 	</select>
@@ -67,8 +72,6 @@
 		(app_key, code, name, name_en, description, status, gmt_create, gmt_modified)
 		values (#{appKey}, #{code}, #{name}, #{nameEn}, #{description}, 
 		#{status}, now(), now())
-		ON DUPLICATE KEY update status=#{status},name=#{name},name_en=#{nameEn},
-		description=#{description},gmt_modified = now()
 	</insert>
 
 	<update id="update" parameterType="DataModelDO">

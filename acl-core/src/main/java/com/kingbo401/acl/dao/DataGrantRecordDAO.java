@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.kingbo401.acl.model.entity.DataGrantRecordDO;
-import com.kingbo401.acl.model.entity.param.DataGrantPropertyValueParam;
 import com.kingbo401.acl.model.entity.param.DataGrantRecordParam;
 import com.kingbo401.acl.model.entity.param.DataGrantRecordQueryParam;
 
@@ -29,13 +28,4 @@ public interface DataGrantRecordDAO {
 	List<DataGrantRecordDO> pageDataGrantRecord(DataGrantRecordQueryParam param);
 	
 	long countDataGrantRecord(DataGrantRecordQueryParam param);
-	
-	List<Long> listIdByPropertyValues(DataGrantPropertyValueParam param);
-	
-	List<Long> pageIdByPropertyValues(DataGrantPropertyValueParam param);
-	
-	long countIdByPropertyValues(DataGrantPropertyValueParam param);
-	
-	DataGrantRecordDO getOneDataGrantRecord(@Param("modelId")Long modelId, @Param("operationId")Long operationId, @Param("propertyId")Long propertyId);
-
 }

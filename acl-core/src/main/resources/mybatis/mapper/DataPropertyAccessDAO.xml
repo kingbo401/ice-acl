@@ -21,17 +21,6 @@
 		</if>
 	</select>
 
-	<insert id="create" parameterType="DataPropertyAccessDO">
-		insert into data_property_access (app_key,model_id, property_id,
-		grant_target_id, grant_target_type, tenant,
-		access_type, status, gmt_create, gmt_modified)
-		values (#{appKey},#{modelId}, #{propertyId}, #{grantTargetId}, #{grantTargetType},
-		#{tenant},
-		#{accessType}, #{status}, now(), now())
-		ON DUPLICATE KEY update
-		status=#{status},access_type=#{accessType},gmt_modified = now()
-	</insert>
-
 	<insert id="batchCreate" parameterType="DataPropertyAccessDO">
 		insert into data_property_access (app_key, model_id, property_id,
 		grant_target_id, grant_target_type, tenant
@@ -46,7 +35,7 @@
 		status=values(status),access_type=values(accessType),gmt_modified = now()
 	</insert>
 
-	<update id="updateRefsStatus" parameterType="DataPropertyAccessParam">
+	<update id="updateStatus" parameterType="DataPropertyAccessParam">
 		update data_property_access set status = #{status}, gmt_modified = now()
 		where app_key=#{appKey} and grant_target_id = #{grantTargetId} and grant_target_type = #{grantTargetType} and tenant = #{tenant}
 		and model_id = #{modelId} 

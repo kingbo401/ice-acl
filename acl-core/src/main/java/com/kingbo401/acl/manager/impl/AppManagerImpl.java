@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.AppDAO;
 import com.kingbo401.acl.manager.AppManager;
 import com.kingbo401.acl.model.dto.AppDTO;
@@ -18,7 +19,6 @@ import com.kingbo401.acl.model.entity.AppDO;
 import com.kingbo401.acl.model.entity.param.AppQueryParam;
 import com.kingbo401.commons.encrypt.SecurityUtil;
 import com.kingbo401.commons.model.PageVO;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class AppManagerImpl implements AppManager{
@@ -26,7 +26,7 @@ public class AppManagerImpl implements AppManager{
 	private AppDAO appDao;
 	
 	@Override
-	public AppDTO getAppByKey(String appKey) {
+	public AppDTO getByKey(String appKey) {
 		Assert.hasText(appKey, "appKey不能为空");
 		AppDO appDO = appDao.getByKey(appKey);
 		if(appDO != null){
@@ -36,7 +36,7 @@ public class AppManagerImpl implements AppManager{
 	}
 	
 	@Override
-	public AppDTO getAppById(Long appId) {
+	public AppDTO getById(Long appId) {
 		Assert.notNull(appId, "appId不能为空");
 		AppDO appDO = appDao.getById(appId);
 		if(appDO != null){
@@ -46,7 +46,7 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public String getAppSecret(String appKey) {
+	public String getSecret(String appKey) {
 		Assert.hasText(appKey, "appKey不能为空");
 		AppDO appDO = appDao.getByKey(appKey);
 		if(appDO == null){
@@ -70,7 +70,7 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public AppDTO createApp(AppDTO appDTO) {
+	public AppDTO create(AppDTO appDTO) {
 		Assert.notNull(appDTO, "参数不能为空");
 		String appName = appDTO.getName();
 		String description = appDTO.getDescription();
@@ -89,7 +89,7 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public boolean updateApp(AppDTO appDTO) {
+	public boolean update(AppDTO appDTO) {
 		Assert.notNull(appDTO, "参数不能为空");
 		Long appId = appDTO.getId();
 		String appKey = appDTO.getAppKey();
@@ -111,7 +111,7 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public boolean freezeApp(AppDTO appDTO) {
+	public boolean freeze(AppDTO appDTO) {
 		String appKey = appDTO.getAppKey();
 		AppDO appDO = appDao.getByKey(appKey);
 		Assert.notNull(appDO, "应用不存在");
@@ -121,7 +121,7 @@ public class AppManagerImpl implements AppManager{
 	}
 
 	@Override
-	public boolean unfreezeApp(AppDTO appDTO) {
+	public boolean unfreeze(AppDTO appDTO) {
 		String appKey = appDTO.getAppKey();
 		AppDO appDO = appDao.getByKey(appKey);
 		Assert.notNull(appDO, "应用不存在");

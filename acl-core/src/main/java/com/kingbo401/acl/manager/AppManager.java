@@ -8,21 +8,21 @@ import com.kingbo401.acl.model.entity.param.AppQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface AppManager {
-	AppDTO getAppByKey(String appKey);
+	AppDTO getByKey(String appKey);
 	
-	AppDTO getAppById(Long appId);
+	AppDTO getById(Long appId);
 	
 	Map<String, AppDTO> getAppMap(List<String> appKeys);
 	
-	String getAppSecret(String appKey);
+	String getSecret(String appKey);
 
-	AppDTO createApp(AppDTO appDTO);
+	AppDTO create(AppDTO appDTO);
 
-	boolean updateApp(AppDTO appDTO);
+	boolean update(AppDTO appDTO);
 
-	boolean freezeApp(AppDTO appDTO);
+	boolean freeze(AppDTO appDTO);
 
-	boolean unfreezeApp(AppDTO appDTO);
+	boolean unfreeze(AppDTO appDTO);
 
 	List<AppDTO> listApp(AppQueryParam param);
 

@@ -2,15 +2,16 @@ package com.kingbo401.acl.model.entity;
 
 import java.util.Date;
 
-import com.kingbo401.iceacl.common.model.BaseDO;
+import com.kingbo401.acl.common.model.BaseDO;
 
 public class DataGrantRecordDO extends BaseDO{
 	private String appKey;
 	private Long modelId;
-	private Long operationId;
 	private String grantTargetId;
 	private Integer grantTargetType;
 	private String tenant;
+	private String operationCodes;
+	private String propertyRules;
 	private Integer status;
 	private Date effectiveTime;
 	private Date expireTime;
@@ -26,12 +27,6 @@ public class DataGrantRecordDO extends BaseDO{
 	}
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
-	}
-	public Long getOperationId() {
-		return operationId;
-	}
-	public void setOperationId(Long operationId) {
-		this.operationId = operationId;
 	}
 	public String getGrantTargetId() {
 		return grantTargetId;
@@ -51,6 +46,18 @@ public class DataGrantRecordDO extends BaseDO{
 	}
 	public void setTenant(String tenant) {
 		this.tenant = tenant;
+	}
+	public String getOperationCodes() {
+		return operationCodes;
+	}
+	public void setOperationCodes(String operationCodes) {
+		this.operationCodes = operationCodes;
+	}
+	public String getPropertyRules() {
+		return propertyRules;
+	}
+	public void setPropertyRules(String propertyRules) {
+		this.propertyRules = propertyRules;
 	}
 	public Integer getStatus() {
 		return status;

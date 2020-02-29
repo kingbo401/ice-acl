@@ -9,15 +9,15 @@ import com.kingbo401.commons.model.PageVO;
 
 public interface RolePermissionRefManager {
 	
-    boolean addRolePermissionRef(RolePermissionIdRefParam param);
+    boolean addRef(RolePermissionIdRefParam param);
 
-    boolean updateRolePermissionRef(RolePermissionIdRefParam param);
+    boolean updateRef(RolePermissionIdRefParam param);
     
-    boolean removeRolePermissionRef(RolePermissionIdRefParam param);
+    boolean removeRef(RolePermissionIdRefParam param);
     
-    boolean freezeRolePermissionRef(RolePermissionIdRefParam param);
+    boolean freezeRef(RolePermissionIdRefParam param);
     
-    boolean unfreezeRolePermissionRef(RolePermissionIdRefParam param);
+    boolean unfreezeRef(RolePermissionIdRefParam param);
     
     List<PermissionDTO> listRolePermission(RolePermissionRefQueryParam param);
     

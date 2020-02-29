@@ -3,12 +3,17 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
 <mapper namespace="com.kingbo401.acl.dao.DataOperationDAO">
-    <select id="getOperationByCode" resultType="DataOperationDO">
+    <select id="getByCode" resultType="DataOperationDO">
         select * from data_operation 
         where model_id = #{modelId} and code = #{code} and status != 0 
     </select>
+    
+    <select id="getByCode0" resultType="DataOperationDO">
+        select * from data_operation 
+        where model_id = #{modelId} and code = #{code}
+    </select>
 
-    <select id="listDataOperationByModelId" resultType="DataOperationDO">
+    <select id="listByModelId" resultType="DataOperationDO">
         select * from data_operation
         where  model_id = #{modelId} and status != 0 order by id desc
     </select>
@@ -16,8 +21,6 @@
     <insert id="create" parameterType="DataOperationDO" useGeneratedKeys="true" keyProperty="id">
         insert into data_operation (model_id, code, name, name_en, description, status,gmt_create, gmt_modified)
         values (#{modelId}, #{code}, #{name}, #{nameEn}, #{description}, #{status}, now(), now())
-        ON DUPLICATE KEY update status=#{status},name=#{name},name_en=#{nameEn},
-		description=#{description},gmt_modified = now()
     </insert>
 
     <update id="update" parameterType="DataOperationDO" >

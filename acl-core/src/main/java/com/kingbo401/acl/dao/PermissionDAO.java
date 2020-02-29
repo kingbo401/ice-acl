@@ -14,14 +14,16 @@ public interface PermissionDAO {
 
 	int update(PermissionDO permission);
 
-	List<PermissionDO> getPermissionByIds(@Param("ids") List<Long> ids);
+	List<PermissionDO> getByIds(@Param("ids") List<Long> ids);
 
-	List<PermissionDO> getPermissionByKeys(@Param("appKey") String appKey,
+	List<PermissionDO> getByKeys(@Param("appKey") String appKey,
 			@Param("permissionKeys") List<String> permissionKeys);
 
 	PermissionDO getById(@Param("id") Long id);
 	
 	PermissionDO getByKey(@Param("appKey") String appKey, @Param("permissionKey") String permissionKey);
+	
+	PermissionDO getByKey0(@Param("appKey") String appKey, @Param("permissionKey") String permissionKey);
 
 	List<PermissionDO> listPermission(PermissonQueryParam param);
 

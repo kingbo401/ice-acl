@@ -20,16 +20,16 @@
     <select id="getByCode" resultType="DataPropertyDO">
         select * from data_property where status != 0 and model_id = #{modelId} and code = #{code}
     </select>
-	
+	<select id="getByCode0" resultType="DataPropertyDO">
+        select * from data_property where model_id = #{modelId} and code = #{code}
+    </select>
     <select id="listDataProperty" resultType="DataPropertyDO" parameterType="DataPropertyQueryParam" >
         select * from data_property where model_id = #{modelId} and status != 0 order by gmt_modified desc
     </select>
 
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="DataPropertyDO">
-        insert into data_property (model_id, code, name ,name_en, description,default_access_type, status, gmt_create, gmt_modified)
-        values (#{modelId}, #{code}, #{name}, #{nameEn}, #{description},#{defaultAccessType}, #{status}, now(), now())
-        ON DUPLICATE KEY UPDATE status=#{status},name=#{name},name_en=#{nameEn},
-		description=#{description},gmt_modified = now()
+        insert into data_property (model_id, code, data_type, config, name ,name_en, description,default_access_type, status, gmt_create, gmt_modified)
+        values (#{modelId}, #{code}, #{dataType}, #{config}, #{name}, #{nameEn}, #{description},#{defaultAccessType}, #{status}, now(), now())
     </insert>
 
     <update id="update" parameterType="DataPropertyDO" >
@@ -41,6 +41,12 @@
 			<if test="nameEn != null and nameEn != ''" >
                 nameEn = #{nameEn},
             </if>
+            <if test="data_type != null and data_type != ''">
+				data_type = #{dataType},
+			</if>
+			<if test="config != null and config != ''">
+				config = #{config},
+			</if>
 			<if test="description != null and description != ''">
 				description = #{description}
 			</if>

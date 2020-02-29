@@ -12,15 +12,17 @@ public interface DataModelDAO {
 
 	int update(DataModelDO dataModel);
 
-	DataModelDO getModelById(@Param("id") long id);
+	DataModelDO getById(@Param("id") long id);
 
-	DataModelDO getModelByCode(@Param("code") String ccode);
+	DataModelDO getByCode(@Param("code") String code);
+	
+	DataModelDO getByCode0(@Param("code") String code);
 
-	List<DataModelDO> getModelsByIds(@Param("ids") List<Long> modelIds);
+	List<DataModelDO> getByIds(@Param("ids") List<Long> modelIds);
 
-	List<DataModelDO> listDataModel(DataModelQueryParam dataModelQueryParam);
+	List<DataModelDO> listModel(DataModelQueryParam dataModelQueryParam);
 
-	List<DataModelDO> pageDataModel(DataModelQueryParam dataModelQueryParam);
+	List<DataModelDO> pageModel(DataModelQueryParam dataModelQueryParam);
 
-	int countDataModel(DataModelQueryParam dataModelQueryParam);
+	int countModel(DataModelQueryParam dataModelQueryParam);
 }

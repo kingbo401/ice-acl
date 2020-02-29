@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.DataModelDAO;
 import com.kingbo401.acl.manager.AppManager;
 import com.kingbo401.acl.manager.DataModelManager;
@@ -19,7 +20,6 @@ import com.kingbo401.acl.model.entity.DataModelDO;
 import com.kingbo401.acl.model.entity.param.DataModelQueryParam;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class DataModelManagerImpl implements DataModelManager {
@@ -41,7 +41,7 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.isTrue(subCodes.length >= 3, "数据模型code格式必须为kingbo.ice.user或者kingbo_ice_user,小数点或下划线不能少于两个");
 	}
 
-	public DataModelDTO createDataModel(DataModelDTO dataModelDTO) {
+	public DataModelDTO create(DataModelDTO dataModelDTO) {
 		Assert.notNull(dataModelDTO, "dataModelDTO 不能为空");
 		String appKey = dataModelDTO.getAppKey();
 		Assert.hasText(appKey, "appKey 不能为空");
@@ -49,20 +49,26 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.hasText(name, "name 不能为空");
 		String modelCode = dataModelDTO.getCode();
 		assertModelCode(modelCode);
-		Assert.notNull(appManager.getAppByKey(appKey), "app不存在");
-
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
-		Assert.isNull(dataModelDO, "模型code已存在");
-		dataModelDTO.setId(dataModelDO.getId());
+		Assert.notNull(appManager.getByKey(appKey), "app不存在");
 		dataModelDTO.setStatus(AclConstant.STATUS_NORMAL);
-		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
-		dataModelDAO.create(dataModelDO);
-		dataModelDTO.setId(dataModelDO.getId());
+		
+		DataModelDO dataModelDO = dataModelDAO.getByCode0(modelCode);
+		if (dataModelDO != null) {
+			Assert.isTrue(AclConstant.STATUS_REMOVE == dataModelDO.getStatus(),  "模型code已存在");
+			dataModelDTO.setId(dataModelDO.getId());
+			BeanUtils.copyProperties(dataModelDTO, dataModelDO);
+			dataModelDAO.update(dataModelDO);
+		} else {
+			dataModelDO = new DataModelDO();
+			BeanUtils.copyProperties(dataModelDTO, dataModelDO);
+			dataModelDAO.create(dataModelDO);
+			dataModelDTO.setId(dataModelDO.getId());
+		}
 		return dataModelDTO;
 	}
 
 	@Override
-	public DataModelDTO updateDataModel(DataModelDTO dataModelDTO) {
+	public DataModelDTO update(DataModelDTO dataModelDTO) {
 		Assert.notNull(dataModelDTO, "dataModelDTO 不能为空");
 		String appKey = dataModelDTO.getAppKey();
 		Assert.hasText(appKey, "appKey 不能为空");
@@ -70,7 +76,7 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.hasText(name, "name 不能为空");
 		String modelCode = dataModelDTO.getCode();
 		assertModelCode(modelCode);
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
+		DataModelDO dataModelDO = dataModelDAO.getByCode(modelCode);
 		Assert.notNull(dataModelDO, "模型不存在");
 		dataModelDTO.setId(dataModelDO.getId());
 		BeanUtils.copyProperties(dataModelDTO, dataModelDO);
@@ -83,7 +89,7 @@ public class DataModelManagerImpl implements DataModelManager {
 		String modelCode = dataModel.getCode();
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(modelCode, "modelCode不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
+		DataModelDO dataModelDO = dataModelDAO.getByCode(modelCode);
 		Assert.notNull(dataModelDO, "模型不存在");
 		Assert.isTrue(appKey.equals(dataModelDO.getAppKey()), "appkey模型不匹配");
 		List<DataPropertyDTO> properties = dataPropertyManager.listDataProperty(dataModelDO.getId());
@@ -94,38 +100,38 @@ public class DataModelManagerImpl implements DataModelManager {
 	}
 
 	@Override
-	public boolean removeDataModel(DataModelDTO dataModel) {
+	public boolean remove(DataModelDTO dataModel) {
 		return updateDataModelStatus(dataModel, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
-	public boolean freezeDataModel(DataModelDTO dataModel) {
+	public boolean freeze(DataModelDTO dataModel) {
 		return updateDataModelStatus(dataModel, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
-	public boolean unfreezeDataModel(DataModelDTO dataModel) {
+	public boolean unfreeze(DataModelDTO dataModel) {
 		return updateDataModelStatus(dataModel, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override
-	public DataModelDTO getDataModel(Long id) {
+	public DataModelDTO getById(Long id) {
 		Assert.notNull(id, "id不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelById(id);
+		DataModelDO dataModelDO = dataModelDAO.getById(id);
 		return buildDataModelDTO(dataModelDO);
 	}
 
 	@Override
-	public DataModelDTO getDataModel(String modelCode) {
+	public DataModelDTO getByCode(String modelCode) {
 		Assert.hasText(modelCode, "modelCode 不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
+		DataModelDO dataModelDO = dataModelDAO.getByCode(modelCode);
 		return buildDataModelDTO(dataModelDO);
 	}
 
 	@Override
-	public DataModelDTO getDataModel(String appKey, String modelCode) {
+	public DataModelDTO getByCode(String appKey, String modelCode) {
 		Assert.hasText(modelCode, "modelCode 不能为空");
-		DataModelDO dataModelDO = dataModelDAO.getModelByCode(modelCode);
+		DataModelDO dataModelDO = dataModelDAO.getByCode(modelCode);
 		if (dataModelDO == null) {
 			return null;
 		}
@@ -138,7 +144,7 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.notNull(dataModelQueryParam, "参数不能为空");
 		Assert.hasText(dataModelQueryParam.getCode(), "code 不能为空");
 		Assert.hasText(dataModelQueryParam.getAppKey(), "appKey 不能为空");
-		List<DataModelDO> dataModelDOs = dataModelDAO.listDataModel(dataModelQueryParam);
+		List<DataModelDO> dataModelDOs = dataModelDAO.listModel(dataModelQueryParam);
 		return buildDataModelDTOs(dataModelDOs);
 	}
 
@@ -147,13 +153,13 @@ public class DataModelManagerImpl implements DataModelManager {
 		Assert.notNull(dataModelQueryParam, "参数不能为空");
 		PageVO<DataModelDTO> pageVO = new PageVO<DataModelDTO>(dataModelQueryParam);
 		if(dataModelQueryParam.isReturnTotalCount()){
-			long total = dataModelDAO.countDataModel(dataModelQueryParam);
+			long total = dataModelDAO.countModel(dataModelQueryParam);
 			pageVO.setTotal(total);
 			if(total == 0){
 				return pageVO;
 			}
 		}
-		List<DataModelDO> dataModelDOs = dataModelDAO.pageDataModel(dataModelQueryParam);
+		List<DataModelDO> dataModelDOs = dataModelDAO.pageModel(dataModelQueryParam);
 		pageVO.setItems(buildDataModelDTOs(dataModelDOs));
 		return pageVO;
 	}

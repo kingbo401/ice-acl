@@ -5,19 +5,19 @@ import java.util.List;
 import com.kingbo401.acl.model.dto.DataPropertyDTO;
 
 public interface DataPropertyManager {
-	DataPropertyDTO createDataProperty(DataPropertyDTO dataPropertyDTO);
+	DataPropertyDTO create(DataPropertyDTO dataPropertyDTO);
 	
-	DataPropertyDTO updateDataProperty(DataPropertyDTO dataPropertyDTO);
+	DataPropertyDTO update(DataPropertyDTO dataPropertyDTO);
 	
-	boolean removeDataProperty(DataPropertyDTO dataPropertyDTO);
+	boolean remove(DataPropertyDTO dataPropertyDTO);
 	
-	boolean freezeDataProperty(DataPropertyDTO dataPropertyDTO);
+	boolean freeze(DataPropertyDTO dataPropertyDTO);
 	
-	boolean unfreezeDataProperty(DataPropertyDTO dataPropertyDTO);
+	boolean unfreeze(DataPropertyDTO dataPropertyDTO);
 
-	List<DataPropertyDTO> getDataProperties(Long modelId, List<String> propertyCodes);
+	List<DataPropertyDTO> getByCodes(Long modelId, List<String> propertyCodes);
 	
-	DataPropertyDTO getDataProperty(Long modelId, String propertyCode);
+	DataPropertyDTO getByCode(Long modelId, String propertyCode);
 	
 	List<DataPropertyDTO> listDataProperty(Long modelId);
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.dao.UserPermissionRefDAO;
 import com.kingbo401.acl.manager.PermissionManager;
 import com.kingbo401.acl.manager.UserPermissionRefManager;
@@ -22,7 +23,6 @@ import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
 import com.kingbo401.commons.util.StringUtil;
-import com.kingbo401.iceacl.common.constant.AclConstant;
 
 @Service
 public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
@@ -32,7 +32,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	private PermissionManager permissionManager;
 	
 	@Override
-	public boolean addUserPermissionRef(UserPermissionRefParam param) {
+	public boolean addRef(UserPermissionRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -62,7 +62,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	}
 
 	@Override
-	public boolean updateUserPermissionRef(UserPermissionRefParam param) {
+	public boolean updateRef(UserPermissionRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -106,7 +106,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	}
 
 	@Override
-	public boolean removeUserPermissionRef(UserPermissionRefParam param) {
+	public boolean removeRef(UserPermissionRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -123,7 +123,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	}
 
 	@Override
-	public boolean freezeUserPermissionRef(UserPermissionRefParam param) {
+	public boolean freezeRef(UserPermissionRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -137,7 +137,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 	}
 
 	@Override
-	public boolean unfreezeUserPermissionRef(UserPermissionRefParam param) {
+	public boolean unfreezeRef(UserPermissionRefParam param) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -181,7 +181,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		if(CollectionUtil.isEmpty(permissionIds)){
 			return;
 		}
-		List<PermissionDTO> permissionDTOs = permissionManager.getPermissionByIds(appKey, permissionIds);
+		List<PermissionDTO> permissionDTOs = permissionManager.getByIds(appKey, permissionIds);
 		Assert.notEmpty(permissionDTOs, "权限不存在");
 		Map<Long, PermissionDTO> idMap = permissionDTOs.stream().collect(Collectors.toMap(PermissionDTO::getId, a -> a, (k1, k2) -> k1));
 		for(Long permissionId : permissionIds){
