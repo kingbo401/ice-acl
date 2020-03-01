@@ -1,3 +1,5 @@
 spring:
+  application:
+    name: ice-acl
   profiles:
     active: dev

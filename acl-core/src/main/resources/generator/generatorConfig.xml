@@ -26,7 +26,7 @@
 		</jdbcConnection>
 
 		<javaModelGenerator
-			targetPackage="com.kingbo401.iceacl.model.DO.test"
+			targetPackage="com.kingbo401.acl.model.DO.test"
 			targetProject="src/main/java">
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
@@ -35,10 +35,10 @@
 			targetProject="src/main/resources" />
 
 		<javaClientGenerator type="XMLMAPPER"
-			targetPackage="com.kingbo401.iceacl.dao.test"
+			targetPackage="com.kingbo401.acl.dao.test"
 			targetProject="src/main/java" />
 
-		<table tableName="ice_app" domainObjectName="AppPO"
+		<table tableName="app" domainObjectName="AppPO"
 			mapperName="AppDAO">
 			<generatedKey column="id" sqlStatement="Mysql"
 				identity="true" />

@@ -1,8 +1,9 @@
- package com.kingbo401.iceacl;
+ package com.kingbo401.acl;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -12,7 +13,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication
 @EnableTransactionManagement 
-@MapperScan("com.kingbo401.iceacl.dao") 
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@MapperScan("com.kingbo401.acl.dao") 
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

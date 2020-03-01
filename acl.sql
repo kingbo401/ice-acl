@@ -178,7 +178,7 @@ CREATE TABLE `role_permission_group_ref` (
 -- ----------------------------
 CREATE TABLE `user_permission_group_ref` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` varchar(64 NOT NULL COMMENT '用户id',
+  `user_id` varchar(64) NOT NULL COMMENT '用户id',
   `group_id` bigint(20) NOT NULL COMMENT '权限组id',
   `tenant` varchar(64) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 删除 1正常 2封禁',
@@ -196,7 +196,7 @@ CREATE TABLE `user_permission_group_ref` (
 -- ----------------------------
 CREATE TABLE `user_permission_ref` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` varchar(64 NOT NULL COMMENT '用户id',
+  `user_id` varchar(64) NOT NULL COMMENT '用户id',
   `tenant` varchar(64) NOT NULL COMMENT '租户id',
   `permission_id` bigint(20) NOT NULL COMMENT '权限id',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 删除 1正常  2封禁',
@@ -215,8 +215,8 @@ CREATE TABLE `user_role_grant_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `app_key` varchar(64) NOT NULL COMMENT '应用appkey',
   `tenant` varchar(64) NOT NULL COMMENT '租户id',
-  `admin_user_id` varchar(64 NOT NULL COMMENT '授权者用户id',
-  `granted_user_id` varchar(64 NOT NULL COMMENT '被授权者用户id',
+  `admin_user_id` varchar(64) NOT NULL COMMENT '授权者用户id',
+  `granted_user_id` varchar(64) NOT NULL COMMENT '被授权者用户id',
   `role_ids_pre` varchar(1024) DEFAULT NULL COMMENT '授权前的角色id，用逗号分隔',
   `role_ids_after` varchar(1024) DEFAULT NULL COMMENT '授权后的角色id，用逗号分隔',
   `role_info_pre` varchar(2048) DEFAULT NULL COMMENT '授权前的角色描述信息',
@@ -227,7 +227,7 @@ CREATE TABLE `user_role_grant_log` (
   PRIMARY KEY (`id`),
   KEY `idx_appkey_tenant` (`app_key`,`tenant`),
   KEY `idx_admin_user_id` (`admin_user_id`),
-  KEY `idx_admin_user_id` (`admin_user_id`)
+  KEY `idx_granted_user_id` (`granted_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='给用户授予角色记录表';
 
 -- ----------------------------
@@ -235,7 +235,7 @@ CREATE TABLE `user_role_grant_log` (
 -- ----------------------------
 CREATE TABLE `user_role_ref` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `user_id` varchar(64 NOT NULL COMMENT '用户id',
+  `user_id` varchar(64) NOT NULL COMMENT '用户id',
   `tenant` varchar(64) NOT NULL COMMENT '租户id',
   `role_id` bigint(20) NOT NULL COMMENT '角色id',
   `status` tinyint(1) DEFAULT NULL COMMENT '0 删除 1正常 2封禁',

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Aspect
 public class TimeCostAspect {
 	private static final Logger  logger = LoggerFactory.getLogger(TimeCostAspect.class);
-	@Around("execution(public * com.kingbo401.iceacl.manager.impl.*.*(..))")
+	@Around("execution(public * com.kingbo401.acl.manager.impl.*.*(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
 		Object[] args = joinPoint.getArgs();
 		Object rst = null;
