@@ -2,7 +2,7 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.DataOperationDTO;
+import com.kingbo401.acl.common.model.dto.DataOperationDTO;
 
 public interface DataOperationManager {
 	DataOperationDTO create(DataOperationDTO dataOperationDTO);

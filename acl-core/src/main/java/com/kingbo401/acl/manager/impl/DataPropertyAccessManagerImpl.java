@@ -12,14 +12,14 @@ import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.common.enums.GrantTargetType;
+import com.kingbo401.acl.common.model.dto.DataModelDTO;
+import com.kingbo401.acl.common.model.dto.DataPropertyAccessDTO;
+import com.kingbo401.acl.common.model.dto.DataPropertyDTO;
+import com.kingbo401.acl.common.model.dto.param.DataPropertyCodeAccessParam;
 import com.kingbo401.acl.dao.DataPropertyAccessDAO;
 import com.kingbo401.acl.manager.DataModelManager;
 import com.kingbo401.acl.manager.DataPropertyAccessManager;
 import com.kingbo401.acl.manager.DataPropertyManager;
-import com.kingbo401.acl.model.dto.DataModelDTO;
-import com.kingbo401.acl.model.dto.DataPropertyAccessDTO;
-import com.kingbo401.acl.model.dto.DataPropertyDTO;
-import com.kingbo401.acl.model.dto.param.DataPropertyCodeAccessParam;
 import com.kingbo401.acl.model.entity.DataPropertyAccessDO;
 import com.kingbo401.acl.model.entity.param.DataPropertyAccessParam;
 import com.kingbo401.commons.util.CollectionUtil;

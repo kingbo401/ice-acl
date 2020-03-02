@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.DataModelDTO;
+import com.kingbo401.acl.common.model.dto.DataPropertyDTO;
 import com.kingbo401.acl.dao.DataModelDAO;
 import com.kingbo401.acl.manager.AppManager;
 import com.kingbo401.acl.manager.DataModelManager;
 import com.kingbo401.acl.manager.DataPropertyManager;
-import com.kingbo401.acl.model.dto.DataModelDTO;
-import com.kingbo401.acl.model.dto.DataPropertyDTO;
 import com.kingbo401.acl.model.entity.DataModelDO;
 import com.kingbo401.acl.model.entity.param.DataModelQueryParam;
 import com.kingbo401.commons.model.PageVO;

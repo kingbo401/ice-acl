@@ -2,8 +2,8 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.PermissionGroupDTO;
-import com.kingbo401.acl.model.dto.param.RolePermissionGroupRefParam;
+import com.kingbo401.acl.common.model.dto.PermissionGroupDTO;
+import com.kingbo401.acl.common.model.dto.param.RolePermissionGroupRefParam;
 import com.kingbo401.acl.model.entity.param.RolePermissionGroupRefQueryParam;
 import com.kingbo401.commons.model.PageVO;
 

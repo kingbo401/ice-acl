@@ -3,7 +3,7 @@ package com.kingbo401.acl.manager;
 import java.util.List;
 import java.util.Map;
 
-import com.kingbo401.acl.model.dto.AppDTO;
+import com.kingbo401.acl.common.model.dto.AppDTO;
 import com.kingbo401.acl.model.entity.param.AppQueryParam;
 import com.kingbo401.commons.model.PageVO;
 

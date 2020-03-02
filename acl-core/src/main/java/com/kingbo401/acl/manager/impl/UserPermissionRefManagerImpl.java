@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
+import com.kingbo401.acl.common.model.dto.UserPermissionRefDTO;
+import com.kingbo401.acl.common.model.dto.param.UserPermissionRefParam;
 import com.kingbo401.acl.dao.UserPermissionRefDAO;
 import com.kingbo401.acl.manager.PermissionManager;
 import com.kingbo401.acl.manager.UserPermissionRefManager;
-import com.kingbo401.acl.model.dto.PermissionDTO;
-import com.kingbo401.acl.model.dto.UserPermissionRefDTO;
-import com.kingbo401.acl.model.dto.param.UserPermissionRefParam;
 import com.kingbo401.acl.model.entity.UserPermissionRefDO;
 import com.kingbo401.acl.model.entity.param.UserPermissionRefQueryParam;
 import com.kingbo401.acl.util.BizUtil;

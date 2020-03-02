@@ -12,10 +12,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
 import com.kingbo401.acl.dao.PermissionDAO;
 import com.kingbo401.acl.manager.PermissionManager;
 import com.kingbo401.acl.manager.UserPermissionRefManager;
-import com.kingbo401.acl.model.dto.PermissionDTO;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.param.PermissonQueryParam;
 import com.kingbo401.acl.util.BizUtil;

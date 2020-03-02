@@ -3,7 +3,7 @@ package com.kingbo401.acl.manager;
 import java.util.List;
 
 import com.kingbo401.acl.common.model.MenuTreeNode;
-import com.kingbo401.acl.model.dto.MenuDTO;
+import com.kingbo401.acl.common.model.dto.MenuDTO;
 import com.kingbo401.acl.model.entity.param.GetUserMenuParam;
 import com.kingbo401.acl.model.entity.param.RoleMenuQueryParam;
 

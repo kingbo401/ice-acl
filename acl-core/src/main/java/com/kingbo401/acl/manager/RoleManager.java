@@ -2,7 +2,7 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.RoleDTO;
+import com.kingbo401.acl.common.model.dto.RoleDTO;
 import com.kingbo401.acl.model.entity.param.RoleQueryParam;
 import com.kingbo401.commons.model.PageVO;
 

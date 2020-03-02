@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.acl.model.dto.UserRoleRefDTO;
+import com.kingbo401.acl.common.model.dto.UserRoleRefDTO;
 import com.kingbo401.acl.model.entity.UserRoleRefDO;
 import com.kingbo401.acl.model.entity.param.UserRoleRefQueryParam;
 import com.kingbo401.acl.model.entity.param.UsersRoleRefQueryParam;

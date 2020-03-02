@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
-import com.kingbo401.acl.model.dto.PermissionDTO;
-import com.kingbo401.acl.model.dto.PermissionGroupDTO;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
+import com.kingbo401.acl.common.model.dto.PermissionGroupDTO;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.PermissionGroupDO;
 

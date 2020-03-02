@@ -14,13 +14,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.RoleDTO;
+import com.kingbo401.acl.common.model.dto.UserRoleRefDTO;
+import com.kingbo401.acl.common.model.dto.UserRoleRefsDTO;
+import com.kingbo401.acl.common.model.dto.param.UserRoleRefParam;
 import com.kingbo401.acl.dao.UserRoleRefDAO;
 import com.kingbo401.acl.manager.RoleManager;
 import com.kingbo401.acl.manager.UserRoleRefManager;
-import com.kingbo401.acl.model.dto.RoleDTO;
-import com.kingbo401.acl.model.dto.UserRoleRefDTO;
-import com.kingbo401.acl.model.dto.UserRoleRefsDTO;
-import com.kingbo401.acl.model.dto.param.UserRoleRefParam;
 import com.kingbo401.acl.model.entity.UserRoleRefDO;
 import com.kingbo401.acl.model.entity.param.UserRoleRefQueryParam;
 import com.kingbo401.acl.model.entity.param.UsersRoleRefQueryParam;

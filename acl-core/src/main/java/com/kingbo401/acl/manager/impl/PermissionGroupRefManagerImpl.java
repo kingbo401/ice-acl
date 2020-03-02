@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
+import com.kingbo401.acl.common.model.dto.PermissionGroupDTO;
+import com.kingbo401.acl.common.model.dto.param.PermissionGroupRefParam;
 import com.kingbo401.acl.dao.PermissionDAO;
 import com.kingbo401.acl.dao.PermissionGroupRefDAO;
 import com.kingbo401.acl.manager.PermissionGroupManager;
 import com.kingbo401.acl.manager.PermissionGroupRefManager;
-import com.kingbo401.acl.model.dto.PermissionDTO;
-import com.kingbo401.acl.model.dto.PermissionGroupDTO;
-import com.kingbo401.acl.model.dto.param.PermissionGroupRefParam;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.PermissionGroupRefDO;
 import com.kingbo401.acl.model.entity.param.PermissionGroupRefQueryParam;

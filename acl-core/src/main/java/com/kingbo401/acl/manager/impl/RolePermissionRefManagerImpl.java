@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
+import com.kingbo401.acl.common.model.dto.RoleDTO;
+import com.kingbo401.acl.common.model.dto.param.RolePermissionIdRefParam;
 import com.kingbo401.acl.dao.RolePermissionRefDAO;
 import com.kingbo401.acl.manager.PermissionManager;
 import com.kingbo401.acl.manager.RoleManager;
 import com.kingbo401.acl.manager.RolePermissionRefManager;
-import com.kingbo401.acl.model.dto.PermissionDTO;
-import com.kingbo401.acl.model.dto.RoleDTO;
-import com.kingbo401.acl.model.dto.param.RolePermissionIdRefParam;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.RolePermissionRefDO;
 import com.kingbo401.acl.model.entity.param.RolePermissionRefQueryParam;

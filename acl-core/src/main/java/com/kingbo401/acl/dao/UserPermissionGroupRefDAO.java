@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO;
+import com.kingbo401.acl.common.model.dto.UserPermissionGroupRefDTO;
 import com.kingbo401.acl.model.entity.UserPermissionGroupRefDO;
 import com.kingbo401.acl.model.entity.param.UserPermissionGroupRefQueryParam;
 

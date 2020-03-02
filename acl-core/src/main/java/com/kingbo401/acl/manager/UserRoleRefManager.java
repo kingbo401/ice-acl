@@ -2,9 +2,9 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.UserRoleRefDTO;
-import com.kingbo401.acl.model.dto.UserRoleRefsDTO;
-import com.kingbo401.acl.model.dto.param.UserRoleRefParam;
+import com.kingbo401.acl.common.model.dto.UserRoleRefDTO;
+import com.kingbo401.acl.common.model.dto.UserRoleRefsDTO;
+import com.kingbo401.acl.common.model.dto.param.UserRoleRefParam;
 import com.kingbo401.acl.model.entity.param.UserRoleRefQueryParam;
 import com.kingbo401.acl.model.entity.param.UsersRoleRefQueryParam;
 import com.kingbo401.commons.model.PageVO;

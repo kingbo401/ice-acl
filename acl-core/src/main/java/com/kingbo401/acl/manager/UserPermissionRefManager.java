@@ -2,8 +2,8 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.UserPermissionRefDTO;
-import com.kingbo401.acl.model.dto.param.UserPermissionRefParam;
+import com.kingbo401.acl.common.model.dto.UserPermissionRefDTO;
+import com.kingbo401.acl.common.model.dto.param.UserPermissionRefParam;
 import com.kingbo401.acl.model.entity.param.UserPermissionRefQueryParam;
 import com.kingbo401.commons.model.PageVO;
 

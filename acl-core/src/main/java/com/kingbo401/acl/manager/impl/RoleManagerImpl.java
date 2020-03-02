@@ -13,14 +13,14 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.RoleDTO;
+import com.kingbo401.acl.common.model.dto.param.RoleMenuIdRefParam;
 import com.kingbo401.acl.dao.MenuDAO;
 import com.kingbo401.acl.dao.RoleDAO;
 import com.kingbo401.acl.dao.RoleMenuRefDAO;
 import com.kingbo401.acl.manager.AppManager;
 import com.kingbo401.acl.manager.RoleManager;
 import com.kingbo401.acl.manager.UserRoleRefManager;
-import com.kingbo401.acl.model.dto.RoleDTO;
-import com.kingbo401.acl.model.dto.param.RoleMenuIdRefParam;
 import com.kingbo401.acl.model.entity.MenuDO;
 import com.kingbo401.acl.model.entity.RoleDO;
 import com.kingbo401.acl.model.entity.RoleMenuRefDO;

@@ -12,12 +12,12 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.PermissionGroupDTO;
+import com.kingbo401.acl.common.model.dto.UserPermissionGroupRefDTO;
+import com.kingbo401.acl.common.model.dto.param.UserPermissionGroupRefParam;
 import com.kingbo401.acl.dao.UserPermissionGroupRefDAO;
 import com.kingbo401.acl.manager.PermissionGroupManager;
 import com.kingbo401.acl.manager.UserPermissionGroupRefManager;
-import com.kingbo401.acl.model.dto.PermissionGroupDTO;
-import com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO;
-import com.kingbo401.acl.model.dto.param.UserPermissionGroupRefParam;
 import com.kingbo401.acl.model.entity.UserPermissionGroupRefDO;
 import com.kingbo401.acl.model.entity.param.UserPermissionGroupRefQueryParam;
 import com.kingbo401.acl.util.BizUtil;

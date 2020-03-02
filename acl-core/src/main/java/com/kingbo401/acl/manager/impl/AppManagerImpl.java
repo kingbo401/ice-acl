@@ -12,9 +12,9 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.AppDTO;
 import com.kingbo401.acl.dao.AppDAO;
 import com.kingbo401.acl.manager.AppManager;
-import com.kingbo401.acl.model.dto.AppDTO;
 import com.kingbo401.acl.model.entity.AppDO;
 import com.kingbo401.acl.model.entity.param.AppQueryParam;
 import com.kingbo401.commons.encrypt.SecurityUtil;

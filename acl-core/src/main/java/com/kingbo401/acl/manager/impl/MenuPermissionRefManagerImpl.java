@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.MenuDTO;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
+import com.kingbo401.acl.common.model.dto.param.MenuPermissionRefParam;
 import com.kingbo401.acl.dao.MenuPermissionRefDAO;
 import com.kingbo401.acl.manager.MenuManager;
 import com.kingbo401.acl.manager.MenuPermissionRefManager;
 import com.kingbo401.acl.manager.PermissionManager;
-import com.kingbo401.acl.model.dto.MenuDTO;
-import com.kingbo401.acl.model.dto.PermissionDTO;
-import com.kingbo401.acl.model.dto.param.MenuPermissionRefParam;
 import com.kingbo401.acl.model.entity.MenuPermissionRefDO;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.param.MenuPermissionRefQueryParam;

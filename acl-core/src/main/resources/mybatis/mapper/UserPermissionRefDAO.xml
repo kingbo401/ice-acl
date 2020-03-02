@@ -56,7 +56,7 @@
 		and t2.status=1 and t1.status!=0
 	</sql>
 	
-	<select id = "listUserPermissionRef"  resultType="com.kingbo401.acl.model.dto.UserPermissionRefDTO">
+	<select id = "listUserPermissionRef"  resultType="com.kingbo401.acl.common.model.dto.UserPermissionRefDTO">
 		select t1.*,t2.app_key,t2.tenant as permission_tenant,t2.permission_key,
 		t2.name as permission_name,t2.description as permission_description
 		from user_permission_ref t1, permission t2
@@ -71,7 +71,7 @@
 		<include refid="queryUserPermissionRefSubSql" />
 	</select>
 	
-	<select id = "pageUserPermissionRef"  resultType="com.kingbo401.acl.model.dto.UserPermissionRefDTO">
+	<select id = "pageUserPermissionRef"  resultType="com.kingbo401.acl.common.model.dto.UserPermissionRefDTO">
 		select t1.*,t2.app_key,t2.tenant as permission_tenant,t2.permission_key,
 		t2.name as permission_name,t2.description as permission_description
 		from user_permission_ref t1, permission t2

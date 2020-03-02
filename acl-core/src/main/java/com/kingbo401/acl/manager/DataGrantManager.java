@@ -2,13 +2,13 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.DataGrantRecordDTO;
-import com.kingbo401.acl.model.dto.DatasCheckResult;
-import com.kingbo401.acl.model.dto.param.DataCheckParam;
-import com.kingbo401.acl.model.dto.param.DataGrantParam;
-import com.kingbo401.acl.model.dto.param.DataGrantQueryParam;
-import com.kingbo401.acl.model.dto.param.DataRevokeParam;
-import com.kingbo401.acl.model.dto.param.DatasCheckParam;
+import com.kingbo401.acl.common.model.dto.DataGrantRecordDTO;
+import com.kingbo401.acl.common.model.dto.DatasCheckResult;
+import com.kingbo401.acl.common.model.dto.param.DataCheckParam;
+import com.kingbo401.acl.common.model.dto.param.DataGrantParam;
+import com.kingbo401.acl.common.model.dto.param.DataGrantQueryParam;
+import com.kingbo401.acl.common.model.dto.param.DataRevokeParam;
+import com.kingbo401.acl.common.model.dto.param.DatasCheckParam;
 import com.kingbo401.commons.model.PageVO;
 
 public interface DataGrantManager {

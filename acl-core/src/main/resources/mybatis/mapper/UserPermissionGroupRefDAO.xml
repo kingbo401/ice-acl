@@ -56,7 +56,7 @@
 		and t2.status=1 and t1.status!=0
 	</sql>
 
-	<select id = "listUserPermissionGroupRef"  resultType="com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO">
+	<select id = "listUserPermissionGroupRef"  resultType="com.kingbo401.acl.common.model.dto.UserPermissionGroupRefDTO">
 		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.group_pid,
 		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.subgroup as subgroup
 		from user_permission_group_ref t1, permission_group t2
@@ -71,7 +71,7 @@
 		<include refid="queryUserPermissionGroupRefSubSql" />
 	</select>
 	
-	<select id = "pageUserPermissionGroupRef"  resultType="com.kingbo401.acl.model.dto.UserPermissionGroupRefDTO">
+	<select id = "pageUserPermissionGroupRef"  resultType="com.kingbo401.acl.common.model.dto.UserPermissionGroupRefDTO">
 		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.group_pid,
 		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.subgroup as subgroup
 		from user_permission_group_ref t1, permission_group t2

@@ -2,7 +2,7 @@ package com.kingbo401.acl.manager;
 
 import java.util.List;
 
-import com.kingbo401.acl.model.dto.PermissionDTO;
+import com.kingbo401.acl.common.model.dto.PermissionDTO;
 import com.kingbo401.acl.model.entity.param.PermissonQueryParam;
 import com.kingbo401.commons.model.PageVO;
 
