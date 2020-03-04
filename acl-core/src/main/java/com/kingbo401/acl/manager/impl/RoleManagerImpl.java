@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.common.model.dto.RoleDTO;
@@ -219,11 +219,8 @@ public class RoleManagerImpl implements RoleManager{
 		roleMenuQueryParam.setRoleId(roleId);
 		roleMenuQueryParam.setSubgroup(param.getSubgroup());
 		List<MenuDO> menuDOs = roleMenuRefDAO.listMenu(roleMenuQueryParam);
-		if(!CollectionUtils.isEmpty(menuDOs)){
-			List<Long> menuIds = new ArrayList<Long>();
-			for(MenuDO menuDO : menuDOs){
-				menuIds.add(menuDO.getId());
-			}
+		if(CollectionUtils.isNotEmpty(menuDOs)){
+			List<Long> menuIds = menuDOs.stream().map(MenuDO::getId).collect(Collectors.toList());
 			roleMenuRefDAO.updateRefsStatus(roleId, menuIds, AclConstant.STATUS_REMOVE);
 		}
 		

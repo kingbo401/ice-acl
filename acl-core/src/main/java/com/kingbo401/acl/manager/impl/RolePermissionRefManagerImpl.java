@@ -2,6 +2,7 @@ package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +60,7 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		permissionGroupRefQueryParam.setRoleId(roleId);
 		List<PermissionDO> permissionDOs =  rolePermissionRefDAO.listPermission(permissionGroupRefQueryParam);
 		if(CollectionUtil.isNotEmpty(permissionDOs)){
-			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(PermissionDO permissionDO : permissionDOs){
-				permissionIdsRemove.add(permissionDO.getId());
-			}
+			List<Long> permissionIdsRemove =  permissionDOs.stream().map(PermissionDO::getId).collect(Collectors.toList());
 			rolePermissionRefDAO.updateRefsStatus(roleId, permissionIdsRemove, AclConstant.STATUS_REMOVE);
 		}
 		
@@ -142,15 +140,14 @@ public class RolePermissionRefManagerImpl implements RolePermissionRefManager{
 		RoleDTO roleDTO = roleManager.getById(appKey, roleId);
 		Assert.notNull(roleDTO, "角色不存在");
 		List<Long> permissionIds = param.getPermissionIds();
+		Assert.notEmpty(permissionIds, "permissionIds不能为空");
 		String subgroup = param.getSubgroup();
-		if(CollectionUtil.isNotEmpty(permissionIds)){
-			List<PermissionDTO> permissionDTOs = permissionManager.getByIds(permissionIds);
-			Assert.notEmpty(permissionDTOs, "权限不存在");
-			for(PermissionDTO permissionDTO : permissionDTOs){
-				Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appkey不匹配:" + permissionDTO.getId());
-				if (StringUtils.isNotBlank(subgroup)) {
-					Assert.isTrue(subgroup.equals(permissionDTO.getSubgroup()), "subgroup非法");
-				}
+		List<PermissionDTO> permissionDTOs = permissionManager.getByIds(permissionIds);
+		Assert.notEmpty(permissionDTOs, "权限不存在");
+		for(PermissionDTO permissionDTO : permissionDTOs){
+			Assert.isTrue(appKey.equals(permissionDTO.getAppKey()), "权限appkey不匹配:" + permissionDTO.getId());
+			if (StringUtils.isNotBlank(subgroup)) {
+				Assert.isTrue(subgroup.equals(permissionDTO.getSubgroup()), "subgroup非法");
 			}
 		}
 	}
