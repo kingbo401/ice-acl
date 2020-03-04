@@ -16,12 +16,10 @@
 		<if test = "tenant != null and tenant != ''">
 			and tenant=#{tenant}
 		</if>
-		<if test="permissionIds != null and permissionIds.size > 0">
-			and permission_id in
-			<foreach collection="permissionIds" item="permissionId" open="(" separator="," close=")">
-				#{permissionId}
-			</foreach>
-		</if>
+		and permission_id in
+		<foreach collection="permissionIds" item="permissionId" open="(" separator="," close=")">
+			#{permissionId}
+		</foreach>
 	</update>
 	
 	<update id="removeRefsByPermissionId">

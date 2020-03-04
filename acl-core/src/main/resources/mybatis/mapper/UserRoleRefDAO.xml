@@ -16,12 +16,10 @@
 		<if test = "tenant != null and tenant != ''">
 			and tenant=#{tenant}
 		</if>
-		<if test="roleIds != null and roleIds.size > 0">
-			and role_id in
-			<foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
-				#{roleId}
-			</foreach>
-		</if>
+		and role_id in
+		<foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+			#{roleId}
+		</foreach>
 	</update>
 	
 	<update id="removeRefsByRoleId">

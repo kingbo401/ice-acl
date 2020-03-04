@@ -83,10 +83,7 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		userPermissionRefQueryParam.setReturnNotEffective(true);
 		List<UserPermissionRefDTO> userPermissionRefVOs = userPermissionRefDAO.listUserPermissionRef(userPermissionRefQueryParam);
 		if(CollectionUtil.isNotEmpty(userPermissionRefVOs)){
-			List<Long> permissionIdsRemove = new ArrayList<Long>();
-			for(UserPermissionRefDTO userPermissionRefVO : userPermissionRefVOs){
-				permissionIdsRemove.add(userPermissionRefVO.getPermissionId());
-			}
+			List<Long> permissionIdsRemove = userPermissionRefVOs.stream().map(UserPermissionRefDTO::getPermissionId).collect(Collectors.toList());
 			userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIdsRemove, AclConstant.STATUS_REMOVE);
 		}
 		assertPermissions(appKey, param.getSubgroup(), permissionIds);
@@ -104,9 +101,8 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		userPermissionRefDAO.batchCreate(userPermissionRefDOs);
 		return true;
 	}
-
-	@Override
-	public boolean removeRef(UserPermissionRefParam param) {
+	
+	private boolean updateRefStatus(UserPermissionRefParam param, int status) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -118,36 +114,36 @@ public class UserPermissionRefManagerImpl implements UserPermissionRefManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		Assert.hasText(tenant, "tenant不能为空");
 		Assert.notNull(userId, "userId不能为空");
-		userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIds, AclConstant.STATUS_REMOVE);
+		if (CollectionUtil.isEmpty(permissionIds)) {
+			UserPermissionRefQueryParam userPermissionRefQueryParam = new UserPermissionRefQueryParam();
+			userPermissionRefQueryParam.setAppKey(appKey);
+			userPermissionRefQueryParam.setUserId(userId);
+			userPermissionRefQueryParam.setTenant(tenant);
+			userPermissionRefQueryParam.setReturnNotEffective(true);
+			List<UserPermissionRefDTO> userPermissionRefVOs = userPermissionRefDAO.listUserPermissionRef(userPermissionRefQueryParam);
+			if(CollectionUtil.isEmpty(userPermissionRefVOs)){
+				return true;
+			}
+			permissionIds = userPermissionRefVOs.stream().map(UserPermissionRefDTO::getPermissionId).collect(Collectors.toList());
+		}
+		
+		userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIds, status);
 		return true;
+	}
+	
+	@Override
+	public boolean removeRef(UserPermissionRefParam param) {
+		return this.updateRefStatus(param, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
 	public boolean freezeRef(UserPermissionRefParam param) {
-		Assert.notNull(param, "参数不能为空");
-		String appKey = param.getAppKey();
-		String tenant = param.getTenant();
-		String userId = param.getUserId();
-		List<Long> permissionIds = param.getPermissionIds();
-		Assert.hasText(appKey, "appKey不能为空");
-		Assert.hasText(tenant, "tenant不能为空");
-		Assert.notNull(userId, "userId不能为空");
-		userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIds, AclConstant.STATUS_FREEZE);
-		return true;
+		return this.updateRefStatus(param, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
 	public boolean unfreezeRef(UserPermissionRefParam param) {
-		Assert.notNull(param, "参数不能为空");
-		String appKey = param.getAppKey();
-		String tenant = param.getTenant();
-		String userId = param.getUserId();
-		List<Long> permissionIds = param.getPermissionIds();
-		Assert.hasText(appKey, "appKey不能为空");
-		Assert.hasText(tenant, "tenant不能为空");
-		Assert.notNull(userId, "userId不能为空");
-		userPermissionRefDAO.updateRefsStatus(userId, tenant, permissionIds, AclConstant.STATUS_NORMAL);
-		return true;
+		return this.updateRefStatus(param, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override

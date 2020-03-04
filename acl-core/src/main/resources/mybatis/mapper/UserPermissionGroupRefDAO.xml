@@ -16,12 +16,10 @@
 		<if test = "tenant != null and tenant != ''">
 			and tenant=#{tenant}
 		</if>
-		<if test="groupIds != null and groupIds.size() > 0">
-			and group_id in
-			<foreach collection="groupIds" item="groupId" open="(" separator="," close=")">
-				#{groupId}
-			</foreach>
-		</if>
+		and group_id in
+		<foreach collection="groupIds" item="groupId" open="(" separator="," close=")">
+			#{groupId}
+		</foreach>
 	</update>
 	
 	<update id="removeRefsByGroupId">

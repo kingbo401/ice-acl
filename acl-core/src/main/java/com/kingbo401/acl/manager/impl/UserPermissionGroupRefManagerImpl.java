@@ -83,10 +83,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		userPermissionGroupRefQueryParam.setTenant(tenant);
 		List<UserPermissionGroupRefDTO> userPermissionGroupRefVOs = userPermissionGroupRefDAO.listUserPermissionGroupRef(userPermissionGroupRefQueryParam);
 		if(CollectionUtil.isNotEmpty(userPermissionGroupRefVOs)){
-			List<Long> groupIdsRemove = new ArrayList<Long>();
-			for(UserPermissionGroupRefDTO userPermissionGroupRefVO : userPermissionGroupRefVOs){
-				groupIdsRemove.add(userPermissionGroupRefVO.getGroupId());
-			}
+			List<Long> groupIdsRemove = userPermissionGroupRefVOs.stream().map(UserPermissionGroupRefDTO::getGroupId).collect(Collectors.toList());
 			userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIdsRemove, AclConstant.STATUS_REMOVE);
 		}
 		
@@ -104,9 +101,8 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		userPermissionGroupRefDAO.batchCreate(userPermissionGroupRefDOs);
 		return true;
 	}
-
-	@Override
-	public boolean removeRef(UserPermissionGroupRefParam param) {
+	
+	private boolean updateRefStatus(UserPermissionGroupRefParam param, int status) {
 		Assert.notNull(param, "参数不能为空");
 		String appKey = param.getAppKey();
 		String tenant = param.getTenant();
@@ -116,38 +112,34 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		Assert.notNull(userId, "userId不能为空");
 		List<Long> groupIds = param.getGroupIds();
 		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
-		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, AclConstant.STATUS_REMOVE);
+		if (CollectionUtil.isEmpty(groupIds)) {
+			UserPermissionGroupRefQueryParam userPermissionGroupRefQueryParam = new UserPermissionGroupRefQueryParam();
+			userPermissionGroupRefQueryParam.setAppKey(appKey);
+			userPermissionGroupRefQueryParam.setUserId(userId);
+			userPermissionGroupRefQueryParam.setTenant(tenant);
+			List<UserPermissionGroupRefDTO> userPermissionGroupRefVOs = userPermissionGroupRefDAO.listUserPermissionGroupRef(userPermissionGroupRefQueryParam);
+			if(CollectionUtil.isEmpty(userPermissionGroupRefVOs)){
+				return true;
+			}
+			groupIds = userPermissionGroupRefVOs.stream().map(UserPermissionGroupRefDTO::getGroupId).collect(Collectors.toList());
+		}
+		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, status);
 		return true;
+	}
+
+	@Override
+	public boolean removeRef(UserPermissionGroupRefParam param) {
+		return this.updateRefStatus(param, AclConstant.STATUS_REMOVE);
 	}
 
 	@Override
 	public boolean freezeRef(UserPermissionGroupRefParam param) {
-		Assert.notNull(param, "参数不能为空");
-		String appKey = param.getAppKey();
-		String tenant = param.getTenant();
-		String userId = param.getUserId();
-		Assert.hasText(appKey, "appKey不能为空");
-		Assert.hasText(tenant, "tenant不能为空");
-		Assert.notNull(userId, "userId不能为空");
-		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
-		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, AclConstant.STATUS_FREEZE);
-		return true;
+		return this.updateRefStatus(param, AclConstant.STATUS_FREEZE);
 	}
 
 	@Override
 	public boolean unfreezeRef(UserPermissionGroupRefParam param) {
-		Assert.notNull(param, "参数不能为空");
-		String appKey = param.getAppKey();
-		String tenant = param.getTenant();
-		String userId = param.getUserId();
-		Assert.hasText(appKey, "appKey不能为空");
-		Assert.hasText(tenant, "tenant不能为空");
-		Assert.notNull(userId, "userId不能为空");
-		List<Long> groupIds = param.getGroupIds();
-		assertPermissionGroup(appKey, param.getSubgroup(), groupIds);
-		userPermissionGroupRefDAO.updateRefsStats(userId, tenant, groupIds, AclConstant.STATUS_NORMAL);
-		return true;
+		return this.updateRefStatus(param, AclConstant.STATUS_NORMAL);
 	}
 
 	@Override
