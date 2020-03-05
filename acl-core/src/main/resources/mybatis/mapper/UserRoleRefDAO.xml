@@ -12,16 +12,15 @@
 	</insert>
 
 	<update id="updateRefsStatus">
-		update user_role_ref set status = #{status},gmt_modified = now() where user_id=#{userId}
-		<if test = "tenant != null and tenant != ''">
-			and tenant=#{tenant}
-		</if>
+		update user_role_ref set status = #{status},gmt_modified = now() 
+		where user_id=#{userId}
+		and tenant=#{tenant}
 		and role_id in
 		<foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
 			#{roleId}
 		</foreach>
 	</update>
-	
+	 
 	<update id="removeRefsByRoleId">
 		update user_role_ref set status = 0,gmt_modified = now() where role_id = #{roleId}
 	</update>
@@ -32,12 +31,6 @@
 		<if test="status != null">
             and t1.status = #{status},
         </if>
-		<if test='tenant == "_t_c"'>
-		    and t2.tenant='_t_c'
-		</if>
-		<if test='tenant != "_t_c"'>
-		    and t2.tenant in ('_t_c',#{tenant})
-		</if>
 		<if test = "roleName != null and roleName != ''">
 		    and t2.name like  concat('%', #{roleName}, '%')
 		</if>
@@ -109,12 +102,6 @@
 		<if test="status != null">
             and t1.status = #{status},
         </if>
-		<if test='tenant == "_t_c"'>
-		    and t2.tenant='_t_c'
-		</if>
-		<if test='tenant != "_t_c"'>
-		    and t2.tenant in ('_t_c',#{tenant})
-		</if>
 		<if test="filterUserRole == true">
 			<if test = "roleName != null and roleName != ''">
 			    and t2.name like  concat('%', #{roleName}, '%')
@@ -146,12 +133,6 @@
 		<if test="status != null">
             and t1.status = #{status},
         </if>
-		<if test='tenant == "_t_c"'>
-		    and t2.tenant='_t_c'
-		</if>
-		<if test='tenant != "_t_c"'>
-		    and t2.tenant in ('_t_c',#{tenant})
-		</if>
 		<if test = "roleName != null and roleName != ''">
 		    and t2.name like  concat('%', #{roleName}, '%')
 		</if>

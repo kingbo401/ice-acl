@@ -12,10 +12,9 @@
 	</insert>
 
 	<update id="updateRefsStatus">
-		update user_permission_ref set status = #{status},gmt_modified = now() where user_id=#{userId}
-		<if test = "tenant != null and tenant != ''">
-			and tenant=#{tenant}
-		</if>
+		update user_permission_ref set status = #{status},gmt_modified = now() 
+		where user_id=#{userId}
+		and tenant=#{tenant}
 		and permission_id in
 		<foreach collection="permissionIds" item="permissionId" open="(" separator="," close=")">
 			#{permissionId}
@@ -32,12 +31,6 @@
 		<if test="status != null">
             and t1.status = #{status},
         </if>
-		<if test='tenant == "_t_c"'>
-		    and t2.tenant='_t_c'
-		</if>
-		<if test='tenant != "_t_c"'>
-		    and t2.tenant in ('_t_c',#{tenant})
-		</if>
 		<if test = "permissionKey != null and permissionKey != ''">
 		    and t2.permission_key = #{permissionKey}
 		</if>

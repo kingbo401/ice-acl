@@ -38,7 +38,7 @@
 			<if test="target != null and target != ''">
 				target = #{target},
 			</if>
-			<if test="showType != null and showType != ''">
+			<if test="showType != null">
 				show_type = #{showType},
 			</if>
 			<if test="icon != null and icon != ''">

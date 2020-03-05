@@ -27,6 +27,9 @@
 			<if test="description != null and description != ''">
 				description = #{description},
 			</if>
+			<if test="pid != null">
+				pid = #{pid},
+			</if>
 			<if test="idx != null">
 				idx = #{idx},
 			</if>
