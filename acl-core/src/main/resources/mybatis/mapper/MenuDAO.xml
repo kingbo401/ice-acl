@@ -21,7 +21,7 @@
 				name = #{name},
 			</if>
 			<if test="nameEn != null and nameEn != ''">
-				nameEn = #{nameEn},
+				name_en = #{nameEn},
 			</if>
 			<if test="idx != null">
 				idx = #{idx},

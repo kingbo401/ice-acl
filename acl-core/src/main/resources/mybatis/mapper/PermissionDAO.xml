@@ -68,7 +68,7 @@
 		insert into permission(permission_key,name,name_en,subgroup,app_key,description,gmt_modified,gmt_create,status)
 		values
 		<foreach collection="list" separator="," item="item">
-			(#{item.permissionKey},#{item.name},#{item.subgroup},#{item.appKey},#{item.description},now(),now(),#{status})
+			(#{item.permissionKey},#{item.name},#{item.nameEn},#{item.subgroup},#{item.appKey},#{item.description},now(),now(),#{status})
 		</foreach>
 		ON DUPLICATE KEY UPDATE status=values(status),name=values(name),name_en=values(name_en),subgroup=values(subgroup),
 		description=values(description),gmt_modified = now()
@@ -84,7 +84,7 @@
 				name = #{name},
 			</if>
 			<if test="nameEn != null and nameEn != ''" >
-                nameEn = #{nameEn},
+                name_en = #{nameEn},
             </if>
 			<if test="subgroup != null and subgroup != ''">
 				subgroup = #{subgroup},

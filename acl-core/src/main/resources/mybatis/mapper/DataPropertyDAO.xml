@@ -39,7 +39,7 @@
 				name = #{name},
 			</if>
 			<if test="nameEn != null and nameEn != ''" >
-                nameEn = #{nameEn},
+                name_en = #{nameEn},
             </if>
             <if test="data_type != null and data_type != ''">
 				data_type = #{dataType},
