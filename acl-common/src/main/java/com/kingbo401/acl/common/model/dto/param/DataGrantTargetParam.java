@@ -2,7 +2,7 @@ package com.kingbo401.acl.common.model.dto.param;
 
 import com.kingbo401.commons.model.param.PageParam;
 
-public class GrantTargetParam extends PageParam{
+public class DataGrantTargetParam extends PageParam{
 	private String appKey;
 	
 	private String tenant;

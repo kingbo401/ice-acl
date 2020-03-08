@@ -9,6 +9,7 @@ public class MenuTreeNode extends BasePojo{
 	private Long id;
 	private String name;
 	private String nameEn;
+	private String menuKey;
 	private Long pid;
 	private String url;
 	private String icon;
@@ -32,6 +33,13 @@ public class MenuTreeNode extends BasePojo{
 	}
 	public void setNameEn(String nameEn) {
 		this.nameEn = nameEn;
+	}
+	
+	public String getMenuKey() {
+		return menuKey;
+	}
+	public void setMenuKey(String menuKey) {
+		this.menuKey = menuKey;
 	}
 	public Long getPid() {
 		return pid;

@@ -1,6 +1,6 @@
 package com.kingbo401.acl.common.model.dto.param;
 
-public class BaseDataGrantParam extends GrantTargetParam{
+public class BaseDataGrantParam extends DataGrantTargetParam{
 
 	private String modelCode;
 	
