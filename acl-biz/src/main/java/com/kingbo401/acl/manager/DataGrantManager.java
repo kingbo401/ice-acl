@@ -11,6 +11,11 @@ import com.kingbo401.acl.common.model.dto.param.DataRevokeParam;
 import com.kingbo401.acl.common.model.dto.param.DatasCheckParam;
 import com.kingbo401.commons.model.PageVO;
 
+/**
+ * 数据权限
+ * @author kingbo
+ *
+ */
 public interface DataGrantManager {
 	boolean grantDataPermission(DataGrantParam dataGrantParam);
 	

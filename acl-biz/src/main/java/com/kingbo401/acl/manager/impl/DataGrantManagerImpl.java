@@ -149,10 +149,10 @@ public class DataGrantManagerImpl implements DataGrantManager{
 			Assert.notNull(model, "模型不存在, code:" + modelCode);
 			Long modelId = model.getId();
 			BizUtil.checkEffectiveExpireTime(record.getEffectiveTime(), record.getExpireTime());
-			Set<String> operatinCodes = record.getOperationCodes();
-			Assert.notEmpty(operatinCodes, "operatinCodes不能为空");
+			Set<String> operationCodes = record.getOperationCodes();
+			Assert.notEmpty(operationCodes, "operationCodes不能为空");
 			Map<String, DataOperationDTO> operationMap = modelOperationMap.get(modelId);
-			operatinCodes.forEach(operatinCode -> {
+			operationCodes.forEach(operatinCode -> {
 				Assert.notNull(operationMap.get(operatinCode), "operationCode不存在：" + operatinCode);
 			});
 			Set<PropertyRule> propertyRules = record.getPropertyRules();
