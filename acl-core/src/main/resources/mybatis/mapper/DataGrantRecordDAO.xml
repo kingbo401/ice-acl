@@ -31,7 +31,7 @@
 	</update>
 	
 	<select id="getById" resultType="DataGrantRecordDO">
-		select * from data_grant_record where id = #{id}
+		select * from data_grant_record where id = #{id} and status != 0
 	</select>
 	
 	<select id="getByIds" resultType="DataGrantRecordDO">
@@ -39,23 +39,32 @@
 		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
 			#{id}
 		</foreach>
+		and status != 0
 	</select>
 	
 	<update id="removeByParam" parameterType="DataGrantRecordParam">
 		update data_grant_record set status=0, gmt_modified=now() 
-		where app_key=#{appKey} and model_id=#{modelId}
-		and grant_target_id=#{grantTargetId} and grant_target_type=#{grantTargetType} and tenant=#{tenant}
+		where app_key=#{appKey} 
+		<if test="modelId != null">
+			and model_id=#{modelId}
+		</if>
+		and grant_target_id=#{grantTargetId} 
+		and grant_target_type=#{grantTargetType} 
+		and tenant=#{tenant}
 	</update>
 	
 	<sql id="queryRecordSubSql">
-		where app_key=#{appKey} and model_id=#{modelId}
+		where app_key=#{appKey} 
+		<if test="modelId != null">
+			and model_id=#{modelId}
+		</if>
 		and grant_target_id in
 		<foreach collection="grantTargetIds" item="grantTargetId" open="(" separator="," close=")">
 			#{grantTargetId}
 		</foreach>
 		and grant_target_type=#{grantTargetType}
 		<if test='tenant == "_t_c"'>
-		    and tenant='_t_c'
+		    and tenant=#{tenant}
 		</if>
 		<if test='tenant != "_t_c"'>
 		    and tenant in ('_t_c',#{tenant})
@@ -82,5 +91,9 @@
 	<select id = "countDataGrantRecord" parameterType="DataGrantRecordQueryParam" resultType="long">
 		select count(*) from data_grant_record 
 		<include refid="queryRecordSubSql" />
+	</select>
+	
+	<select id="getOneByModel" resultType="DataGrantRecordDO">
+		select * from data_grant_record where model_id=#{modelId} and status = 1
 	</select>
 </mapper> 

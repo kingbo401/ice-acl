@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.github.pagehelper.util.StringUtil;
 import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.common.model.dto.RoleDTO;
 import com.kingbo401.acl.common.model.dto.param.RoleMenuIdRefParam;
@@ -182,6 +183,11 @@ public class RoleManagerImpl implements RoleManager{
 	@Override
 	public List<RoleDTO> listRole(RoleQueryParam param) {
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
+		String tenant = param.getTenant();
+		if (StringUtil.isEmpty(tenant)) {
+			tenant = AclConstant.TENANT_COMMON;
+			param.setTenant(tenant);
+		}
 		List<RoleDO> roleDOs = roleDAO.listRole(param);
 		return buildRoleDTOs(roleDOs);
 	}
@@ -190,7 +196,11 @@ public class RoleManagerImpl implements RoleManager{
 	public PageVO<RoleDTO> pageRole(RoleQueryParam param) {
 		Assert.notNull(param, "参数不能为空");
 		Assert.hasText(param.getAppKey(), "appKey不能为空");
-		
+		String tenant = param.getTenant();
+		if (StringUtil.isEmpty(tenant)) {
+			tenant = AclConstant.TENANT_COMMON;
+			param.setTenant(tenant);
+		}
 		PageVO<RoleDTO> pageVO = new PageVO<RoleDTO>(param);
 		if(param.isReturnTotalCount()){
 			long total = roleDAO.countRole(param);

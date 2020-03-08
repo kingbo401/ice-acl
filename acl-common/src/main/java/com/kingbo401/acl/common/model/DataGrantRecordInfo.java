@@ -6,6 +6,7 @@ import java.util.Set;
 
 public class DataGrantRecordInfo {
 	private Long id;
+	private String modelCode;
 	private Set<String> operationCodes;
 	private Set<PropertyRule> propertyRules;
 	private Date effectiveTime;
@@ -15,6 +16,12 @@ public class DataGrantRecordInfo {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getModelCode() {
+		return modelCode;
+	}
+	public void setModelCode(String modelCode) {
+		this.modelCode = modelCode;
 	}
 	public Set<String> getOperationCodes() {
 		return operationCodes;

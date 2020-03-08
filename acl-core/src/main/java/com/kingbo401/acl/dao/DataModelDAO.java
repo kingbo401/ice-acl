@@ -19,6 +19,8 @@ public interface DataModelDAO {
 	DataModelDO getByCode0(@Param("code") String code);
 
 	List<DataModelDO> getByIds(@Param("ids") List<Long> modelIds);
+	
+	List<DataModelDO> getByCodes(@Param("codes") List<String> modelCodes);
 
 	List<DataModelDO> listModel(DataModelQueryParam dataModelQueryParam);
 

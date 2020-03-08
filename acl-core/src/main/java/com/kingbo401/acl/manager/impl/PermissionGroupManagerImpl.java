@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import com.github.pagehelper.util.StringUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.kingbo401.acl.common.constant.AclConstant;
@@ -99,11 +100,15 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 	}
 
 	@Override
-	public List<PermissionGroupTreeNode> getPermissionGroupTree(PermissionGroupQueryParam permissionGroupQueryParam) {
-		Assert.notNull(permissionGroupQueryParam, "permissionGroupQueryParam不能为空");
-		String appKey = permissionGroupQueryParam.getAppKey();
+	public List<PermissionGroupTreeNode> getPermissionGroupTree(PermissionGroupQueryParam param) {
+		String appKey = param.getAppKey();
 		Assert.hasText(appKey, "appKey 不能为空");
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.listPermissionGroup(permissionGroupQueryParam);
+		String tenant = param.getTenant();
+		if (StringUtil.isEmpty(tenant)) {
+			tenant = AclConstant.TENANT_COMMON;
+			param.setTenant(tenant);
+		}
+		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.listPermissionGroup(param);
 		if (CollectionUtils.isEmpty(permissionGroupDOs)) {
 			return null;
 		}
@@ -148,28 +153,36 @@ public class PermissionGroupManagerImpl implements PermissionGroupManager{
 	}
 
 	@Override
-	public List<PermissionGroupDTO> listPermissionGroup(PermissionGroupQueryParam permissionGroupQueryParam) {
-		Assert.notNull(permissionGroupQueryParam, "permissionGroupQueryParam不能为空");
-		Assert.hasText(permissionGroupQueryParam.getAppKey(), "appKey 不能为空");
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.listPermissionGroup(permissionGroupQueryParam);
+	public List<PermissionGroupDTO> listPermissionGroup(PermissionGroupQueryParam param) {
+		Assert.hasText(param.getAppKey(), "appKey 不能为空");
+		String tenant = param.getTenant();
+		if (StringUtil.isEmpty(tenant)) {
+			tenant = AclConstant.TENANT_COMMON;
+			param.setTenant(tenant);
+		}
+		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.listPermissionGroup(param);
 		return BizUtil.buildPermissionGroupDTOs(permissionGroupDOs);
 	}
 
 	@Override
-	public PageVO<PermissionGroupDTO> pagePermissionGroup(PermissionGroupQueryParam permissionGroupQueryParam) {
-		Assert.notNull(permissionGroupQueryParam, "permissionGroupQueryParam不能为空");
-		Assert.hasText(permissionGroupQueryParam.getAppKey(), "appKey 不能为空");
-		PageVO<PermissionGroupDTO> pageDTO = new PageVO<PermissionGroupDTO>(permissionGroupQueryParam);
-		pageDTO.setPageNum(permissionGroupQueryParam.getPageNum());
-		pageDTO.setPageSize(permissionGroupQueryParam.getPageSize());
-		if(permissionGroupQueryParam.isReturnTotalCount()){
-			long total = permissionGroupDAO.countPermissionGroup(permissionGroupQueryParam);
+	public PageVO<PermissionGroupDTO> pagePermissionGroup(PermissionGroupQueryParam param) {
+		Assert.hasText(param.getAppKey(), "appKey 不能为空");
+		String tenant = param.getTenant();
+		if (StringUtil.isEmpty(tenant)) {
+			tenant = AclConstant.TENANT_COMMON;
+			param.setTenant(tenant);
+		}
+		PageVO<PermissionGroupDTO> pageDTO = new PageVO<PermissionGroupDTO>(param);
+		pageDTO.setPageNum(param.getPageNum());
+		pageDTO.setPageSize(param.getPageSize());
+		if(param.isReturnTotalCount()){
+			long total = permissionGroupDAO.countPermissionGroup(param);
 			pageDTO.setTotal(total);
 			if(total == 0){
 				return pageDTO;
 			}
 		}
-		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.pagePermissionGroup(permissionGroupQueryParam);
+		List<PermissionGroupDO> permissionGroupDOs = permissionGroupDAO.pagePermissionGroup(param);
 		pageDTO.setItems(BizUtil.buildPermissionGroupDTOs(permissionGroupDOs));
 		return pageDTO;
 	}

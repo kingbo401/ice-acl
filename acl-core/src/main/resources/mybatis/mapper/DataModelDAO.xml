@@ -20,10 +20,19 @@
 
 	<select id="getByIds" resultType="DataModelDO">
 		select * from data_model
-		where status = 1 and id in
+		where status != 0 and id in
 		<foreach item="modelId" collection="ids" open="(" separator=","
 			close=")">
 			#{modelId}
+		</foreach>
+	</select>
+	
+	<select id="getByCodes" resultType="DataModelDO">
+		select * from data_model
+		where status != 0 and code in
+		<foreach item="code" collection="codes" open="(" separator=","
+			close=")">
+			#{code}
 		</foreach>
 		ORDER BY id desc
 	</select>

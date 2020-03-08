@@ -1,6 +1,7 @@
 package com.kingbo401.acl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,18 +80,23 @@ public class DataGrantManagerImpl implements DataGrantManager{
 	
 	private Map<String, DataOperationDTO> getOperationMap(Long modelId){
 		List<DataOperationDTO> operations = dataOperationManager.listDataOperation(modelId);
-		Assert.notEmpty(operations, "模型没有配置操作");
+		if (CollectionUtils.isEmpty(operations)) {
+			return new HashMap<>();
+		}
 		return operations.stream()
 				.collect(Collectors.toMap(DataOperationDTO::getCode, a -> a, (k1, k2) -> k1));
 	}
 	
 	private Map<String, DataPropertyDTO> getPropertyMap(Long modelId){
 		List<DataPropertyDTO> properties = dataPropertyManager.listDataProperty(modelId);
-		Assert.notEmpty(properties, "模型没有配置属性");
+		if (CollectionUtils.isEmpty(properties)) {
+			return new HashMap<>();
+		}
 		return properties.stream()
 				.collect(Collectors.toMap(DataPropertyDTO::getCode, a -> a, (k1, k2) -> k1));
 	}
     
+	@Override
 	public boolean grantDataPermission(DataGrantParam dataGrantParam) {
 		String appKey = dataGrantParam.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -103,10 +109,6 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		
 		String tenant = dataGrantParam.getTenant();
 		Assert.hasText(tenant, "tenant不能为空");
-		
-		String modelCode = dataGrantParam.getModelCode();
-		DataModelDTO dataModelDTO = dataModelManager.getByCode(modelCode);
-		Assert.notNull(dataModelDTO, "modelCode非法");
 		
 		if(grantTargetType == GrantTargetType.PERMISSION_GROUP.getCode()){
 			long groupId = NumberUtils.toLong(grantTargetId);
@@ -124,21 +126,38 @@ public class DataGrantManagerImpl implements DataGrantManager{
 			Assert.isTrue(roleDO.getAppKey().equals(appKey), "此角色不属于app:" + appKey);
 		}
 		
-		Long modelId = dataModelDTO.getId();
-		Map<String, DataOperationDTO> operationMap = this.getOperationMap(modelId);
-		Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
 		//判断数据是否包含非法值
 		List<DataGrantRecordInfo> records = dataGrantParam.getRecords();
 		Assert.notEmpty(records, "records不能为空");
+		List<String> modelCodes = records.stream().map(DataGrantRecordInfo::getModelCode).distinct().collect(Collectors.toList());
+		List<DataModelDTO> models = dataModelManager.getByCodes(modelCodes);
+		Assert.notEmpty(models, "modelCode非法");
+		Assert.isTrue(modelCodes.size() == models.size(), "modelCode非法.");
+		Map<String, DataModelDTO> modelMap = new HashMap<>();
+		Map<Long, Map<String, DataPropertyDTO>> modelPropertyMap = new HashMap<>();
+		Map<Long, Map<String, DataOperationDTO>> modelOperationMap = new HashMap<>();
+		models.forEach(model -> {
+			String modelCode = model.getCode();
+			Long modelId = model.getId();
+			modelMap.put(modelCode, model);
+			modelPropertyMap.put(modelId, this.getPropertyMap(modelId));
+			modelOperationMap.put(modelId, this.getOperationMap(modelId));
+		});
 		records.forEach(record -> {
+			String modelCode = record.getModelCode();
+			DataModelDTO model = modelMap.get(modelCode);
+			Assert.notNull(model, "模型不存在, code:" + modelCode);
+			Long modelId = model.getId();
 			BizUtil.checkEffectiveExpireTime(record.getEffectiveTime(), record.getExpireTime());
 			Set<String> operatinCodes = record.getOperationCodes();
 			Assert.notEmpty(operatinCodes, "operatinCodes不能为空");
+			Map<String, DataOperationDTO> operationMap = modelOperationMap.get(modelId);
 			operatinCodes.forEach(operatinCode -> {
 				Assert.notNull(operationMap.get(operatinCode), "operationCode不存在：" + operatinCode);
 			});
 			Set<PropertyRule> propertyRules = record.getPropertyRules();
 			Assert.notEmpty(propertyRules, "propertyRules不能为空");
+			Map<String, DataPropertyDTO> propertyMap = modelPropertyMap.get(modelId);
 			propertyRules.forEach(propertyRule -> {
 				String code = propertyRule.getCode();
 				String comparator = propertyRule.getComparator();
@@ -158,11 +177,14 @@ public class DataGrantManagerImpl implements DataGrantManager{
 			});
 		});
 		records.forEach(record -> {
+			String modelCode = record.getModelCode();
+			DataModelDTO model = modelMap.get(modelCode);
+			Long modelId = model.getId();
 			Long id = record.getId();
 			DataGrantRecordDO dataGrantRecordDO = new DataGrantRecordDO();
 			dataGrantRecordDO.setId(id);
 			dataGrantRecordDO.setAppKey(appKey);
-			dataGrantRecordDO.setModelId(dataModelDTO.getId());
+			dataGrantRecordDO.setModelId(modelId);
 			dataGrantRecordDO.setOperationCodes(JSON.toJSONString(record.getOperationCodes()));
 			dataGrantRecordDO.setPropertyRules(JSON.toJSONString(record.getPropertyRules()));
 			dataGrantRecordDO.setStatus(AclConstant.STATUS_NORMAL);
@@ -192,9 +214,12 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		Assert.hasText(appKey, "appKey不能为空");
 
 		String modelCode = dataRevokeParam.getModelCode();
-		DataModelDTO dataModelDTO = dataModelManager.getByCode(modelCode);
-		Assert.notNull(dataModelDTO, "modelCode非法");
-		Long modelId = dataModelDTO.getId();
+		Long modelId = null;
+		if (StringUtils.isNotBlank(modelCode)) {
+			DataModelDTO dataModelDTO = dataModelManager.getByCode(modelCode);
+			Assert.notNull(dataModelDTO, "modelCode非法");
+			modelId = dataModelDTO.getId();
+		}
 		
 		String tenant = dataRevokeParam.getTenant();
 		Assert.hasText(tenant, "tenant不能为空");
@@ -221,9 +246,6 @@ public class DataGrantManagerImpl implements DataGrantManager{
 			Assert.isTrue(roleDO.getAppKey().equals(appKey), "此角色不属于app:" + appKey);
 		}
 		
-		List<DataPropertyDTO> dataProperties = dataPropertyManager.listDataProperty(dataModelDTO.getId());
-		Assert.notEmpty(dataProperties, "没有配置模型对应的属性");
-		
 		DataGrantRecordParam dataGrantRecordParam = new DataGrantRecordParam();
 		dataGrantRecordParam.setAppKey(appKey);
 		dataGrantRecordParam.setGrantTargetId(grantTargetId);
@@ -241,11 +263,13 @@ public class DataGrantManagerImpl implements DataGrantManager{
 			List<DataGrantRecordDO> dataGrantRecordDOs = dataGrantRecordDAO.getByIds(dataGrantRecordIds);
 			Assert.notEmpty(dataGrantRecordDOs, "授权记录不存在");
 			for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs){
-				Assert.isTrue(dataGrantRecordDO.getAppKey().equals(appKey), "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getModelId().equals(modelId), "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getGrantTargetId().equals(grantTargetId), "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getGrantTargetType() == grantTargetType, "参数不合法");
-				Assert.isTrue(dataGrantRecordDO.getTenant().equals(tenant), "参数不合法");
+				Assert.isTrue(dataGrantRecordDO.getAppKey().equals(appKey), "参数非法");
+				if (modelId != null) {
+					Assert.isTrue(dataGrantRecordDO.getModelId().equals(modelId), "参数非法");
+				}
+				Assert.isTrue(dataGrantRecordDO.getGrantTargetId().equals(grantTargetId), "参数非法");
+				Assert.isTrue(dataGrantRecordDO.getGrantTargetType() == grantTargetType, "参数非法");
+				Assert.isTrue(dataGrantRecordDO.getTenant().equals(tenant), "参数非法");
 			}
 			dataGrantRecordDAO.removeByIds(dataGrantRecordIds);
 		}
@@ -273,8 +297,10 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		Long modelId = dataModelDTO.getId();
 		
  		String operationCode = datasCheckParam.getOperationCode();
-		DataOperationDTO dataOperationDTO = dataOperationManager.getByCode(modelId, operationCode);
-		Assert.notNull(dataOperationDTO, "没查到operationCode对用的操作");
+ 		if (!AclConstant.ALL_DATA.equals(operationCode)) {
+ 			DataOperationDTO dataOperationDTO = dataOperationManager.getByCode(modelId, operationCode);
+ 			Assert.notNull(dataOperationDTO, "没查到operationCode对用的操作");
+		}
 		
 		Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
 		Map<String, DataOperationDTO> operationMap = this.getOperationMap(modelId);
@@ -415,7 +441,9 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		if (CollectionUtils.isEmpty(operationCodes)) {
 			return false;
 		}
-		if(operationCode != null && !operationCodes.contains(operationCode)) {
+		if(operationCode != null 
+				&& (!operationCodes.contains(operationCode) 
+						|| !operationCodes.contains(AclConstant.ALL_DATA))) {
 			return false;
 		}
 		boolean valid = true;
@@ -462,11 +490,12 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		Assert.hasText(appKey, "appKey不能为空");
 		
 		String modelCode = dataGrantQueryParam.getModelCode();
-		Assert.hasText(modelCode, "modelCode不能为空");
-		
-		DataModelDTO dataModelDTO = dataModelManager.getByCode(modelCode);
-		Assert.notNull(dataModelDTO, "没查到modelCode对用的模型");
-		Long modelId = dataModelDTO.getId();
+		Long modelId = null;
+		if (StringUtils.isNotBlank(modelCode)) {
+			DataModelDTO dataModelDTO = dataModelManager.getByCode(modelCode);
+			Assert.notNull(dataModelDTO, "没查到modelCode对用的模型");
+			modelId = dataModelDTO.getId();
+		}
 		
 		DataGrantRecordQueryParam dataGrantRecordQueryParam = new DataGrantRecordQueryParam();
 		dataGrantRecordQueryParam.setAppKey(appKey);
@@ -487,6 +516,9 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		dataGrantRecordQueryParam.setTenant(tenant);
 		
 		Map<String, String> data = dataGrantQueryParam.getData();
+		if (modelId == null && data != null) {
+			data.clear();
+		}
 		if(MapUtils.isNotEmpty(data)){
 			Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
 			for(Map.Entry<String, String> entry : data.entrySet()){
@@ -504,43 +536,85 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		return dataGrantRecordQueryParam;
 	}
 	
-	private List<DataGrantRecordDTO> buildDataGrantRecordDTOs(List<DataGrantRecordDO> datas, String modelCode,
+	private DataGrantRecordDTO buildDataGrantRecordDTO(DataGrantRecordDO dataGrantRecordDO, String modelCode,
+			Map<String, DataPropertyDTO> propertyMap, Map<String, DataOperationDTO> operationMap){
+		String operationCodesStr = dataGrantRecordDO.getOperationCodes();
+		String propertyRulesStr = dataGrantRecordDO.getPropertyRules();
+		List<String> operationCodes = JSON.parseArray(operationCodesStr, String.class);
+		List<DataOperationDTO> operations = new ArrayList<>();
+		Iterator<String> opIter = operationCodes.iterator();
+		while(opIter.hasNext()) {
+			String operationCode = opIter.next();
+			if (operationCode.equals(AclConstant.ALL_DATA)) {
+				DataOperationDTO operation = new DataOperationDTO();
+				operation.setCode(operationCode);
+				operation.setName("ALL");
+				operations.add(operation);
+				continue;
+			}
+			DataOperationDTO operation = operationMap.get(operationCode);
+			if (operation != null) {
+				operations.add(operation);
+			} else {
+				opIter.remove();
+			}
+		}
+		
+		List<PropertyRule> propertyRules = JSON.parseArray(propertyRulesStr, PropertyRule.class);
+		Iterator<PropertyRule> ruleIter = propertyRules.iterator();
+		while (ruleIter.hasNext()) {
+			PropertyRule propertyRule = ruleIter.next();
+			if (propertyMap.get(propertyRule.getCode()) == null) {
+				ruleIter.remove();
+			}
+		}
+		DataGrantRecordDTO dataGrantRecordDTO = new DataGrantRecordDTO();
+		BeanUtils.copyProperties(dataGrantRecordDO, dataGrantRecordDTO);
+		dataGrantRecordDTO.setModelCode(modelCode);
+		dataGrantRecordDTO.setOperationCodes(operationCodes);
+		dataGrantRecordDTO.setOperations(operations);
+		dataGrantRecordDTO.setPropertyRules(propertyRules);
+		return dataGrantRecordDTO;
+	} 
+	
+	private List<DataGrantRecordDTO> buildDataGrantRecordDTOs(List<DataGrantRecordDO> dataGrantRecordDOs, String modelCode,
 			Map<String, DataPropertyDTO> propertyMap, Map<String, DataOperationDTO> operationMap){
 		List<DataGrantRecordDTO> records = new ArrayList<>();
-		if(CollectionUtil.isEmpty(datas)){
+		if(CollectionUtil.isEmpty(dataGrantRecordDOs)){
 			return records;
 		}
-		for(DataGrantRecordDO dataGrantRecordDO : datas) {
-			String operationCodesStr = dataGrantRecordDO.getOperationCodes();
-			String propertyRulesStr = dataGrantRecordDO.getPropertyRules();
-			List<String> operationCodes = JSON.parseArray(operationCodesStr, String.class);
-			List<DataOperationDTO> operations = new ArrayList<>();
-			Iterator<String> opIter = operationCodes.iterator();
-			while(opIter.hasNext()) {
-				String operationCode = opIter.next();
-				DataOperationDTO operation = operationMap.get(operationCode);
-				if (operation != null) {
-					operations.add(operation);
-				} else {
-					opIter.remove();
-				}
-			}
-			
-			List<PropertyRule> propertyRules = JSON.parseArray(propertyRulesStr, PropertyRule.class);
-			Iterator<PropertyRule> ruleIter = propertyRules.iterator();
-			while (ruleIter.hasNext()) {
-				PropertyRule propertyRule = ruleIter.next();
-				if (propertyMap.get(propertyRule.getCode()) == null) {
-					ruleIter.remove();
-				}
-			}
-			DataGrantRecordDTO dataGrantRecordDTO = new DataGrantRecordDTO();
-			BeanUtils.copyProperties(dataGrantRecordDO, dataGrantRecordDTO);
-			dataGrantRecordDTO.setModelCode(modelCode);
-			dataGrantRecordDTO.setOperationCodes(operationCodes);
-			dataGrantRecordDTO.setOperations(operations);
-			dataGrantRecordDTO.setPropertyRules(propertyRules);
-			records.add(dataGrantRecordDTO);
+		for(DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs) {
+			records.add(this.buildDataGrantRecordDTO(dataGrantRecordDO, modelCode, propertyMap, operationMap));
+		}
+		return records;
+	}
+	
+	private List<DataGrantRecordDTO> buildDataGrantRecordDTOs(List<DataGrantRecordDO> dataGrantRecordDOs){
+		List<DataGrantRecordDTO> records = new ArrayList<>();
+		if (CollectionUtils.isEmpty(dataGrantRecordDOs)) {
+			return records;
+		}
+		
+		List<Long> modelIds = dataGrantRecordDOs.stream().map(DataGrantRecordDO::getId).distinct().collect(Collectors.toList());
+		List<DataModelDTO> models = dataModelManager.getByIds(modelIds);
+		Assert.notEmpty(models, "modelCode非法");
+		Assert.isTrue(modelIds.size() == models.size(), "modelCode非法.");
+		Map<Long, DataModelDTO> modelMap = new HashMap<>();
+		Map<Long, Map<String, DataPropertyDTO>> modelPropertyMap = new HashMap<>();
+		Map<Long, Map<String, DataOperationDTO>> modelOperationMap = new HashMap<>();
+		models.forEach(model -> {
+			Long modelId = model.getId();
+			modelMap.put(modelId, model);
+			modelPropertyMap.put(modelId, this.getPropertyMap(modelId));
+			modelOperationMap.put(modelId, this.getOperationMap(modelId));
+		});
+		for (DataGrantRecordDO dataGrantRecordDO : dataGrantRecordDOs) {
+			Long modelId = dataGrantRecordDO.getModelId();
+			DataModelDTO dataModelDTO = modelMap.get(modelId);
+			String modelCode = dataModelDTO.getCode();
+			Map<String, DataPropertyDTO> propertyMap = modelPropertyMap.get(modelId);
+			Map<String, DataOperationDTO> operationMap = modelOperationMap.get(modelId);
+			records.add(this.buildDataGrantRecordDTO(dataGrantRecordDO, modelCode, propertyMap, operationMap));
 		}
 		return records;
 	}
@@ -550,16 +624,12 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		boolean hierarchicalRole = dataGrantQueryParam.isHierarchicalRole();
 		boolean hierarchicalPermissionGroup = dataGrantQueryParam.isHierarchicalPermissionGroup();
 		boolean hierarchicalRolePermissionGroup = dataGrantQueryParam.isHierarchicalRolePermissionGroup();
-		DataGrantRecordQueryParam dataGrantRecordQueryParam = buildDataGrantRecordQueryParam(dataGrantQueryParam);
+		DataGrantRecordQueryParam dataGrantRecordQueryParam = this.buildDataGrantRecordQueryParam(dataGrantQueryParam);
 		String grantTargetId = dataGrantQueryParam.getGrantTargetId();
 		String tenant = dataGrantQueryParam.getTenant();
 		Long modelId = dataGrantRecordQueryParam.getModelId();
 		String modelCode = dataGrantQueryParam.getModelCode();
 		String operationCode = dataGrantQueryParam.getOperationCode();
-		if (StringUtils.isNoneBlank(operationCode)) {
-			DataOperationDTO dataOperationDTO = dataOperationManager.getByCode(modelId, operationCode);
-			Assert.notNull(dataOperationDTO, "操作编码不存在:" + operationCode);
-		}
 		//此appkey可能跟modelCode的appkey不同
 		String appKey = dataGrantQueryParam.getAppKey();
 		Assert.hasText(appKey, "appKey不能为空");
@@ -601,10 +671,15 @@ public class DataGrantManagerImpl implements DataGrantManager{
 				}
 			}
 		}
-		Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
-		Map<String, DataOperationDTO> operationMap = this.getOperationMap(modelId);
-		List<DataGrantRecordDTO> dataGrantRecordDTOs = buildDataGrantRecordDTOs(datas, modelCode, propertyMap, operationMap);
-		this.filterDataGrantRecords(operationCode, dataGrantQueryParam.getData(), dataGrantRecordDTOs);
+		List<DataGrantRecordDTO> dataGrantRecordDTOs = null;
+		if (modelId != null) {
+			Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
+			Map<String, DataOperationDTO> operationMap = this.getOperationMap(modelId);
+			dataGrantRecordDTOs = buildDataGrantRecordDTOs(datas, modelCode, propertyMap, operationMap);
+			this.filterDataGrantRecords(operationCode, dataGrantQueryParam.getData(), dataGrantRecordDTOs);
+		} else {
+			dataGrantRecordDTOs = this.buildDataGrantRecordDTOs(datas);
+		}
 		return dataGrantRecordDTOs;
 	}
 
@@ -612,7 +687,7 @@ public class DataGrantManagerImpl implements DataGrantManager{
 	public PageVO<DataGrantRecordDTO> pageDataGrantRecord(DataGrantQueryParam dataGrantQueryParam) {
 		Assert.notNull(dataGrantQueryParam, "参数不能为空");
 		PageVO<DataGrantRecordDTO> pageVO = new PageVO<DataGrantRecordDTO>(dataGrantQueryParam);
-		DataGrantRecordQueryParam dataGrantRecordQueryParam = buildDataGrantRecordQueryParam(dataGrantQueryParam);
+		DataGrantRecordQueryParam dataGrantRecordQueryParam = this.buildDataGrantRecordQueryParam(dataGrantQueryParam);
 		Long modelId = dataGrantRecordQueryParam.getModelId();
 		String modelCode = dataGrantQueryParam.getModelCode();
 		if(dataGrantQueryParam.isReturnTotalCount()){
@@ -623,15 +698,20 @@ public class DataGrantManagerImpl implements DataGrantManager{
     		}
 		}
 		List<DataGrantRecordDO> datas = dataGrantRecordDAO.pageDataGrantRecord(dataGrantRecordQueryParam);
-		Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
-		Map<String, DataOperationDTO> operationMap = this.getOperationMap(modelId);
-		List<DataGrantRecordDTO> dataGrantRecordDTOs = buildDataGrantRecordDTOs(datas, modelCode, propertyMap, operationMap);
+		List<DataGrantRecordDTO> dataGrantRecordDTOs = null;
+		if (modelId != null) {
+			Map<String, DataPropertyDTO> propertyMap = this.getPropertyMap(modelId);
+			Map<String, DataOperationDTO> operationMap = this.getOperationMap(modelId);
+			dataGrantRecordDTOs = buildDataGrantRecordDTOs(datas, modelCode, propertyMap, operationMap);
+		} else {
+			dataGrantRecordDTOs = this.buildDataGrantRecordDTOs(datas);
+		}
 		pageVO.setItems(dataGrantRecordDTOs);
 		return pageVO;
 	}
 	
 	private List<String> getUserRoleIds(String appKey, String userId, String tenant){
-		List<String> userRoleIds = Lists.newArrayList();
+		List<String> userRoleIds = new ArrayList<String>();
 		//查出用户所有的角色
 		UserRoleRefQueryParam param = new UserRoleRefQueryParam();
 		param.setAppKey(appKey);
@@ -639,8 +719,9 @@ public class DataGrantManagerImpl implements DataGrantManager{
 		param.setUserId(userId);
 		param.setReturnNotEffective(false);
 		List<UserRoleRefDTO> userRoleRefVOs = userRoleRefDAO.listUserRoleRef(param);
+		//用户没有角色
 		if(CollectionUtil.isEmpty(userRoleRefVOs)){
-			return userRoleIds;//用户没有角色，直接返回失败
+			return userRoleIds;
 		}
 		for(UserRoleRefDTO userRoleRefVO : userRoleRefVOs){
 			userRoleIds.add(String.valueOf(userRoleRefVO.getRoleId()));
@@ -675,5 +756,10 @@ public class DataGrantManagerImpl implements DataGrantManager{
 			groupIds.add(String.valueOf(permissionGroupId));
 		}
 		return groupIds;
+	}
+
+	@Override
+	public boolean isModelUsed(Long modelId) {
+		return dataGrantRecordDAO.getOneByModel(modelId) != null;
 	}
 }

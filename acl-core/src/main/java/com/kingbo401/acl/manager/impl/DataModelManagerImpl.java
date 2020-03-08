@@ -11,10 +11,13 @@ import org.springframework.util.Assert;
 
 import com.kingbo401.acl.common.constant.AclConstant;
 import com.kingbo401.acl.common.model.dto.DataModelDTO;
+import com.kingbo401.acl.common.model.dto.DataOperationDTO;
 import com.kingbo401.acl.common.model.dto.DataPropertyDTO;
 import com.kingbo401.acl.dao.DataModelDAO;
 import com.kingbo401.acl.manager.AppManager;
+import com.kingbo401.acl.manager.DataGrantManager;
 import com.kingbo401.acl.manager.DataModelManager;
+import com.kingbo401.acl.manager.DataOperationManager;
 import com.kingbo401.acl.manager.DataPropertyManager;
 import com.kingbo401.acl.model.entity.DataModelDO;
 import com.kingbo401.acl.model.entity.param.DataModelQueryParam;
@@ -30,6 +33,10 @@ public class DataModelManagerImpl implements DataModelManager {
 	private AppManager appManager;
 	@Autowired
 	private DataPropertyManager dataPropertyManager;
+	@Autowired
+	private DataOperationManager dataOperationManager;
+	@Autowired
+	private DataGrantManager dataGrantManager;
 
 	private void assertModelCode(String modelCode) {
 		Assert.hasText(modelCode, "模型编码不能为空");
@@ -92,8 +99,15 @@ public class DataModelManagerImpl implements DataModelManager {
 		DataModelDO dataModelDO = dataModelDAO.getByCode(modelCode);
 		Assert.notNull(dataModelDO, "模型不存在");
 		Assert.isTrue(appKey.equals(dataModelDO.getAppKey()), "appkey模型不匹配");
-		List<DataPropertyDTO> properties = dataPropertyManager.listDataProperty(dataModelDO.getId());
-		Assert.isTrue(CollectionUtil.isEmpty(properties), "请先解除数据模型与属性的绑定关系");
+		Long modelId = dataModelDO.getId();
+		if (status == AclConstant.STATUS_REMOVE) {
+			Assert.isTrue(!dataGrantManager.isModelUsed(modelId), "模型有数据授权使用，不能删除");
+			List<DataOperationDTO> operations = dataOperationManager.listDataOperation(modelId);
+			Assert.isTrue(CollectionUtil.isEmpty(operations), "请先删除模型下的操作");
+			List<DataPropertyDTO> properties = dataPropertyManager.listDataProperty(modelId);
+			Assert.isTrue(CollectionUtil.isEmpty(properties), "请先删除模型下的属性");
+		}
+		
 		dataModelDO.setStatus(status);
 		dataModelDAO.update(dataModelDO);
 		return true;
@@ -137,6 +151,19 @@ public class DataModelManagerImpl implements DataModelManager {
 		}
 		Assert.isTrue(appKey.equals(dataModelDO.getAppKey()), "appkey应用不存在");
 		return buildDataModelDTO(dataModelDO);
+	}
+	
+
+	@Override
+	public List<DataModelDTO> getByIds(List<Long> ids) {
+		Assert.notEmpty(ids, "modelIds不能为空");
+		return buildDataModelDTOs(dataModelDAO.getByIds(ids));
+	}
+
+	@Override
+	public List<DataModelDTO> getByCodes(List<String> modelCodes) {
+		Assert.notEmpty(modelCodes, "modelCodes不能为空");
+		return buildDataModelDTOs(dataModelDAO.getByCodes(modelCodes));
 	}
 
 	@Override
@@ -183,4 +210,5 @@ public class DataModelManagerImpl implements DataModelManager {
 		}
 		return list;
 	}
+
 }

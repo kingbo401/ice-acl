@@ -11,7 +11,7 @@ public class RoleQueryParam extends PageParam{
 	private String subgroup;
 	private Integer status;
 	private boolean fuzzy;
-	
+	private boolean onlyTenantRole;
 	public String getAppKey() {
 		return appKey;
 	}
@@ -60,5 +60,11 @@ public class RoleQueryParam extends PageParam{
 	}
 	public void setFuzzy(boolean fuzzy) {
 		this.fuzzy = fuzzy;
+	}
+	public boolean isOnlyTenantRole() {
+		return onlyTenantRole;
+	}
+	public void setOnlyTenantRole(boolean onlyTenantRole) {
+		this.onlyTenantRole = onlyTenantRole;
 	}
 }

@@ -19,6 +19,10 @@ public interface DataModelManager {
 	
 	DataModelDTO getById(Long id);
 	
+	List<DataModelDTO> getByIds(List<Long> ids);
+	
+	List<DataModelDTO> getByCodes(List<String> modelCodes);
+	
 	DataModelDTO getByCode(String modelCode);
 	
 	DataModelDTO getByCode(String appKey, String modelCode);

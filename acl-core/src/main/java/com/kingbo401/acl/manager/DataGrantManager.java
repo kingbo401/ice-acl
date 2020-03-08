@@ -23,4 +23,6 @@ public interface DataGrantManager {
 	List<DataGrantRecordDTO> listDataGrantRecord(DataGrantQueryParam dataGrantQueryParam);
 	
 	PageVO<DataGrantRecordDTO> pageDataGrantRecord(DataGrantQueryParam dataGrantQueryParam);
+	
+	boolean isModelUsed(Long modelId);
 }

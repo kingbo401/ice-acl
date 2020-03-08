@@ -8,6 +8,7 @@ public class PermissonQueryParam extends PageParam{
 	private String name;
 	private String subgroup;
 	private Integer status;
+	private boolean onlyTenantGroup;
 	public String getAppKey() {
 		return appKey;
 	}
@@ -37,5 +38,11 @@ public class PermissonQueryParam extends PageParam{
 	}
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+	public boolean isOnlyTenantGroup() {
+		return onlyTenantGroup;
+	}
+	public void setOnlyTenantGroup(boolean onlyTenantGroup) {
+		this.onlyTenantGroup = onlyTenantGroup;
 	}
 }

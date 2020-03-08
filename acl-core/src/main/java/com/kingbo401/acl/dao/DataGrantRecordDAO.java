@@ -13,9 +13,9 @@ public interface DataGrantRecordDAO {
 	
 	int removeByIds(@Param("ids")List<Long> ids);
 	
-	int removeById(@Param("id")long id);
+	int removeById(@Param("id")Long id);
 	
-	DataGrantRecordDO getById(@Param("id")long id);
+	DataGrantRecordDO getById(@Param("id")Long id);
 	
 	List<DataGrantRecordDO> getByIds(@Param("ids")List<Long> ids);
 	
@@ -28,4 +28,6 @@ public interface DataGrantRecordDAO {
 	List<DataGrantRecordDO> pageDataGrantRecord(DataGrantRecordQueryParam param);
 	
 	long countDataGrantRecord(DataGrantRecordQueryParam param);
+	
+	DataGrantRecordDO getOneByModel(@Param("modelId") Long modelId);
 }
