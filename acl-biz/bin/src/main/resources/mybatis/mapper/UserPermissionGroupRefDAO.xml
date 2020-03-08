@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.kingbo401.acl.dao.UserPermissionGroupRefDAO"> 
+	<insert id="batchCreate" parameterType="list">
+		insert into user_permission_group_ref(user_id,group_id,tenant,status,effective_time,expire_time,gmt_create,gmt_modified) values
+		<foreach collection="list" item="item" index="index" separator="," >  
+		(#{item.userId},#{item.groupId},#{item.tenant},#{item.status},#{item.effectiveTime},#{item.expireTime},now(),now())
+		</foreach>
+		ON DUPLICATE KEY UPDATE gmt_modified = now(),status = values(status),effective_time=values(effective_time),expire_time=values(expire_time)
+	</insert>
+
+	<update id="updateRefsStatus">
+		update user_permission_group_ref set status = #{status},gmt_modified = now() 
+		where user_id=#{userId}
+		and tenant=#{tenant}
+		and group_id in
+		<foreach collection="groupIds" item="groupId" open="(" separator="," close=")">
+			#{groupId}
+		</foreach>
+	</update>
+	
+	<update id="removeRefsByGroupId">
+		update user_permission_group_ref set status = 0,gmt_modified = now() where group_id = #{groupId}
+	</update>
+	
+	<sql id="queryUserPermissionGroupRefSubSql">
+		where t1.user_id=#{userId} and t1.tenant=#{tenant} and t1.group_id=t2.id 
+		and and t2.app_key=#{appKey}
+		<if test="status != null">
+            and t1.status = #{status},
+        </if>
+		<if test='tenant == "_t_c"'>
+		    and t2.tenant='_t_c'
+		</if>
+		<if test = "groupName != null and groupName != ''">
+		    and t2.name like  concat('%', #{groupName}, '%')
+		</if>
+		<if test = "groupId != null">
+		    and t2.id = #{groupId}
+		</if>
+		<if test="returnNotEffective == false">
+			and (t1.effective_time &lt;= now() or t1.effective_time is null)
+		</if>
+		and	(t1.expire_time &gt;= now() or t1.expire_time is null) 
+		and t2.status=1 and t1.status!=0
+	</sql>
+
+	<select id = "listUserPermissionGroupRef"  resultType="com.kingbo401.acl.common.model.dto.UserPermissionGroupRefDTO">
+		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.group_pid,
+		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.subgroup as subgroup
+		from user_permission_group_ref t1, permission_group t2
+		<include refid="queryUserPermissionGroupRefSubSql" />
+		<if test = "orderField != null and orderField != ''">
+	       order by ${orderField} ${orderType}
+	    </if>
+	</select>
+	
+	<select id = "countUserPermissionGroupRef"  resultType="long">
+		select count(*) from user_permission_group_ref t1, permission_group t2
+		<include refid="queryUserPermissionGroupRefSubSql" />
+	</select>
+	
+	<select id = "pageUserPermissionGroupRef"  resultType="com.kingbo401.acl.common.model.dto.UserPermissionGroupRefDTO">
+		select t1.*,t2.app_key,t2.tenant as group_tenant,t2.group_pid,
+		t2.name as groupName,t2.description as groupDescription, t2.idx as groupIdx,t2.subgroup as subgroup
+		from user_permission_group_ref t1, permission_group t2
+		<include refid="queryUserPermissionGroupRefSubSql" />
+		<if test = "orderField != null and orderField != ''">
+	       order by ${orderField} ${orderType}
+	    </if>
+		limit #{offset},#{pageSize}
+	</select>
+	
+	<select id = "hasUserUse" resultType="UserPermissionGroupRefDO">
+		select count(*) from user_permission_group_ref 
+		where group_id=#{groupId} and status!=0
+		and	(expire_time &gt;= now() or expire_time is null)
+		limit 1
+	</select>
+</mapper> 

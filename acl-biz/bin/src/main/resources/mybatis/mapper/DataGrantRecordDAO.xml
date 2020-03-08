@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.kingbo401.acl.dao.DataGrantRecordDAO">
+    <insert id="create" parameterType="DataGrantRecordDO" useGeneratedKeys="true" keyProperty="id">
+		insert into data_grant_record(app_key,model_id,operation_codes,property_rules,grant_target_id,grant_target_type,tenant,
+		status,effective_time,expire_time,gmt_create,gmt_modified)
+		values(#{appKey},#{modelId},#{operationCodes},#{propertyRules},#{grantTargetId},#{grantTargetType},#{tenant},
+		#{status},#{effectiveTime},#{expireTime},now(),now())
+	</insert>
+	
+	<update id="update" parameterType="DataGrantRecordDO">
+		update data_grant_record 
+		set operation_codes = #{operationCodes},property_rules=#{propertyRules},
+		effective_time=#{effectiveTime},expire_time=#{expireTime},gmt_modified=now()
+		where id=#{id}
+	</update>
+	
+	<update id="removeByIds">
+		update data_grant_record set status=0, gmt_modified=now() 
+		where id in		
+		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+	<update id="removeById">
+		update data_grant_record set status=0, gmt_modified=now() 
+		where id = #{id}
+	</update>
+	
+	<select id="getById" resultType="DataGrantRecordDO">
+		select * from data_grant_record where id = #{id} and status != 0
+	</select>
+	
+	<select id="getByIds" resultType="DataGrantRecordDO">
+		select * from data_grant_record where id in		
+		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		and status != 0
+	</select>
+	
+	<update id="removeByParam" parameterType="DataGrantRecordParam">
+		update data_grant_record set status=0, gmt_modified=now() 
+		where app_key=#{appKey} 
+		<if test="modelId != null">
+			and model_id=#{modelId}
+		</if>
+		and grant_target_id=#{grantTargetId} 
+		and grant_target_type=#{grantTargetType} 
+		and tenant=#{tenant}
+	</update>
+	
+	<sql id="queryRecordSubSql">
+		where app_key=#{appKey} 
+		<if test="modelId != null">
+			and model_id=#{modelId}
+		</if>
+		and grant_target_id in
+		<foreach collection="grantTargetIds" item="grantTargetId" open="(" separator="," close=")">
+			#{grantTargetId}
+		</foreach>
+		and grant_target_type=#{grantTargetType}
+		<if test='tenant == "_t_c"'>
+		    and tenant=#{tenant}
+		</if>
+		<if test='tenant != "_t_c"'>
+		    and tenant in ('_t_c',#{tenant})
+		</if>
+		<if test="returnNotEffective == false">
+			and (effective_time is null or effective_time &lt;= now())
+		</if>
+		and (expire_time is null or expire_time &gt;= now())
+		and status=1 
+	</sql>
+	
+	<select id = "listDataGrantRecord" parameterType="DataGrantRecordQueryParam" resultType="DataGrantRecordDO">
+		select * from data_grant_record 
+		<include refid="queryRecordSubSql" />
+		order by id desc
+	</select>
+	
+	<select id = "pageDataGrantRecord" parameterType="DataGrantRecordQueryParam" resultType="DataGrantRecordDO">
+		select * from data_grant_record 
+		<include refid="queryRecordSubSql" />
+		order by id desc limit #{offset}, #{pageSize}
+	</select>
+	
+	<select id = "countDataGrantRecord" parameterType="DataGrantRecordQueryParam" resultType="long">
+		select count(*) from data_grant_record 
+		<include refid="queryRecordSubSql" />
+	</select>
+	
+	<select id="getOneByModel" resultType="DataGrantRecordDO">
+		select * from data_grant_record where model_id=#{modelId} and status = 1
+	</select>
+</mapper> 

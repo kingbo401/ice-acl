@@ -9,9 +9,9 @@
 		<artifactId>acl</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>acl-core</artifactId>
+	<artifactId>acl-biz</artifactId>
 	<packaging>jar</packaging>
-	<name>acl-core</name>
+	<name>acl-biz</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

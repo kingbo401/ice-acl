@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingbo401.acl.dao.RolePermissionGroupRefDAO">
+	<insert id="batchCreate" parameterType="list">
+		insert into role_permission_group_ref (role_id,group_id, status,
+		gmt_create, gmt_modified)
+		values
+		<foreach collection="list" separator="," item="item">
+			(#{item.roleId}, #{item.groupId},
+			#{item.status},now(),now())
+		</foreach>
+		ON DUPLICATE KEY UPDATE gmt_modified = now(),status = values(status)
+	</insert>
+
+	<update id="updateRefsStatus">
+		update role_permission_group_ref set status =
+		#{status},gmt_modified = now()
+		where role_id = #{roleId}
+		<if test="groupIds != null and groupIds.size > 0">
+			and group_id in
+			<foreach collection="groupIds" item="id" close=")" open="("
+				separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</update>
+
+	<sql id="queryPermissionGroupSubSql">
+		where t1.status != 0 and t2.status = 1 and t1.role_id = #{roleId} 
+		and t1.group_id=t2.id
+		<if test="status != null">
+			and t1.status = #{status},
+		</if>
+		<if test="subgroup != null and subgroup != ''">
+			and t2.subgroup=#{subgroup}
+		</if>
+		<if test="groupName != null and groupName != ''">
+			and t2.name like concat('%', #{groupName}, '%')
+		</if>
+	</sql>
+
+	<select id="listPermissionGroup" resultType="PermissionGroupDO">
+		select t2.* from role_permission_group_ref t1,permission_group t2
+		<include refid="queryPermissionGroupSubSql" />
+		<if test="orderField != null and orderField != ''">
+			order by ${orderField} ${orderType}
+		</if>
+	</select>
+
+	<select id="pagePermissionGroup" resultType="PermissionGroupDO">
+		select t2.* from role_permission_group_ref t1,permission_group t2
+		<include refid="queryPermissionGroupSubSql" />
+		<if test="orderField != null and orderField != ''">
+			order by ${orderField} ${orderType}
+		</if>
+		limit #{offset},#{pageSize}
+	</select>
+
+	<select id="countPermissionGroup" resultType="long">
+		select count(t2.*) from role_permission_group_ref t1,permission_group t2
+		<include refid="queryPermissionGroupSubSql" />
+	</select>
+
+	<select id="getPermissionGroupsByRoleIds" resultType="PermissionGroupDO">
+		select t2.* from role_permission_group_ref t1,permission_group t2
+		where t1.group_id = t2.id and t1.`status` != 0 and t2.`status` = 1
+		and t1.role_id in
+		<foreach collection="roleIds" item="roleId" separator=","
+			open="(" close=")">
+			#{roleId}
+		</foreach>
+	</select>
+</mapper>

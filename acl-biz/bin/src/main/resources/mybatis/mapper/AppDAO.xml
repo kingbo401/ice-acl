@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+ <mapper namespace="com.kingbo401.acl.dao.AppDAO">
+    <select id="getByKey" resultType="AppDO">
+		select * from app where app_key=#{appKey} and status != 0
+	</select>
+	
+	<select id="getById" resultType="AppDO">
+		select * from app where id=#{appId} and  status != 0
+	</select>
+	
+	<select id="getByName" resultType="AppDO">
+		select * from app where name=#{name} and status != 0
+	</select>
+
+	<sql id="queryAppSubSql">
+		where status != 0
+		<if test="appKey != null and appKey != ''">
+			and app_key = #{appKey}
+		</if>
+		<if test="name != null and name != ''">
+			and name like  concat('%',#{name},'%')
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+	</sql>
+	
+	<select id="countApp" parameterType="AppQueryParam" resultType="long">
+		select count(*) from  app 
+		<include refid="queryAppSubSql" />
+	</select>
+
+	<select id="pageApp" parameterType="AppQueryParam" resultType="AppDO">
+		select * from app
+		<include refid="queryAppSubSql" />
+		<if test = "orderField != null and orderField != ''">
+		    order by ${orderField} ${orderType}
+		</if>
+		limit #{offset},#{pageSize}
+	</select>
+
+	<select id="listApp" parameterType="AppQueryParam" resultType="AppDO">
+		select * from app
+		<include refid="queryAppSubSql" />
+		<if test = "orderField != null and orderField != ''">
+		    order by ${orderField} ${orderType}
+		</if>
+	</select>
+
+	<insert id="createApp" keyProperty="id" useGeneratedKeys="true" parameterType="AppDO">
+		insert into app(name,name_en,app_key,app_secret,status,description,gmt_create,gmt_modified)
+		values(#{name},#{nameEn},#{appKey},#{appSecret},#{status},#{description},now(),now())
+	</insert>
+
+	<update id="updateApp" parameterType="AppDO">
+		update app
+		<set>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="nameEn != null and nameEn != ''" >
+                name_en = #{nameEn},
+            </if>
+			<if test="description != null and description != ''">
+				description = #{description}
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			gmt_modified = now()
+		</set>
+		 where app_key=#{appKey}
+	</update>
+
+	<select id="getByKeys" resultType="AppDO">
+		select * from app where app_key in
+		<foreach collection="appKeys" open="(" close=")" item="appKey" separator=",">
+            #{appKey}
+        </foreach>
+        and status != 0
+	</select>
+</mapper>

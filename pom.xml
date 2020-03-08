@@ -33,7 +33,7 @@
 	<modules>
 		<module>acl-common</module>
 		<module>acl-api</module>
-		<module>acl-core</module>
+		<module>acl-biz</module>
 		<module>acl-web</module>
 	</modules>
 	
