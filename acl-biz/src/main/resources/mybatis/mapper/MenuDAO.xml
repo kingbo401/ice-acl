@@ -49,8 +49,12 @@
 		where id = #{id}
 	</update>
 
-    <select id="getByKey0" resultType="MenuDO">
+    <select id="getByMenuKey" resultType="MenuDO">
         select * from menu where app_key=#{appKey} and menu_key = #{menuKey} and subgroup=#{subgroup}
+    </select>
+    
+    <select id="getByMenuUrl" resultType="MenuDO">
+        select * from menu where app_key=#{appKey} and url = #{menuUrl} and subgroup=#{subgroup}
     </select>
     
     <select id="getById" resultType="MenuDO">
@@ -83,7 +87,7 @@
          order by idx asc
     </select>
     
-    <select id="checkUserMenu" resultType="MenuDO">
+    <select id="checkUserMenu" resultType="int">
     	select count(1) from
     	(
     		 select t4.*

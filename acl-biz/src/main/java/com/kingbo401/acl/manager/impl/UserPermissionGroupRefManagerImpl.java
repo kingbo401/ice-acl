@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -23,7 +24,6 @@ import com.kingbo401.acl.model.entity.param.UserPermissionGroupRefQueryParam;
 import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-import com.kingbo401.commons.util.StringUtil;
 
 @Service
 public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRefManager{
@@ -198,7 +198,7 @@ public class UserPermissionGroupRefManagerImpl implements UserPermissionGroupRef
 		for(Long groupId : groupIds){
 			PermissionGroupDTO permissionGroup = permissionGroupMap.get(groupId);
 			Assert.notNull(permissionGroup, "权限组不存在:" + groupId);
-			if(StringUtil.isNotBlank(subgroup)){
+			if(StringUtils.isNotBlank(subgroup)){
 				Assert.isTrue(subgroup.equals(permissionGroup.getSubgroup()), "权限组类型不匹配");
 			}
 		}

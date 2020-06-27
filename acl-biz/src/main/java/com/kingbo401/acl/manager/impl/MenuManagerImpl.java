@@ -138,7 +138,7 @@ public class MenuManagerImpl implements MenuManager{
 		Assert.isTrue(MenuShowType.isValid(menuDTO.getShowType()), "菜单显示类型非法");
 		menuDTO.setStatus(AclConstant.STATUS_NORMAL);
 		
-		MenuDO menuDO = menuDAO.getByKey0(appKey, menuKey, menuDTO.getSubgroup());
+		MenuDO menuDO = menuDAO.getByMenuKey(appKey, menuKey, menuDTO.getSubgroup());
 		if (menuDO != null) {
 			menuDTO.setId(menuDO.getId());
 			BeanUtils.copyProperties(menuDTO, menuDO);
@@ -202,7 +202,7 @@ public class MenuManagerImpl implements MenuManager{
 		if (subgroup == null) {
 			subgroup = AclConstant.DEF_SUBGROUP;
 		}
-		MenuDO menuDO = menuDAO.getByKey0(appKey, menuKey, subgroup);
+		MenuDO menuDO = menuDAO.getByMenuKey(appKey, menuKey, subgroup);
 		if(menuDO == null || menuDO.getStatus().equals(AclConstant.STATUS_REMOVE)){
 			return null;
 		}

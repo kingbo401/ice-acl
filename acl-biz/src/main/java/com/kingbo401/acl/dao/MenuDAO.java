@@ -15,7 +15,9 @@ public interface MenuDAO {
 
 	int update(MenuDO menu);
 	
-	MenuDO getByKey0(@Param("appKey")String appKey, @Param("menuKey")String menuKey, @Param("subgroup")String subgroup);
+	MenuDO getByMenuKey(@Param("appKey")String appKey, @Param("menuKey")String menuKey, @Param("subgroup")String subgroup);
+	
+	List<MenuDO> getByMenuUrl(@Param("appKey")String appKey, @Param("menuUrl")String menuUrl, @Param("subgroup")String subgroup);
 	
 	MenuDO getById(@Param("id")Long id);
 	

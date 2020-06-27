@@ -2,7 +2,7 @@ package com.kingbo401.acl.model.entity;
 
 import java.util.Date;
 
-import com.kingbo401.acl.common.model.BaseDO;
+import com.kingbo401.commons.model.BaseDO;
 
 public class UserPermissionRefDO extends BaseDO {
 	private String userId;

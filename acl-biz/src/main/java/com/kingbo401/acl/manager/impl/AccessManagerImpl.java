@@ -1,17 +1,26 @@
 package com.kingbo401.acl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.kingbo401.acl.common.constant.AclConstant;
+import com.kingbo401.acl.common.model.dto.param.CheckUserMenuKeyParam;
+import com.kingbo401.acl.common.model.dto.param.CheckUserMenuUrlParam;
 import com.kingbo401.acl.dao.MenuDAO;
 import com.kingbo401.acl.dao.MenuPermissionRefDAO;
 import com.kingbo401.acl.dao.PermissionDAO;
 import com.kingbo401.acl.dao.RoleDAO;
 import com.kingbo401.acl.dao.UserRoleRefDAO;
 import com.kingbo401.acl.manager.AccessManager;
+import com.kingbo401.acl.model.entity.MenuDO;
 import com.kingbo401.acl.model.entity.PermissionDO;
 import com.kingbo401.acl.model.entity.RoleDO;
 import com.kingbo401.acl.model.entity.param.CheckUserMenuParam;
@@ -92,7 +101,7 @@ public class AccessManagerImpl implements AccessManager{
 	}
 
 	@Override
-	public boolean checkUserRole(String userId, String appKey, String roleKey, String tenant) {
+	public boolean checkUserRole(String userId, String tenant, String appKey, String roleKey) {
 		Assert.notNull(userId , "userId 不能为空");
         Assert.hasText(roleKey, "roleKey 不能为空");
         Assert.hasText(appKey, "appKey 不能为空");
@@ -101,5 +110,56 @@ public class AccessManagerImpl implements AccessManager{
         Assert.notNull(roleDO, "角色不存在");
         int count = userRoleRefDAO.checkUserRole(userId, tenant, roleDO.getId());
         return count > 0;
+	}
+
+	@Override
+	public boolean checkUserMenuKey(CheckUserMenuKeyParam param) {
+		String userId = param.getUserId();
+		String menuKey = param.getMenuKey();
+		String appKey = param.getAppKey();
+		String tenant = param.getTenant();
+		String subgroup = param.getSubgroup();
+		Assert.notNull(userId , "userId 不能为空");
+        Assert.hasText(menuKey, "menuKey 不能为空");
+        Assert.hasText(appKey, "appKey 不能为空");
+        Assert.hasText(tenant, "tenant 不能为空");
+        if (StringUtils.isBlank(subgroup)) {
+			subgroup = AclConstant.DEF_SUBGROUP;
+		}
+        MenuDO menuDO = menuDAO.getByMenuKey(appKey, menuKey, subgroup);
+        if (menuDO == null) {
+			return false;
+		}
+        List<Long> menuIds = new ArrayList<Long>();
+        menuIds.add(menuDO.getId());
+        CheckUserMenuParam checkUserMenuParam = new CheckUserMenuParam();
+        BeanUtils.copyProperties(param, checkUserMenuParam);
+        checkUserMenuParam.setMenuIds(menuIds);
+		return menuDAO.checkUserMenu(checkUserMenuParam) > 0;
+	}
+
+	@Override
+	public boolean checkUserMenuUrl(CheckUserMenuUrlParam param) {
+		String userId = param.getUserId();
+		String menuUrl = param.getMenuUrl();
+		String appKey = param.getAppKey();
+		String tenant = param.getTenant();
+		String subgroup = param.getSubgroup();
+		Assert.notNull(userId , "userId 不能为空");
+        Assert.hasText(menuUrl, "menuUrl 不能为空");
+        Assert.hasText(appKey, "appKey 不能为空");
+        Assert.hasText(tenant, "tenant 不能为空");
+        if (StringUtils.isBlank(subgroup)) {
+			subgroup = AclConstant.DEF_SUBGROUP;
+		}
+        List<MenuDO> menuDOs = menuDAO.getByMenuUrl(appKey, menuUrl, subgroup);
+        if (CollectionUtils.isEmpty(menuDOs)) {
+			return false;
+		}
+        List<Long> menuIds = menuDOs.stream().map(MenuDO::getId).collect(Collectors.toList());
+        CheckUserMenuParam checkUserMenuParam = new CheckUserMenuParam();
+        BeanUtils.copyProperties(param, checkUserMenuParam);
+        checkUserMenuParam.setMenuIds(menuIds);
+		return menuDAO.checkUserMenu(checkUserMenuParam) > 0;
 	}
 }

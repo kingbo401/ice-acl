@@ -3,8 +3,8 @@ package com.kingbo401.acl.common.model.dto;
 import java.util.Date;
 import java.util.List;
 
-import com.kingbo401.acl.common.model.BaseDO;
 import com.kingbo401.acl.common.model.PropertyRule;
+import com.kingbo401.commons.model.BaseDO;
 
 public class DataGrantRecordDTO extends BaseDO{
 	private String appKey;

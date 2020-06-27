@@ -3,9 +3,9 @@ package com.kingbo401.acl.common.model.dto.param;
 import java.util.Date;
 import java.util.List;
 
-import com.kingbo401.commons.model.BasePojo;
+import com.kingbo401.commons.model.param.BaseParam;
 
-public class UserPermissionGroupRefParam extends BasePojo{
+public class UserPermissionGroupRefParam extends BaseParam{
 	private String appKey;
 	private String userId;
 	private String tenant;

@@ -1,6 +1,6 @@
 package com.kingbo401.acl.common.model.dto;
 
-import com.kingbo401.acl.common.model.BaseDO;
+import com.kingbo401.commons.model.BaseDO;
 
 public class MenuDTO extends BaseDO{
 	private String appKey;

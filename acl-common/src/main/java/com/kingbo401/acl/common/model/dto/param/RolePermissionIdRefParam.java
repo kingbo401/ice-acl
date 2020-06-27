@@ -2,9 +2,9 @@ package com.kingbo401.acl.common.model.dto.param;
 
 import java.util.List;
 
-import com.kingbo401.commons.model.BasePojo;
+import com.kingbo401.commons.model.param.BaseParam;
 
-public class RolePermissionIdRefParam extends BasePojo{
+public class RolePermissionIdRefParam extends BaseParam{
 	private String appKey;
 	private Long roleId;
 	private String subgroup;

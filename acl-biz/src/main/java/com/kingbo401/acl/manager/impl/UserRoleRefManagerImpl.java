@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -27,7 +28,6 @@ import com.kingbo401.acl.model.entity.param.UsersRoleRefQueryParam;
 import com.kingbo401.acl.util.BizUtil;
 import com.kingbo401.commons.model.PageVO;
 import com.kingbo401.commons.util.CollectionUtil;
-import com.kingbo401.commons.util.StringUtil;
 
 @Service
 public class UserRoleRefManagerImpl implements UserRoleRefManager{
@@ -114,7 +114,7 @@ public class UserRoleRefManagerImpl implements UserRoleRefManager{
 		for(Long roleId : roleIds){
 			RoleDTO roleDTO = roleIdMap.get(roleId);
 			Assert.notNull(roleDTO, "角色:" + roleId + " 不存在");
-			if(StringUtil.isNotBlank(roleType)){
+			if(StringUtils.isNotBlank(roleType)){
 				Assert.isTrue(roleType.equals(roleDTO.getSubgroup()), "角色类型不匹配");
 			}
 		}

@@ -2,9 +2,9 @@ package com.kingbo401.acl.common.model.dto.param;
 
 import java.util.List;
 
-import com.kingbo401.commons.model.BasePojo;
+import com.kingbo401.commons.model.param.BaseParam;
 
-public class MenuPermissionRefParam extends BasePojo{
+public class MenuPermissionRefParam extends BaseParam{
 	private String appKey;
 	private Long menuId;
 	private String subgroup;

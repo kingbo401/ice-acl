@@ -1,8 +1,8 @@
 package com.kingbo401.acl.common.model.dto.param;
 
-import com.kingbo401.commons.model.BasePojo;
+import com.kingbo401.commons.model.param.BaseParam;
 
-public class PermissionGroupTreeQueryParam extends BasePojo{
+public class PermissionGroupTreeQueryParam extends BaseParam{
 	private String appKey;
     private String tenant;
     private String subgroup;
